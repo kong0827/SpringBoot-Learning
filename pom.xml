@@ -19,6 +19,7 @@
     <modules>
         <module>swagger</module>
         <module>restful</module>
+        <module>springsecurity</module>
     </modules>
 
     <dependencies>
@@ -40,6 +41,24 @@
             <version>2.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.4</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.5</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
