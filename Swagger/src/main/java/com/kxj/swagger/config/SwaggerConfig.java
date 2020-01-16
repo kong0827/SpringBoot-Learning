@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 /**
  * 启动swagger自动配置
+ * @author kongxiangjin
  */
 @EnableSwagger2
 @Component

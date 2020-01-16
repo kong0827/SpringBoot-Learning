@@ -19,7 +19,7 @@
     <modules>
         <module>swagger</module>
         <module>restful</module>
-        <module>springsecurity</module>
+        <module>SpringSecurity</module>
     </modules>
 
     <dependencies>
