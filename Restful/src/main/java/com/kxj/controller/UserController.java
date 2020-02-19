@@ -4,6 +4,8 @@ import com.kxj.entity.User;
 import com.kxj.entity.UserQueryCondition;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -26,6 +28,23 @@ public class UserController {
         users.add(new User());
         users.add(new User());
 
+        return users;
+    }
+
+    @GetMapping(value = "/user/{id:\\d+}")
+    public User getInfo(@PathVariable(name = "id") String id) {
+        User user = new User();
+        user.setUsername("tom");
+        return user;
+    }
+
+    @PostMapping("/user")
+    public User create(User user) {
+        String s = ReflectionToStringBuilder.toString(user);
+        System.out.println(s);
+
+        User users = new User();
+        users.setId(1);
         return users;
     }
 }
