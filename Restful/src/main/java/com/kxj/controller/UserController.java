@@ -3,11 +3,10 @@ package com.kxj.controller;
 import com.kxj.entity.User;
 import com.kxj.entity.UserQueryCondition;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,12 +38,18 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public User create(User user) {
+    public User create(@Valid @RequestBody User user, BindingResult errors) {
+        if (errors.hasErrors()) {
+            errors.getAllErrors()
+                    .stream()
+                    .forEach(error ->
+                            System.out.println(error.getDefaultMessage()));
+        }
         String s = ReflectionToStringBuilder.toString(user);
         System.out.println(s);
 
-        User users = new User();
-        users.setId(1);
-        return users;
+        user.setId(1);
+        return user;
     }
+
 }

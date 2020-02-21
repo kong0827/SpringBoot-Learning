@@ -2,9 +2,10 @@ package com.kxj.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kxj.entity.Student;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,34 @@ public class StudentController {
         students.add(new Student());
         students.add(new Student());
         return students;
+    }
+
+    /**
+     * 修改
+     *
+     * @param id
+     * @param student
+     * @return
+     * @PathVariable(value = "id")  可加可不加
+     */
+    @PutMapping("/student/{id}")
+    public Student updateStudent(@PathVariable(value = "id") Integer id,
+                                 @Valid @RequestBody Student student,
+                                 BindingResult bindingResult) {
+        System.out.println(student);
+        bindingResult.getAllErrors().stream().forEach(error -> {
+            System.out.println(error.getDefaultMessage());
+        });
+        return student;
+    }
+
+    /**
+     * 删除
+     * @param id
+     */
+    @DeleteMapping(value = "student/{id}")
+    public void deleteMapping(@PathVariable(value = "id") Integer id) {
+        System.out.println(id);
     }
 
 
