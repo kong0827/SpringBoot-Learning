@@ -45,15 +45,45 @@
 -  **Spring MockMVC**来执行Spring webmvc控制器的**集成测试**。**MockMVC**类是[Spring MVC](https://howtodoinjava.com/spring-mvc-tutorial/)测试框架的一部分，该框架有助于显式启动Servlet容器来测试控制器。 
 
 - get请求也可以用对象接收
+
 - post请求也可以用参数接收
 
-+ 使用方式一
+  当我们post请求只有一两个参数时，不需要创建对象时，可以使用JSONObject实体类。
+
+  如下用post传递Integer类型，在controller层定义**getInteger()**方法；
+
+  ```
+  @ResponseBody
+  @PostMapping("/postID")
+    public Integer getInteger(@RequestBody JSONObject jsonObject){
+    String a=jsonObject.get(“id”).toString();
+    Integer id=Integer.parseInt(a);
+    return id;
+  }
+  ```
+
+  
+
+- 使用方式一
 
   ```java
-  @Autowiredprivate WebApplicationContext wac;private MockMvc mockMvc;@Beforepublic void setup() {    mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();}/** * 查询 * @throws Exception */@Testpublic void whenQuerySuccess() throws Exception {    //发送get请求    mockMvc.perform(MockMvcRequestBuilders.get("/user")            .param("username", "tom")            .param("age", "21")            .param("sex","2")            //请求的格式            .contentType(MediaType.APPLICATION_JSON_UTF8))            //请求的相应期待是200            .andExpect(MockMvcResultMatchers.status().isOk())            //返回的长度是3            .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(3));}
+  @Autowiredprivate WebApplicationContext wac;private MockMvc mockMvc;@Beforepublic void setup() {    mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();}
+  /** 
+  * 查询 
+  * @throws Exception 
+  */
+  @Testpublic void whenQuerySuccess() throws Exception {    
+      //发送get请求    
+      mockMvc.perform(MockMvcRequestBuilders.get("/user")            	               .param("username", "tom")            
+      .param("age", "21")            
+      .param("sex","2")            
+       //请求的格式            
+      .contentType(MediaType.APPLICATION_JSON_UTF8))            
+       //请求的相应期待是200                        .andExpect(MockMvcResultMatchers.status().isOk())            
+          //返回的长度是3            .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(3));}
   ```
-  
-+ 使用方式二 **@AutoConfigureMockMvc**
+
+- 使用方式二 **@AutoConfigureMockMvc**
 
   ```java
   @SpringBootTest
@@ -497,23 +527,23 @@ public void testQuery1() throws Exception {
          @NotNull(message = "密码不能为空")
          private String password;
      }
+     ```
      
-     ```
 
-     然后在controller方法中用`@RequestBody`表示这个参数接收的类：
-
-     ```
+然后在controller方法中用`@RequestBody`表示这个参数接收的类：
+     
+```
       @PostMapping("/teacher")
       public void getTeacher(@Validated @RequestBody Teacher teacher,
       							BindingResult errors) {
               errors.getAllErrors().stream().forEach(
               	error -> {System.out.println(error.getDefaultMessage());});
       }
-     ```
+```
 
-     get请求，使用对象接收也可以进行校验
-
-     ```java
+get请求，使用对象接收也可以进行校验
+     
+```java
      /**
       * get请求对象接收
       * @param teacher
@@ -526,56 +556,55 @@ public void testQuery1() throws Exception {
              System.out.println(error.getDefaultMessage());
          });
      }
-     ```
+```
 
-     
 
-    **分组**
 
-   - @Valid是javax.validation里的。
+ **分组**
 
-   - @Validated是@Valid 的一次封装，是Spring提供的校验机制使用。@Valid不提供分组功能
-
-   - 为什么需要分组？
-
-     例如：当一个实体类 需要多种验证方式的时，对于一个实体类的id 来说，新增的时候不需要校验，更新时则是必须校验
-
-   - 步骤
-
-     1. 新建一个接口
-
-        ```java
+- @Valid是javax.validation里的。
+  
+- @Validated是@Valid 的一次封装，是Spring提供的校验机制使用。@Valid不提供分组功能
+  
+- 为什么需要分组？
+  
+  例如：当一个实体类 需要多种验证方式的时，对于一个实体类的id 来说，新增的时候不需要校验，更新时则是必须校验
+  
+- 步骤
+  
+  1. 新建一个接口
+  
+     ```java
         /**
          * @author kxj
          * @date 2020/2/21 21:30
-         * @Desc 分组接口类
+         * @desc 分组接口类
          */
         public interface First {
         }
-        
-        ```
-
-     2. 实体类
-
-        ```java
+     ```
+     
+   2. 实体类
+  
+      ```java
         @NotEmpty(groups = {First.class})
-        ```
-
-        注：
-
-        (1)不分配groups，默认每次都要进行验证
-
-        (2)对一个参数需要多种验证方式时，也可通过分配不同的组达到目的。例：
-
-        ```java
+      ```
+     
+      注：
+  
+      (1)不分配groups，默认每次都要进行验证
+  
+      (2)对一个参数需要多种验证方式时，也可通过分配不同的组达到目的。例：
+  
+      ```java
         @NotEmpty(groups={First.class})  
         @Size(min=3,max=8,groups={Second.class})  
         private String name; 
-        ```
-
-     3. 控制类
-
-        ```java
+      ```
+     
+   3. 控制类
+  
+      ```java
         /**
          * 分组验证 校验
          */
@@ -598,13 +627,13 @@ public void testQuery1() throws Exception {
                 System.out.println(error.getDefaultMessage());
             });
         }
-        ```
-
-        注：
+      ```
+     
+      注：
         **@Validated没有添加groups属性时，默认验证没有分组的属性**
-
-        **@Validated没有添加groups属性时， 所有参数的验证类型都有分组 ,则不验证任何参数**
-
+     
+      **@Validated没有添加groups属性时， 所有参数的验证类型都有分组 ,则不验证任何参数**
+  
    - **组序列 **
 
      默认情况下，不同组别的约束验证是无序的，然而在某些情况下，约束验证的顺序却很重要。
@@ -614,12 +643,12 @@ public void testQuery1() throws Exception {
      （1）第二个组中的约束验证依赖于一个稳定状态来运行，而这个稳定状态是由第一个组来进行验证的。
 
      （2）某个组的验证比较耗时，CPU 和内存的使用率相对比较大，最优的选择是将其放在最后进行验证。因此，在进行组验证的时候尚需提供一种有序的验证方式，这就提出了组序列的概念。
-     一个组可以定义为其他组的序列，使用它进行验证的时候必须符合该序列规定的顺序。在使用组序列验证的时候，如果序列前边的组验证失败，则后面的组将不再给予验证。
-
+  一个组可以定义为其他组的序列，使用它进行验证的时候必须符合该序列规定的顺序。在使用组序列验证的时候，如果序列前边的组验证失败，则后面的组将不再给予验证。
+  
      **分组接口类 （通过@GroupSequence注解对组进行排序）：**
 
      ```java
-     public interface First {   
+  public interface First {   
      }
      
      public interface Second {  
@@ -629,11 +658,11 @@ public void testQuery1() throws Exception {
      public interface Group {  
      } 
      ```
-
+  
      **实体类**
 
        ```java
-     @Data
+  @Data
      public class People implements Serializable {
      
          // 在First分组，判断不能为空
@@ -647,13 +676,13 @@ public void testQuery1() throws Exception {
      
      }
        ```
-
+  
      **控制类**
 
      **@Validate**不加Group，默认校验字段校验的规则不起作用
 
      ```java
-     @RestController
+  @RestController
      public class PeopleController {
      
      /**
@@ -684,16 +713,8 @@ public void testQuery1() throws Exception {
      }
      
      ```
-
+  
      
-
-   
-
-   
-
-   
-
-   
 
    
 
@@ -716,7 +737,7 @@ public void testQuery1() throws Exception {
    ###### @NonNull
 
    @NotNull 是 JSR303（Bean的校验框架）的注解，用于运行时检查一个属性是否为空，如果为空则不合法。
-   @NonNull 是JSR 305（缺陷检查框架）的注解，是告诉编译器这个域不可能为空，当代码检查有空值时会给出一个风险警告，目前这个注解只有IDEA支持
+@NonNull 是JSR 305（缺陷检查框架）的注解，是告诉编译器这个域不可能为空，当代码检查有空值时会给出一个风险警告，目前这个注解只有IDEA支持
 
 ##### **自定义注解(参数校验)**
 
@@ -760,7 +781,7 @@ public void testQuery1() throws Exception {
    /**
     * @author kxj
     * @date 2020/2/20 21:22
-    * @Desc 自定义参数校验实现类
+    * @desc 自定义参数校验实现类
     *          必须实现ConstraintValidator接口
     *            ConstraintValidator<MyConstraint, Object>
     *                MyConstraint: 自定义注解
@@ -805,10 +826,9 @@ public void testQuery1() throws Exception {
    ```java
    /**
     * 修改测试 put请求
-   */
+    */
    @Test
    public void updateTest() throws Exception {
-          
            Date date = new Date();
            String content = "{\"id\": 1,\"username\": \"tom\", \"password\": null, \"birthday\":"+date.getTime()+"}";
            String reuslt = mockMvc.perform(MockMvcRequestBuilders.put("/student/1").contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -816,7 +836,6 @@ public void testQuery1() throws Exception {
                    .andExpect(status().isOk())
                    .andExpect(jsonPath("$.id").value("1"))
                    .andReturn().getResponse().getContentAsString();
-   
            System.out.println(reuslt);
    }
    
@@ -831,15 +850,308 @@ public void testQuery1() throws Exception {
    }
    ```
 
-##### 
+### Restful API的拦截
+
+#### 过滤器（J2EE的规范）
+
+- **自定义的过滤器**
+
+```java
+@Component
+public class TimeFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        System.out.println("Filter初始化");
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse                servletResponse,FilterChain filterChain) throws IOException, ServletException    {
+        LocalDateTime startTime = LocalDateTime.now();
+        filterChain.doFilter(servletRequest, servletResponse);
+        LocalDateTime endTime = LocalDateTime.now();
+        Duration duration = Duration.between(startTime, endTime);
+        long millis = duration.toMillis();
+        System.out.println("耗时为：" + millis + "毫秒");
+
+    }
+
+    @Override
+    public void destroy() {
+        System.out.println("Filter销毁");
+    }
+}
+```
+
+- **第三方过滤器**
+
+  ```java
+  @Configuration
+  public class WebConfig {
+  
+      // 将TimerFilter默认为第三方的Filter，然后交给Spring管理
+      // 此时上面的@Componenet需要注释（假设为第三方的Filter）
+      @Bean
+      public FilterRegistrationBean timeFilter() {
+          FilterRegistrationBean registration = new FilterRegistrationBean();
+          TimeFilter timeFilter = new TimeFilter();
+          // 设置过滤器
+          registration.setFilter(timeFilter);
+          // 设置URL
+          List<String> urls = new ArrayList<>();
+          urls.add("/*");
+          registration.setUrlPatterns(urls);
+          return registration;
+      }
+  }
+  ```
+
+  
+
+#### 拦截器（Spring框架提供）
+
+```java
+
+```
+
+```java
+@Component
+public class TimeInterceptor implements HandlerInterceptor {
+    /**
+     * preHandle方法是进行处理器拦截用的，该方法将在Controller处理之前进行调用。
+     * @param request
+     * @param response
+     * @param handler   控制器方法的声明
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println(((HandlerMethod)handler).getBean().getClass().getName());
+        LocalDateTime startTime = LocalDateTime.now();
+        request.setAttribute("startTime", startTime);
+        System.out.println("拦截的方法" + ((HandlerMethod)handler).getMethod().getName());
+        //
+        return true;
+//        return false;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        LocalDateTime startTime = (LocalDateTime) request.getAttribute("startTime");
+        LocalDateTime endTime = LocalDateTime.now();
+        Duration duration = Duration.between(startTime, endTime);
+        long millis = duration.toMillis();
+        System.out.println("Interceptor耗时为：" + millis + "毫秒");
+    }
+
+    /**
+     * 控制器方法执行后调用
+     * @param request
+     * @param response
+     * @param handler
+     * @param ex
+     * @throws Exception
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        System.out.println("Interceptor执行结束");
+        System.out.println(ex);
+
+    }
+}
+
+```
+
+**配置类**
+
+```java
+@Configuration
+public class WebMVCInterceptorConfig implements WebMvcConfigurer {
+    @Autowired
+    private TimeInterceptor timeInterceptor;
+
+    /**
+     *
+     * @param registry 拦截器的注册器
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(timeInterceptor);
+	}
+}
+```
+**拦截器概念**
+
+Java 里的拦截器是动态拦截action调用的对象。它提供了一种机制可以使开发者可以定义在一个action执行的前后执行的代码，也可以在一个action执行前阻止其执行，同时也提供了一种可以提取action中可重用部分的方式。在 AOP（Aspect-Oriented Programming，面向切面编程）中拦截器用于在某个方法（包括构造器）或字段被访问之前进行拦截，然后在之前或之后加入某些操作。特别地，现阶段 Spring 自身仅支持基于方法的拦截操作！如果基于方法的拦截操作不能满足需求，可以使用 AspectJ 与 Spring 进行集成，以实现更细粒度或更多方面的拦截操作。
+
+（1） preHandle方法是进行处理器拦截用的，顾名思义，该方法将在Controller处理之前进行调用。
+
+SpringMVC中的Interceptor拦截器是链式的，可以同时存在多个Interceptor，然后SpringMVC会根据声明的前后顺序一个接一个的执行，而且所有的Interceptor中的preHandle方法都会在Controller方法调用之前调用。
+
+（SpringMVC的这种Interceptor链式结构也是可以进行中断的，这种中断方式是令preHandle的返回值为false，当preHandle的返回值为false的时候整个请求就结束了。）
+
+重写preHandle方法，在请求发生前执行。
+
+
+（2）这个方法只会在当前这个Interceptor的preHandle方法返回值为true的时候才会执行。
+
+postHandle是进行处理器拦截用的，它的执行时间是在处理器进行处理之后，也就是在Controller的方法调用之后执行，但是它会在DispatcherServlet进行视图的渲染之前执行，也就是说在这个方法中你可以对ModelAndView进行操作。
+
+
+（3）该方法也是需要当前对应的Interceptor的preHandle方法的返回值为true时才会执行。
+
+该方法将在整个请求完成之后，也就是DispatcherServlet渲染了视图执行。
+
+## 具体实现
+
+### 单个拦截器
+
+#### 1.新建拦截器
+
+```
+	public class Test1Interceptor implements HandlerInterceptor{
+
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		System.out.println("执行preHandle方法-->01");
+		return true;
+	}
+	
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		System.out.println("执行postHandle方法-->02");
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		System.out.println("执行afterCompletion方法-->03");
+	}
+}
+复制代码
+```
+
+#### 2.配置拦截器
+
+```
+@Configuration
+public class WebMvcConfig extends WebMvcConfigurationSupport {
+	/*
+	 * 拦截器配置
+	 */
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		// 注册自定义拦截器，添加拦截路径和排除拦截路径
+		registry.addInterceptor(new Test1Interceptor()) // 添加拦截器
+				.addPathPatterns("/**") // 添加拦截路径
+				.excludePathPatterns(// 添加排除拦截路径
+						"/hello").order(0);//执行顺序
+		super.addInterceptors(registry);
+	}
+```
+
+### 多个拦截器
+
+#### 1.新建两个拦截器
+
+Test1Interceptor
+
+```
+public class Test1Interceptor implements HandlerInterceptor{
+	
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		System.out.println("执行Test1Interceptor preHandle方法-->01");
+		return true;
+	}
+	
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		System.out.println("执行Test1Interceptor postHandle方法-->02");
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		System.out.println("执行Test1Interceptor afterCompletion方法-->03");
+	}
+}
+复制代码
+```
+
+Test2Interceptor
+
+```
+public class Test2Interceptor extends HandlerInterceptorAdapter{
+
+
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		System.out.println("执行Test2Interceptor preHandle方法-->01");
+		return true;
+	}
+	
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		System.out.println("执行Test2Interceptor postHandle方法-->02");
+	}
+
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
+		System.out.println("执行Test2Interceptor afterCompletion方法-->03");
+	}
+}
+
+复制代码
+```
+
+#### 2.配置拦截器
+
+```
+@Configuration
+public class WebMvcConfig extends WebMvcConfigurationSupport {
+	/*
+	 * 拦截器配置
+	 */
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		// 注册自定义拦截器，添加拦截路径和排除拦截路径
+		registry.addInterceptor(new Test1Interceptor()) // 添加拦截器1
+				.addPathPatterns("/**") // 添加拦截路径
+				.excludePathPatterns(// 添加排除拦截路径
+						"/hello")
+				.order(0);
+		registry.addInterceptor(new Test2Interceptor()) // 添加拦截器2
+				.addPathPatterns("/**") // 添加拦截路径
+				.excludePathPatterns(// 添加排除拦截路径
+						"/test1")
+				.order(1);
+		super.addInterceptors(registry);
+	}
+
+}
+```
 
 
 
+#### 过滤器拦截器的区别
 
+1.拦截器是基于java的反射机制的，而过滤器是基于函数回调。 
 
+2.拦截器不依赖于servlet容器，而过滤器依赖于servlet容器。
 
+ 3.拦截器只能对Controller请求起作用，而过滤器则可以对几乎所有的请求起作用。
 
+ 4.拦截器可以访问action上下文、值栈里的对象，而过滤器不能访问。
 
+ 5.在Controller的生命周期中，拦截器可以多次被调用，而过滤器只能在容器初始化时被调用一次。
+
+ 6.拦截器可以获取IOC容器中的各个bean，而过滤器不行。这点很重要，在拦截器里注入一个service，可以调用业务逻辑。
 
 
 

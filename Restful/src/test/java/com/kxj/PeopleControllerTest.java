@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * @author kxj
  * @date 2020/2/21 22:21
- * @Desc
+ * @desc
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(secure = false)
@@ -43,7 +43,7 @@ public class PeopleControllerTest {
      */
     @Test
     public void requestTest2() throws Exception {
-        String content = "[{\"name\": \"xx\",\"id\": \"x\"},{\"username\": \"xxxx\",\"id\": \"\"}]";
+        String content = "[{\"name\": \"xx\",\"id\": \"x\"},{\"name\": \"xxxx\",\"id\": \"\"}]";
         mockMvc.perform(post("/peoples")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(content))

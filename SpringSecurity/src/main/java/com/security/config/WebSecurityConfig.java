@@ -15,7 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * @ClassName WebSecurityConfig
- * @Description TODO 配置Spring Security
+ * @description TODO 配置Spring Security
  * @Author kongxiangjin
  * @Date 2020/1/16 17:22
  * @Version 1.0

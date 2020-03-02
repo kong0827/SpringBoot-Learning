@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author kxj
  * @date 2019/12/27 0:06
- * @Desc
+ * @desc
  */
 @RestController
 public class UserController {
@@ -21,7 +21,7 @@ public class UserController {
     @GetMapping("/user")
     public List query(UserQueryCondition userQueryCondition) {
 //        ReflectionToStringBuilder
-        System.out.println(userQueryCondition);
+//        System.out.println(userQueryCondition);
         List<User> users = new ArrayList<>();
         users.add(new User());
         users.add(new User());

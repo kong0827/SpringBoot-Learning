@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 /**
  * @ClassName SwaggerConfig
- * @Description Swagger配置类
+ * @description Swagger配置类
  * @Author kongxiangjin
  * @Date 2019/12/18 17:25
  * @Version 1.0

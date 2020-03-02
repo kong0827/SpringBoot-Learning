@@ -1,8 +1,9 @@
-package com.kxj.entity;
+package kxj.entity;
 
 import lombok.Data;
-
 import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,9 +14,10 @@ import java.util.Date;
  */
 @Data
 public class User implements Serializable {
-    @NotBlank(message = "不能爲空")
-    private Integer id;
+
+
+    @NotEmpty
+    private String id;
     private String username;
     private int age;
-    private Date birthday;
 }

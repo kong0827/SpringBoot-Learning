@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author kxj
  * @date 2020/2/13 17:43
- * @Desc
+ * @desc
  */
 @RestController
 public class StudentController {

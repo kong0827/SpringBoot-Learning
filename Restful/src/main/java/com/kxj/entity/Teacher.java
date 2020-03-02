@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * @author kxj
  * @date 2020/2/20 22:42
- * @Desc
+ * @desc
  */
 @Data
 public class Teacher {

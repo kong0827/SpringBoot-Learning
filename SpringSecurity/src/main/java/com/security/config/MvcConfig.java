@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 /**
  * @ClassName MvcConfig
- * @Description TODO
+ * @description TODO
  * @Author kongxiangjin
  * @Date 2020/1/16 17:20
  * @Version 1.0

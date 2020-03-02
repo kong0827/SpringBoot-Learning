@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * @author kxj
  * @date 2020/2/13 17:38
- * @Desc
+ * @desc
  */
 @Data
 public class Student implements Serializable {

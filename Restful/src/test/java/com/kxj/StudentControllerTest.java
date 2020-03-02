@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author kxj
  * @date 2020/2/13 17:47
- * @Desc
+ * @desc
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)

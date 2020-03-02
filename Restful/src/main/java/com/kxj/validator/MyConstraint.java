@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * @author kxj
  * @date 2020/2/20 21:18
- * @Desc 自定义注解，参数校验
+ * @desc 自定义注解，参数校验
  */
 
 /**

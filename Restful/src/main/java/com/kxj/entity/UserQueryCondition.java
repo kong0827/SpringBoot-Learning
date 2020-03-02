@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * @author kxj
  * @date 2019/12/27 0:16
- * @Desc
+ * @desc
  */
 @Data
 public class UserQueryCondition {

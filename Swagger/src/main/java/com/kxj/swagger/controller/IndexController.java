@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @ClassName IndexController
- * @Description TODO
+ * @description TODO
  * @Author kongxiangjin
  * @Date 2019/12/19 13:35
  * @Version 1.0

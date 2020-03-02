@@ -6,7 +6,7 @@ import javax.validation.ConstraintValidatorContext;
 /**
  * @author kxj
  * @date 2020/2/20 21:22
- * @Desc 自定义参数校验实现类
+ * @desc 自定义参数校验实现类
  *          必须实现ConstraintValidator接口
  *            ConstraintValidator<MyConstraint, Object>
  *                MyConstraint: 自定义注解

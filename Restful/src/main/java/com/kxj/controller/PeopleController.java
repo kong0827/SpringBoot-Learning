@@ -6,12 +6,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author kxj
  * @date 2020/2/21 22:16
- * @Desc
+ * @desc
  */
 
 @RestController
@@ -19,7 +20,8 @@ public class PeopleController {
 
     /**
      * 单个对象校验
-     * @param people
+     * @param
+     * people
      * @param errors
      */
     @PostMapping("/people")
@@ -35,9 +37,9 @@ public class PeopleController {
      * @param p2
      * @param errors2
      */
-    @PostMapping("/peoples")
-    public void addPeople2(@Validated({Group.class}) @RequestBody People p1, BindingResult errors1,
-                           @Validated({Group.class}) @RequestBody People p2, BindingResult errors2) {
+    @RequestMapping("/peoples")
+    public void addPeople2(@Validated({Group.class}) People p1, BindingResult errors1,
+                           @Validated({Group.class}) People p2, BindingResult errors2) {
         errors1.getAllErrors().stream().forEach(error -> System.out.println(error.getDefaultMessage()));
         System.out.println("--------------------------");
         errors2.getAllErrors().stream().forEach(error -> System.out.println(error.getDefaultMessage()));
