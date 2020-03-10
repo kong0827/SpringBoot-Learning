@@ -1003,11 +1003,11 @@ postHandle是进行处理器拦截用的，它的执行时间是在处理器进�
 
 该方法将在整个请求完成之后，也就是DispatcherServlet渲染了视图执行。
 
-## 具体实现
+**具体实现**
 
-### 单个拦截器
+##### 单个拦截器
 
-#### 1.新建拦截器
+###### 1.新建拦截器
 
 ```
 	public class Test1Interceptor implements HandlerInterceptor{
@@ -1034,7 +1034,7 @@ postHandle是进行处理器拦截用的，它的执行时间是在处理器进�
 复制代码
 ```
 
-#### 2.配置拦截器
+###### 2.配置拦截器
 
 ```
 @Configuration
@@ -1053,9 +1053,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 	}
 ```
 
-### 多个拦截器
+##### 多个拦截器
 
-#### 1.新建两个拦截器
+###### 1.新建两个拦截器
 
 Test1Interceptor
 
@@ -1110,7 +1110,7 @@ public class Test2Interceptor extends HandlerInterceptorAdapter{
 复制代码
 ```
 
-#### 2.配置拦截器
+###### 2.配置拦截器
 
 ```
 @Configuration
@@ -1155,13 +1155,52 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 
 
+#### 切片（Aspect ）
+
+![1583847477271](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1583847477271.png)
+
+##### 配置切面类
+
+```java
+@Aspect
+@Component
+public class TimeAspect {
+
+    /**
+     * 声明切入点
+     * 第一个 "*", 代表任何返回值
+     * 第二个 "*"，代表此类中的任何方法
+     */
+    @Around(value = "execution(* com.kxj.controller.UserController.*(..))")
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println("time aspect start");
+        LocalDateTime startTime = LocalDateTime.now();
+        Object[] args = joinPoint.getArgs();
+        Arrays.asList(args).stream().forEach(arg -> System.out.println("请求参数为：" + arg));
+
+        Object object = joinPoint.proceed();
+
+        LocalDateTime endTime = LocalDateTime.now();
+        System.out.println("time aspect end");
+        Duration duration = Duration.between(startTime, endTime);
+        System.out.println("耗时：" + duration.minus(duration));
+        return object;
+    }
+
+}
+```
 
 
 
+#### 过滤器、拦截器、切片区别
 
+过滤器可以拿到原始Http请求和响应的信息，但是不可以拿到真正处理原始Http请求和响应的方法信息
 
+拦截器可以拿到原始Http请求和响应的信息，也可以拿到真正处理原始Http请求和响应的方法信息，但是拿不到 方法被调用的时候真正调用的参数的值
 
+切片可以 方法被调用的时候真正调用的参数的值 ，但是拿不到原始Http请求和响应的信息
 
+![1583848933942](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1583848933942.png)
 
 
 
