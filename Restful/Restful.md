@@ -109,7 +109,8 @@
   - @SpringBootTest不能和@WebMvcTest(TeacherController.class)同时使用
   - @WebMvcTest(Xxx.class)   Xxx.class可省略
   - 不能和springsecurity使用，同**@AutoConfigureMockMvc**，可以通过**@WebMvcTest(secure = false)**使用
-
+- **如何避开拦截器**
+  
   ```java
   @RunWith(SpringRunner.class)
   @WebMvcTest(TeacherController.class)
@@ -125,8 +126,17 @@
                   .andExpect(MockMvcResultMatchers.status().isOk());
       }
   }
+```
+  
+  
+  
+  **如何避开拦截器**
+  
+  ```java
+  @MockBean
+  private WebMVCInterceptorConfig webMVCInterceptorConfig;
   ```
-
+  
   
 
 ### 常用注解
@@ -1106,8 +1116,6 @@ public class Test2Interceptor extends HandlerInterceptorAdapter{
 		System.out.println("执行Test2Interceptor afterCompletion方法-->03");
 	}
 }
-
-复制代码
 ```
 
 ###### 2.配置拦截器
@@ -1161,6 +1169,17 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 ##### 配置切面类
 
+**引入依赖**
+
+```java
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+```
+
+
+
 ```java
 @Aspect
 @Component
@@ -1204,13 +1223,83 @@ public class TimeAspect {
 
 
 
+### 文件的上传和下载
+
+#### 文件上传
+
+```java
+ @PostMapping
+    public FileInfo upload(MultipartFile file) throws IOException {
+        System.out.println(file.getName());
+        System.out.println(file.getOriginalFilename());
+        System.out.println(file.getSize());
+
+        String filePath = "E:/githubResp/SpringBoot-Demo/Restful/src/main/resources";
+        File localFile = new File(filePath,
+                LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli() + ".txt");
+        file.transferTo(localFile);
+
+        return new FileInfo(localFile.getAbsolutePath());
+```
+
+```java
+
+    /**
+     * 测试文件上传，上传文件字符串
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUpload() throws Exception {
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt",
+                "multipart/form-data", "hello world".getBytes("UTF-8"));
+
+        String content = mockMvc.perform(MockMvcRequestBuilders.multipart("/file").file(multipartFile))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println("content:" + content);
+    }
+```
 
 
 
+#### 文件下载
 
+**把文件写入到响应中**
 
+```java
+ /**
+     * 文件下载
+     */
+    @GetMapping("/{id}")
+    public void download(@PathVariable String id, HttpServletRequest request,
+                         HttpServletResponse response) throws IOException {
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream(
+                    new File("E:/githubResp/SpringBoot-Demo/Restful/src/main/resources/" + id + ".txt"));
+            outputStream = response.getOutputStream();
+            response.setContentType("application/x-download");
 
+            /**
+             * test.txt 下载下来的文件名
+             */
+            response.addHeader("Content-Disposition", "attachment;filename=test.txt");
+            /**
+             * 把文件的输入流复制到输出流中
+             * 即把文件写入到响应中
+             */
+            IOUtils.copy(inputStream, outputStream);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            outputStream.close();
+            inputStream.close();
+        }
 
+    }
+```
 
 
 
