@@ -126,6 +126,7 @@
                   .andExpect(MockMvcResultMatchers.status().isOk());
       }
   }
+  ```
 ```
   
   
@@ -135,8 +136,8 @@
   ```java
   @MockBean
   private WebMVCInterceptorConfig webMVCInterceptorConfig;
-  ```
-  
+```
+
   
 
 ### 常用注解
@@ -921,10 +922,6 @@ public class TimeFilter implements Filter {
 #### 拦截器（Spring框架提供）
 
 ```java
-
-```
-
-```java
 @Component
 public class TimeInterceptor implements HandlerInterceptor {
     /**
@@ -1300,6 +1297,247 @@ public class TimeAspect {
 
     }
 ```
+
+
+
+
+
+### 异步处理Rest服务
+
+![1584020311489](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584020311489.png)
+
+#### 使用Runnale异步处理Rest服务
+
+**副线程必须由主线程掉起**
+
+ ```java
+public class AsyncController {
+
+    @GetMapping("/order")
+    public Callable<String> order() {
+        log.info("主线程开始执行............");
+
+        Callable<String> result = () -> {
+            log.info("副线程执行");
+            Thread.sleep(1000);
+            log.info("副线程返回");
+            return "success";
+        };
+
+        log.info("主线程返回.......");
+        return result;
+
+    }
+}
+ ```
+
+
+
+#### 使用DeferredResult异步处理Rest服务
+
+![1584024346860](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584024346860.png)
+
+
+
+**模拟下单的请求**
+
+​	 相比于`callable`，`DeferredResult`可以处理一些相对复杂一些的业务逻辑，最主要还是可以在另一个线程里面进行业务处理及返回，即可在两个完全不相干的线程间的通信。 
+
+```java
+ @GetMapping
+    public DeferredResult<String> orders() {
+        log.info("主线程开始");
+
+        // 模拟生成订单号
+        String orderNumber = RandomStringUtils.randomNumeric(8);
+        // 发送订单请求
+        mockQueue.setPlaceOrder(orderNumber);
+
+        DeferredResult<String> result = new DeferredResult<>();
+        deferredResultHolder.getMap().put(orderNumber, result);
+
+        log.info("主线程返回");
+        return result;
+
+    }
+```
+
+```java
+/**
+ * @author kxj
+ * @date 2020/3/12 23:14
+ * @desc 模拟下单
+ */
+@Component
+@Slf4j
+public class MockQueue implements Serializable {
+    private static final long serialVersionUID = 3844418539989931372L;
+
+    // 下单
+    private String placeOrder;
+
+    // 订单完成
+    private String completeOrder;
+
+    public MockQueue() {
+    }
+
+    public String getPlaceOrder() {
+        return placeOrder;
+    }
+
+    public void setPlaceOrder(String placeOrder) {
+        new Thread(() -> {
+            log.info("接到下单请求：" + placeOrder);
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            this.completeOrder = placeOrder;
+            log.info("下单请求处理完毕：" + placeOrder);
+        }).start();
+    }
+
+    public String getCompleteOrder() {
+        return completeOrder;
+    }
+
+    public void setCompleteOrder(String completeOrder) {
+        this.completeOrder = completeOrder;
+    }
+}
+
+```
+
+```java
+/**
+ * @author kxj
+ * @date 2020/3/12 23:27
+ * @desc 线程间传递DeferredResult
+ */
+
+@Component
+public class DeferredResultHolder {
+
+    private Map<String, DeferredResult<String>> map = new HashMap<>();
+
+    public Map<String, DeferredResult<String>> getMap() {
+        return map;
+    }
+
+    public void setMap(Map<String, DeferredResult<String>> map) {
+        this.map = map;
+    }
+}
+```
+
+```java
+/**
+ * @author kxj
+ * @date 2020/3/12 23:30
+ * @desc 模拟消息队列的监听器
+ */
+@Component
+@Slf4j
+public class QueueListener implements ApplicationListener<ContextRefreshedEvent> {
+
+    @Autowired
+    private MockQueue mockQueue;
+
+    @Autowired
+    private DeferredResultHolder deferredResultHolder;
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        new Thread(() -> {
+            while (true) {
+                if (StringUtils.isEmpty(mockQueue.getCompleteOrder())) {
+                    String orderNumber = mockQueue.getCompleteOrder();
+                    log.info("返回订单处理结果：" + orderNumber);
+                    deferredResultHolder.getMap().get(orderNumber).setResult("place order success");
+                    mockQueue.setCompleteOrder(null);
+                } else {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+    }
+}
+```
+
+
+
+#### 异步处理配置
+
+```java
+@Configuration
+public class WebMVCInterceptorConfig implements WebMvcConfigurer {
+    /**
+     * 异步请求的配置
+     * @param configurer
+     */
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        // 设置一个异步线程池
+        // 默认使用SimpleAsyncTaskExecutor
+        configurer.setTaskExecutor(new SimpleAsyncTaskExecutor());
+
+        // 设置异步request等待被处理的超时时间
+        // 默认的大小为10秒
+        configurer.setDefaultTimeout(100);
+
+        // 设置Callable任务的拦截器
+        configurer.registerCallableInterceptors(new CallableProcessingInterceptor(){});
+
+        // 设置Callable任务的带有延迟的拦截器
+        configurer.registerDeferredResultInterceptors(new DeferredResultProcessingInterceptor() {});
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
