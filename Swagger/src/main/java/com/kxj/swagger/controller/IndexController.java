@@ -2,10 +2,7 @@ package com.kxj.swagger.controller;
 
 import com.kxj.swagger.entity.User;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @ClassName IndexController
@@ -27,5 +24,10 @@ public class IndexController {
     @PostMapping("/user")
     public User save() {
         return new User();
+    }
+
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public void index() {
+
     }
 }
