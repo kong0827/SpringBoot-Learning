@@ -12,6 +12,8 @@
 
 
 
+### 源码位置 
+
 ### 使用步骤
 
 #### 导入依赖
@@ -97,7 +99,6 @@ public class SwaggerApplication {
     public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("开发小组名称")
                 .select()
             	// 配置要扫描接口的方式
                 .apis(RequestHandlerSelectors.any())
@@ -122,7 +123,6 @@ public class SwaggerApplication {
     public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("开发小组名称")
                 .enable(true)
                 .select()
                 // 配置要扫描接口的方式
@@ -137,25 +137,26 @@ public class SwaggerApplication {
 
 1. 通过判断当前的环境
 
-       @Bean
-       public Docket docket(Environment environment) {
-           // 设置要显示的Swagger环境
-           Profiles profiles = Profiles.of("dev", "test");
-           // 通过Environment.acceptsProfiles 判断是否处在自己设定的环境中
-           boolean enable = environment.acceptsProfiles(profiles);
-       
-           return new Docket(DocumentationType.SWAGGER_2)
-                   .apiInfo(apiInfo())
-                   .groupName("开发小组名称")
-                   .enable(enable)
-                   .select()
-                   // 配置要扫描接口的方式
-                   .apis(RequestHandlerSelectors.any())
-                   // 过滤什么路径 过滤只含有kong下面的请求
-                   .paths(PathSelectors.ant("/kong/**"))
-                   .build();
-       }
-
+   ```java
+   @Bean
+   public Docket docket(Environment environment) {
+       // 设置要显示的Swagger环境
+       Profiles profiles = Profiles.of("dev", "test");
+       // 通过Environment.acceptsProfiles 判断是否处在自己设定的环境中
+       boolean enable = environment.acceptsProfiles(profiles);
+   
+       return new Docket(DocumentationType.SWAGGER_2)
+               .apiInfo(apiInfo())
+               .enable(enable)
+               .select()
+               // 配置要扫描接口的方式
+               .apis(RequestHandlerSelectors.any())
+               // 过滤什么路径 过滤只含有kong下面的请求
+               .paths(PathSelectors.ant("/kong/**"))
+               .build();
+   }
+   ```
+   
 2. 采用属性注入
 
    ![1584634123648](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584634123648.png)
@@ -170,3 +171,216 @@ public class SwaggerApplication {
 
    
 
+##### 分组注释接口
+
+*分组信息同样在源码中可以查看，默认分组为 default*
+
+![1584801012449](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584801012449.png)
+
+设置分组名称
+
+```java
+@Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("小K的分组")
+                .enable(true)
+                .select()
+                // 配置要扫描接口的方式
+                .apis(RequestHandlerSelectors.any())
+                .build();
+    }
+```
+
+![1584801220708](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584801220708.png)
+
+
+
+**在团队协同开发的过程中，可以为自己配置分组，同时设定扫描某个指定包。通过切换分组查看指定的接口**
+
+```java
+ @Bean
+    public Docket docket2() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("小K的分组2")
+                .enable(true)
+                .select()
+                // 配置要扫描接口的方式
+                .apis(RequestHandlerSelectors.basePackage("com.kxj"))
+                .build();
+    }
+
+    @Bean
+    public Docket docket3() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("小K的分组3")
+                .enable(true)
+                .select()
+                // 配置要扫描接口的方式
+                .apis(RequestHandlerSelectors.basePackage("com.kxj"))
+                .build();
+    }
+```
+
+![1584801406067](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584801406067.png)
+
+
+
+
+
+##### 实体类配置
+
+```java
+public class User {
+    public String username;
+    public String password;
+}
+```
+
+```java
+// 只要接口返回值存在对象，他就会被扫描Swagger的实体类中
+@GetMapping
+    public User getUser() {
+        return new User();
+    }
+```
+
+![1584802513797](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584802513797.png)
+
+
+
+如果我们想把生成的文档的实体类添加相应的注释，则需要借助Swagger相关的注解
+
+```java
+@ApiModel("用户实体类")
+public class User {
+
+    @ApiModelProperty("用户名")
+    public String username;
+    @ApiModelProperty("密码")
+    public String password;
+
+}
+```
+
+![1584802735957](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584802735957.png)
+
+
+
+##### 接口注解配置
+
+*通过在接口上配置相关注解，我们也可以生成在在线文档上，便于我们查看*
+
+```java
+@RequestMapping("user")
+@RestController
+@Api(tags = "用户信息")
+public class UserController {
+
+    @GetMapping
+    public User getUser() {
+        return new User();
+    }
+
+    @DeleteMapping("/{id}")
+    @ApiOperation("删除用户")
+    public void deleteUser(@ApiParam("用户ID") @PathVariable("id")Integer id) {
+
+    }
+}
+```
+
+![1584803672720](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584803672720.png)
+
+
+
+
+
+##### 常用注解
+
+注解在Swagger的注解包下
+
+![1584802989581](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584802989581.png)
+
+###### 1、@Api
+
+说明每个controller层控制类的作用，即每个请求类
+ 属性：tags：描述该类的作用
+
+###### 2、@ApiOperation
+
+作用在控制类中的每个方法上，说明该类的作用
+ 属性：value：说明该类的作用
+ 以上这几个注解在代码中的使用例子如下：
+
+
+
+```kotlin
+//说明该类的作用
+@Api(tags = "学生信息")
+//指明该类为控制器
+@RestController
+//设置请求路径url
+@RequestMapping("/student")
+public class StudentController {
+   /**
+     * 根据id查询学生信息
+     * @param id 学生id
+     * @return
+    */
+    @ApiOperation(value = "根据id查询学生信息")
+    @GetMapping("/query/{id}")
+    private List<Student> queryById( @ApiParam(value = "学生id", required = true) @PathVariable("id") Long id) {
+        List<Student> studentList = studentService.queryById(id);
+        return studentList;
+    }
+}
+```
+
+swagger-ui展示结果如下：
+
+
+
+![img](https:////upload-images.jianshu.io/upload_images/15937175-fb652b3d833d6983.png?imageMogr2/auto-orient/strip|imageView2/2/w/919/format/webp)
+
+图1
+
+###### 3、@ApiParam
+
+@ApiParam作用于请求方法上，定义api参数的注解，属性有：
+ name：api参数的英文名
+ value：api参数的描述
+ required：true表示参数必输，false标识参数非必输，默认为非必输
+ 此注解通常与@RequestParam或者@PathVariable集合使用，因为它的作用只是定义每个参数（因此可以不使用，但是为了方便测试，加上效果更好），如果要获取前端的参数还需要通过@RequestParam或者@PathVariable来获取
+
+###### 4、 @ApiImplicitParams、@ApiImplicitParam
+
+定义参数的注解除了@ApiParam之外，这两个注解也可以定义参数
+ ①、@ApiImplicitParams定义一组参数
+ ②、@ApiImplicitParam写在@ApiImplicitParams中，定义每个参数的信息，属性为：
+ name：参数英文名称
+ value：参数中文名称
+ paramType：调用的url 参数形式，“query”为问号"?"后面的拼接参数，“path”为绑定的参数
+
+
+
+##### 测试
+
+*通过Swagger在线文档我们无需借助postman等工具，可以在线测试*
+
+测试不在详述，用法同postman等
+
+![1584803824703](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584803824703.png)
+
+![1584803838803](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1584803838803.png)
+
+
+
+### 总结
+
+1. 可以给实体类和接口添加注释信息
+2. 接口文档实时更新
+3. 在线测试

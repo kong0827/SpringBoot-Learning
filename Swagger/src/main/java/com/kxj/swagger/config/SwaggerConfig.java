@@ -37,13 +37,37 @@ public class SwaggerConfig {
     public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
-                .groupName("开发小组名称")
+                .groupName("小K的分组")
                 .enable(true)
                 .select()
                 // 配置要扫描接口的方式
                 .apis(RequestHandlerSelectors.any())
                 // 过滤什么路径 过滤只含有kong下面的请求
-                .paths(PathSelectors.ant("/kong/**"))
+//                .paths(PathSelectors.ant("/kong/**"))
+                .build();
+    }
+
+    @Bean
+    public Docket docket2() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("小K的分组2")
+                .enable(true)
+                .select()
+                // 配置要扫描接口的方式
+                .apis(RequestHandlerSelectors.basePackage("com.kxj.swagger.controller"))
+                .build();
+    }
+
+    @Bean
+    public Docket docket3() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
+                .groupName("小K的分组3")
+                .enable(true)
+                .select()
+                // 配置要扫描接口的方式
+                .apis(RequestHandlerSelectors.basePackage("com.kxj"))
                 .build();
     }
 
