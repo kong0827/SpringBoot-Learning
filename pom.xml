@@ -21,6 +21,7 @@
         <module>restful</module>
         <module>SpringSecurity</module>
         <module>GlobalException</module>
+        <module>Thymeleaf</module>
     </modules>
 
     <dependencies>

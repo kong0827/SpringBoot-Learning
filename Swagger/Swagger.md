@@ -350,11 +350,11 @@ swagger-ui展示结果如下：
 
 ###### 3、@ApiParam
 
-@ApiParam作用于请求方法上，定义api参数的注解，属性有：
- name：api参数的英文名
- value：api参数的描述
- required：true表示参数必输，false标识参数非必输，默认为非必输
- 此注解通常与@RequestParam或者@PathVariable集合使用，因为它的作用只是定义每个参数（因此可以不使用，但是为了方便测试，加上效果更好），如果要获取前端的参数还需要通过@RequestParam或者@PathVariable来获取
+- @ApiParam作用于请求方法上，定义api参数的注解，属性有：
+   name：api参数的英文名
+   value：api参数的描述
+   required：true表示参数必输，false标识参数非必输，默认为非必输
+   此注解通常与@RequestParam或者@PathVariable集合使用，因为它的作用只是定义每个参数（因此可以不使用，但是为了方便测试，加上效果更好），如果要获取前端的参数还需要通过@RequestParam或者@PathVariable来获取
 
 ###### 4、 @ApiImplicitParams、@ApiImplicitParam
 
