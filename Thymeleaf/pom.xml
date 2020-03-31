@@ -16,8 +16,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.thymeleaf</groupId>
-            <artifactId>thymeleaf</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mybatis</groupId>
@@ -30,5 +30,7 @@
             <version>3.4.0</version>
         </dependency>
 
+
+        
     </dependencies>
 </project>
