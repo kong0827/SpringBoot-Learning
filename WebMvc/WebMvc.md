@@ -2,7 +2,7 @@
 
 **下面图片是Spring Boot 官网关于Spring MVC自动配置的描述**
 
-![](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585748859329.png)
+![](.\src\main\resources\images\\1585748859329.png)
 
 ### 简述
 
@@ -37,19 +37,19 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
      在`WebMvcConfiguration`类中，我们查看源码，可以找到相关的配置
 
-     ![1585749477055](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585749477055.png)
+     ![1585749477055](.\src\main\resources\images\\1585749477055.png)
 
      点击进入`ContentNegotiatingViewResolver`，作为视图解析器，肯定有解析视图的方法，找到解析视图的方法`resolveViewName`。 可以看到spring mvc允许注册多个viewResolver 
 
-     ![1585750918486](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585750918486.png)
+     ![1585750918486](.\src\main\resources\images\\1585750918486.png)
 
      进入`getCandidateViews`方法，查看具体做了什么操作
 
-     ![1585751119060](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585751119060.png)
+     ![1585751119060](.\src\main\resources\images\\1585751119060.png)
 
      那么`getCandidateViews`类中的`viewResolvers`是从哪里定义的呢？在类`ContentNegotiatingViewResolver`中已经定义了视图解析器集合，然后对其赋值
 
-     ![1585751317996](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585751317996.png)
+     ![1585751317996](.\src\main\resources\images\\1585751317996.png)
 
      
 
@@ -83,9 +83,9 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
         访问本项目下任意路径，会进入到`DispatcherServlet`类中 *doDispatch* 方法中，通过打断点可以查看到我们已经成功自定义的视图解析器
 
-        ![1585753839594](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585753839594.png)
+        ![1585753839594](.\src\main\resources\images\\1585753839594.png)
 
-         ![1585753706284](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585753706284.png) 
+         ![1585753706284](.\src\main\resources\images\\1585753706284.png) 
 
      
 
@@ -135,13 +135,13 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
   - 
 
-  ![1585237033325](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237033325.png)
+  ![1585237033325](.\src\main\resources\images\\1585237033325.png)
 
   通过查看源码可以定位到静态资源位置
 
-  ![1585237086290](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237086290.png)
+  ![1585237086290](.\src\main\resources\images\\1585237086290.png)
 
-  ![1585237177880](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237177880.png)
+  ![1585237177880](.\src\main\resources\images\\1585237177880.png)
 
   即以下路径
 
@@ -179,7 +179,7 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
   - 在`WebMvcAutoConfiguration`类中，可以看到自动注册了Converter
 
-    ![1585754968153](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585754968153.png)
+    ![1585754968153](.\src\main\resources\images\\1585754968153.png)
 
     由上面的方法可以知道，我们可以自定义转换器，然后把它添加容器中即可
 
@@ -229,13 +229,13 @@ private Optional<Resource> getWelcomePage() {
 }
 ```
 
-![1585237584838](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237584838.png)
+![1585237584838](.\src\main\resources\images\1585237584838.png)
 
 
 
 ### 图标
 
-![1585237975765](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237975765.png)
+![1585237975765](.\src\main\resources\images\\1585237975765.png)
 
 
 
