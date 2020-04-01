@@ -22,6 +22,7 @@
         <module>SpringSecurity</module>
         <module>GlobalException</module>
         <module>Thymeleaf</module>
+        <module>WebMvc</module>
     </modules>
 
     <dependencies>

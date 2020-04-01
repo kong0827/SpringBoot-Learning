@@ -1,6 +1,6 @@
 #spring:
     ##  thymeleaf:
     ##    prefix: classpath:/templates
-    ##    check-template-location: true
+    ##    check-templates-location: true
   ##    suffix: .html
   ##    encoding: utf-8
