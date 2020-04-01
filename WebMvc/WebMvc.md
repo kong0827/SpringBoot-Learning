@@ -2,7 +2,7 @@
 
 **下面图片是Spring Boot 官网关于Spring MVC自动配置的描述**
 
-![](.\src\main\resources\images\\1585748859329.png)
+![](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585748859329.png)
 
 ### 简述
 
