@@ -81,3 +81,22 @@ private Optional<Resource> getWelcomePage() {
 #### 图标
 
 ![1585237975765](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1585237975765.png)
+
+
+
+### Thymeleaf
+
+1. 引入依赖
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-thymeleaf</artifactId>
+   </dependency>
+   ```
+
+2. 查看Thymeleaf自动配置
+
+   ![1585664820364](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1585664820364.png)
+
+   由源码可知，我们在路径下新建templates用来存放页面，提供访问

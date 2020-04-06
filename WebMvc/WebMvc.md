@@ -2,7 +2,7 @@
 
 **下面图片是Spring Boot 官网关于Spring MVC自动配置的描述**
 
-![](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585748859329.png)
+![](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585748859329.png)
 
 ### 简述
 
@@ -37,19 +37,19 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
      在`WebMvcConfiguration`类中，我们查看源码，可以找到相关的配置
 
-     ![1585749477055](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585749477055.png)
+     ![1585749477055](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585749477055.png)
 
      点击进入`ContentNegotiatingViewResolver`，作为视图解析器，肯定有解析视图的方法，找到解析视图的方法`resolveViewName`。 可以看到spring mvc允许注册多个viewResolver 
 
-     ![1585750918486](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585750918486.png)
+     ![1585750918486](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585750918486.png)
 
      进入`getCandidateViews`方法，查看具体做了什么操作
 
-     ![1585751119060](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585751119060.png)
+     ![1585751119060](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585751119060.png)
 
      那么`getCandidateViews`类中的`viewResolvers`是从哪里定义的呢？在类`ContentNegotiatingViewResolver`中已经定义了视图解析器集合，然后对其赋值
 
-     ![1585751317996](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585751317996.png)
+     ![1585751317996](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585751317996.png)
 
      
 
@@ -83,9 +83,9 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
         访问本项目下任意路径，会进入到`DispatcherServlet`类中 *doDispatch* 方法中，通过打断点可以查看到我们已经成功自定义的视图解析器
 
-        ![1585753839594](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585753839594.png)
+        ![1585753839594](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585753839594.png)
 
-         ![1585753706284](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585753706284.png) 
+         ![1585753706284](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585753706284.png) 
 
      
 
@@ -135,13 +135,13 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
   - 
 
-  ![1585237033325](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585237033325.png)
+  ![1585237033325](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237033325.png)
 
   通过查看源码可以定位到静态资源位置
 
-  ![1585237086290](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585237086290.png)
+  ![1585237086290](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237086290.png)
 
-  ![1585237177880](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585237177880.png)
+  ![1585237177880](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237177880.png)
 
   即以下路径
 
@@ -179,7 +179,7 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
   - 在`WebMvcAutoConfiguration`类中，可以看到自动注册了Converter
 
-    ![1585754968153](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585754968153.png)
+    ![1585754968153](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585754968153.png)
 
     由上面的方法可以知道，我们可以自定义转换器，然后把它添加容器中即可
 
@@ -215,6 +215,40 @@ Spring Boot为Spring MVC提供了自动配置，可与大多数应用程序完�
 
 
 
+### HttpMessageConverters
+
+Spring MVC使用该`HttpMessageConverter`接口来转换HTTP请求和响应。开箱即用中包默认设置。例如，可以将对象自动转换为JSON（通过使用Jackson库）或XML（通过使用Jackson XML扩展（如果可用），或者通过使用JAXB（如果Jackson XML扩展不可用））。默认情况下，字符串以编码`UTF-8`。
+
+如果需要添加或自定义转换器，则可以使用Spring Boot的`HttpMessageConverters`类：
+
+```java
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.context.annotation.*;
+import org.springframework.http.converter.*;
+
+@Configuration
+public class MyConfiguration {
+
+	@Bean
+	public HttpMessageConverters customConverters() {
+		HttpMessageConverter<?> additional = ...
+		HttpMessageConverter<?> another = ...
+		return new HttpMessageConverters(additional, another);
+	}
+
+}
+```
+
+`HttpMessageConverter`上下文中存在的任何Bean都将添加到转换器列表中。您也可以用相同的方法覆盖默认转换器。
+
+
+
+### MessageCodesResolver
+
+**定义错误代码生成规则**
+
+ Spring MVC的具有产生错误代码从绑定错误的渲染错误消息的策略：`MessageCodesResolver`。如果您设置`spring.mvc.message-codes-resolver.format`属性`PREFIX_ERROR_CODE`或`POSTFIX_ERROR_CODE`，Spring Boot会为您创建一个（请参阅中的枚举[`DefaultMessageCodesResolver.Format`](https://docs.spring.io/spring/docs/5.1.14.RELEASE/javadoc-api/org/springframework/validation/DefaultMessageCodesResolver.Format.html)）。 
+
 
 
 ### 欢迎页
@@ -235,7 +269,46 @@ private Optional<Resource> getWelcomePage() {
 
 ### 图标
 
-![1585237975765](https://github.com/kong0827/SpringBoot-Demo/blob/master/WebMvc/src/main/resources/images/1585237975765.png)
+![1585237975765](E:\githubResp\SpringBoot-Demo\WebMvc\src\main\resources\images\1585237975765.png)
 
 
+
+### 总结
+
+- ​	1）、WebMvcAutoConfiguration是SpringMVC的自动配置类
+
+  ​	2）、在做其他自动配置时会导入；@Import(**EnableWebMvcConfiguration**.class)
+
+  ```java
+      @Configuration
+  	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration {
+        private final WebMvcConfigurerComposite configurers = new WebMvcConfigurerComposite();
+  
+  	 //从容器中获取所有的WebMvcConfigurer
+        @Autowired(required = false)
+        public void setConfigurers(List<WebMvcConfigurer> configurers) {
+            if (!CollectionUtils.isEmpty(configurers)) {
+                this.configurers.addWebMvcConfigurers(configurers);
+              	//一个参考实现；将所有的WebMvcConfigurer相关配置都来一起调用；  
+              	@Override
+               // public void addViewControllers(ViewControllerRegistry registry) {
+                //    for (WebMvcConfigurer delegate : this.delegates) {
+                 //       delegate.addViewControllers(registry);
+                 //   }
+                }
+            }
+  	}
+  ```
+
+  ​	3）、容器中所有的WebMvcConfigurer都会一起起作用；
+
+  ​	4）、我们的配置类也会被调用；
+
+  ​	效果：SpringMVC的自动配置和我们的扩展配置都会起作用；
+
+  
+
+## 扩展Spring MVC
+
+### 添加视图映射
 
