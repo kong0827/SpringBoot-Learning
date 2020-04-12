@@ -24,6 +24,7 @@
         <module>Thymeleaf</module>
         <module>WebMvc</module>
         <module>autoConfiguration</module>
+        <module>Cache</module>
     </modules>
 
     <dependencies>
