@@ -7,9 +7,20 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: 39.107.57.111
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: 1
+        max-idle: 8
+        min-idle: 1
+    port: 6379
+
 logging:
   level:
     com.kxj.mapper: debug
+
 
 # 开启驼峰命名
 mybatis:
