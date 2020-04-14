@@ -1,5 +1,7 @@
 package com.kxj.mapper;
 
+import com.kxj.entity.Employee;
+import com.kxj.service.EmployeeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class RedisTemplateTest {
 
     @Autowired
-    RedisTemplate redisTemplate;
+    RedisTemplate<Object, Employee> redisTemplate;
 
+    @Autowired
+    EmployeeMapper employeeMapper;
+
+    /**
+     * 将Employee进行序列化存储进redis
+     */
     @Test
-    public void test() {
-        redisTemplate.opsForValue().set("tt","ll");
+    public void testRedisSerializer() {
+        Employee employee = employeeMapper.getEmployee(1);
+
+        redisTemplate.opsForValue().set("emp", employee);
+
     }
 }
