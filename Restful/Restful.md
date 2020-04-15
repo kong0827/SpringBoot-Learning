@@ -67,7 +67,8 @@
 - 使用方式一
 
   ```java
-  @Autowiredprivate WebApplicationContext wac;private MockMvc mockMvc;@Beforepublic void setup() {    mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();}
+  @Autowiredprivate WebApplicationContext wac;private MockMvc mockMvc;@Beforepublic void setup() {    
+      mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();}
   /** 
   * 查询 
   * @throws Exception 
