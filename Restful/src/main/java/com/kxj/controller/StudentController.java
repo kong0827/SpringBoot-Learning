@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,5 +64,13 @@ public class StudentController {
         System.out.println(id);
     }
 
+
+    @GetMapping("/student/time")
+    public List<Student> getStudents22(String time) {
+        List<Student> students = new ArrayList<>();
+        students.add(new Student());
+        students.add(new Student());
+        return students;
+    }
 
 }

@@ -25,6 +25,7 @@
         <module>WebMvc</module>
         <module>autoConfiguration</module>
         <module>Cache</module>
+        <module>Redis</module>
     </modules>
 
     <dependencies>

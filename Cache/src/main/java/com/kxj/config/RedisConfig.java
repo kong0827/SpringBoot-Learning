@@ -78,6 +78,8 @@ public class RedisConfig {
         //设置 value 的转化格式
         template.setValueSerializer(jackson2JsonRedisSerializer);
         template.setHashValueSerializer(jackson2JsonRedisSerializer);
+
+        // spring设置完properties后进行的处理，在spring init这个bean时候会被调用
         template.afterPropertiesSet();
         return template;
     }

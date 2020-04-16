@@ -101,4 +101,14 @@ public class StudentControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+
+    @Test
+    public void testQuery2() throws Exception {
+        String contentAsString = mockMvc.perform(MockMvcRequestBuilders.get("/student/time").param("time", new Date().getTime()+""))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        System.out.println(contentAsString);
+    }
+
+
 }
