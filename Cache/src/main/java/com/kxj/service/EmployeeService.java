@@ -20,7 +20,8 @@ import org.springframework.stereotype.Service;
 public class EmployeeService {
 
     @Autowired
-    private EmployeeMapper employeeMapper;
+
+     EmployeeMapper employeeMapper;
 
     /**
      * @param id
