@@ -67,7 +67,9 @@
 - 使用方式一
 
   ```java
-  @Autowiredprivate WebApplicationContext wac;private MockMvc mockMvc;@Beforepublic void setup() {    
+  @Autowired
+  private WebApplicationContext wac;
+  private MockMvc mockMvc;@Beforepublic void setup() {    
       mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();}
   /** 
   * 查询 
@@ -87,8 +89,8 @@
 - 使用方式二 **@AutoConfigureMockMvc**
 
   ```java
-  @SpringBootTest
   @RunWith(SpringRunner.class)
+  @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
   @AutoConfigureMockMvc
   public class TeacherControllerTest {
       @Autowired
@@ -110,6 +112,7 @@
   - @SpringBootTest不能和@WebMvcTest(TeacherController.class)同时使用
   - @WebMvcTest(Xxx.class)   Xxx.class可省略
   - 不能和springsecurity使用，同**@AutoConfigureMockMvc**，可以通过**@WebMvcTest(secure = false)**使用
+  
 - **如何避开拦截器**
   
   ```java
