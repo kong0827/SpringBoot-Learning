@@ -1,0 +1,24 @@
+server:
+  port: 8896
+spring:
+  datasource:
+    name: root
+    password: root
+    url: jdbc:mysql://localhost:3306/spring-boot-jdbc?useSSL=false&useUnicode=true&characterEncoding=UTF8
+    driver-class-name: com.mysql.jdbc.Driver
+    #    执行建表语句必须配置
+    schema-username: root
+    schema-password: root
+    #    执行初始化数据必须配置
+    data-username: root
+    data-password: root
+    # classpath: 后不能有空格
+    schema:
+      - classpath:sql/person.sql
+      - classpath:schema.sql
+    initialization-mode: always
+    #    发生错误，程序仍然运行
+    continue-on-error: true
+    data:
+      - classpath:sql/user.sql
+      - classpath:data.sql

@@ -7,6 +7,8 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
+#    type: com.alibaba.druid.pool.DruidDataSource
+
   redis:
     host: 39.107.57.111
 #    lettuce:
