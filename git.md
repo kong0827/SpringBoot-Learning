@@ -48,6 +48,18 @@
   git push origin 本地分支名：远程分支名
   ```
 
+- 切换分支
+
+  ```shell
+  git checkout <分支名>
+  ```
+
+- 合并分支
+
+  ```shell
+  git merge <待合并的分支名>
+  ```
+
 - 建立本地分支与远程分支的追踪关系
 
   ```shell
