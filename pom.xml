@@ -26,6 +26,7 @@
         <module>autoConfiguration</module>
         <module>Cache</module>
         <module>JDBC</module>
+        <module>MQ</module>
     </modules>
 
     <dependencies>
