@@ -2,10 +2,11 @@ server:
   port: 8896
 spring:
   datasource:
-    name: root
+    username: root
     password: root
     url: jdbc:mysql://localhost:3306/spring-boot-jdbc?useSSL=false&useUnicode=true&characterEncoding=UTF8
     driver-class-name: com.mysql.jdbc.Driver
+
     #    执行建表语句必须配置
     schema-username: root
     schema-password: root
@@ -22,3 +23,54 @@ spring:
     data:
       - classpath:sql/user.sql
       - classpath:data.sql
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+#      username: root
+#      password: root
+      # 初始化建立物理连接的个数
+      initial-size: 5
+      # 最大连接池数量
+      max-active: 30
+      # 最小连接池数量
+      min-idle: 2
+      # 获取连接时最大等待时间,单位毫秒
+      max-wait: 60000
+      # 配置多长时间进行一次检测，检测需要关闭的空闲连接，单位毫秒
+      time-between-eviction-runs-millis: 60000
+      # 连接保持空闲而不被驱逐的最小时间
+      min-evictable-idle-time-millis: 30000
+      validationQuery: SELECT 1
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,slf4j
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+
+      # spring监控AOP切入点，如x.y.service.*，配置多个英文逗号分隔
+      #      aop-patterns: com.kxj.service.*
+
+      # 监控配置
+      # 配置DruidStatFilter
+      web-stat-filter:
+        # 是否启用statFilter默认值true
+        enabled: true
+        # 添加过滤规则
+        url-pattern: /*
+        # 忽略过滤的格式
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+      # 配置DruidStatViewServlet
+      stat-view-servlet:
+        url-pattern: "/druid/*"
+        # IP白名单（存在共同时候，deny由于allow）
+        allow: 127.0.0.1,192.168.255.1
+        # IP黑名单
+        #        deny:
+        # 禁止HTML页面上"Reset All"功能
+        # 登录名,密码
+        login-username: admin
+        login-password: admin
