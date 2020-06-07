@@ -27,6 +27,7 @@
         <module>Cache</module>
         <module>JDBC</module>
         <module>MQ</module>
+        <module>mybatis</module>
     </modules>
 
     <dependencies>
