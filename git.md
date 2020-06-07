@@ -139,7 +139,8 @@
   git commit --amend
   ```
 
-- 
+- 将本地分支my-test关联到远程分支my-test上  
+git branch --set-upstream-to=origin/my-test
 
 
 
