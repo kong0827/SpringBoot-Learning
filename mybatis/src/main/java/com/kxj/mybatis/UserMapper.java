@@ -6,7 +6,7 @@ import org.apache.ibatis.mapping.StatementType;
 
 import java.util.List;
 
-@CacheNamespace
+//@CacheNamespace 开启二级缓存
 public interface UserMapper {
 
     @Select({"select * from users where id=#{1}"})

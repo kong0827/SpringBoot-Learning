@@ -92,11 +92,43 @@ public class ExecutorTest {
 
     @Test
     public void sqlSessionTest() {
+        // 默认使用简单执行器
         SqlSession sqlSession = factory.openSession(true);
         List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid", 10);
-        for (User user : list) {
-            System.out.println(user);
-        }
+        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid3", 10);
+//        for (User user : list) {
+//            System.out.println(user);
+//        }
+    }
+
+    /**
+     * 可重用执行器
+     */
+    @Test
+    public void reuseExecutorTest() {
+        // 相同的SQL会被缓存
+        SqlSession sqlSession = factory.openSession(ExecutorType.REUSE, true);
+        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid", 10);
+        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid3", 10);
+    }
+
+    /**
+     * 批处理执行器
+     */
+    @Test
+    public void batchExecutorTest() {
+        SqlSession sqlSession = factory.openSession(ExecutorType.BATCH, true);
+//        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid", 10);
+//        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid3", 10);
+
+        // sql相同,MapperStatement相同,必須是连续的，则会使用一个Statement
+        // 批处理中如果执行查询方法，则会调用flushStatement,和数据库进行传输
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        mapper.setName(10, "hahaha");
+        mapper.addUser(Mock.newUser());
+
+        List<BatchResult> batchResults = sqlSession.flushStatements();
+        System.out.println(batchResults);
 
     }
 }
