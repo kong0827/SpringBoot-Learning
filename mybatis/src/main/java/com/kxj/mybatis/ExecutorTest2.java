@@ -39,7 +39,7 @@ public class ExecutorTest2 {
         configuration = factory.getConfiguration();
         jdbcTransaction = new JdbcTransaction(factory.openSession().getConnection());
         // 获取SQL映射
-        ms = configuration.getMappedStatement("com.kxj.mybatis.UserMapper.selectByid");
+        ms = configuration.getMappedStatement("com.kxj.mybatis.UserMapper.selectById");
     }
 
 

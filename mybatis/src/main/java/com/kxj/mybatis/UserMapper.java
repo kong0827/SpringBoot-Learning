@@ -10,11 +10,12 @@ import java.util.List;
 public interface UserMapper {
 
     @Select({"select * from users where id=#{1}"})
-    User selectByid(Integer id);
+    User selectById(Integer id);
 
 
     @Select({"select * from users where id=#{1}"})
-    User selectByid3(Integer id);
+    @Options(flushCache = Options.FlushCachePolicy.TRUE)
+    User selectById3(Integer id);
 
     @Select({" select * from users where name='${name}'"})
     @Options(statementType = StatementType.PREPARED)

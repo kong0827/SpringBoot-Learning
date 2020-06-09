@@ -35,7 +35,7 @@ public class ExecutorTest {
         configuration = factory.getConfiguration();
         jdbcTransaction = new JdbcTransaction(factory.openSession().getConnection());
         // 获取SQL映射
-        ms = configuration.getMappedStatement("com.kxj.mybatis.UserMapper.selectByid");
+        ms = configuration.getMappedStatement("com.kxj.mybatis.UserMapper.selectById");
     }
 
     // 简单执行器测试
@@ -94,8 +94,8 @@ public class ExecutorTest {
     public void sqlSessionTest() {
         // 默认使用简单执行器
         SqlSession sqlSession = factory.openSession(true);
-        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid", 10);
-        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid3", 10);
+        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectById", 10);
+        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectById3", 10);
 //        for (User user : list) {
 //            System.out.println(user);
 //        }
@@ -108,8 +108,8 @@ public class ExecutorTest {
     public void reuseExecutorTest() {
         // 相同的SQL会被缓存
         SqlSession sqlSession = factory.openSession(ExecutorType.REUSE, true);
-        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid", 10);
-        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid3", 10);
+        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectById", 10);
+        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectById3", 10);
     }
 
     /**
@@ -118,13 +118,14 @@ public class ExecutorTest {
     @Test
     public void batchExecutorTest() {
         SqlSession sqlSession = factory.openSession(ExecutorType.BATCH, true);
-//        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid", 10);
-//        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectByid3", 10);
+//        List<User> list = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectById", 10);
+//        List<User> list1 = sqlSession.selectList("com.kxj.mybatis.UserMapper.selectById3", 10);
 
         // sql相同,MapperStatement相同,必須是连续的，则会使用一个Statement
         // 批处理中如果执行查询方法，则会调用flushStatement,和数据库进行传输
         UserMapper mapper = sqlSession.getMapper(UserMapper.class);
         mapper.setName(10, "hahaha");
+        mapper.addUser(Mock.newUser());
         mapper.addUser(Mock.newUser());
 
         List<BatchResult> batchResults = sqlSession.flushStatements();
