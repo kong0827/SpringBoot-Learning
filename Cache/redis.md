@@ -243,6 +243,36 @@ salve-redis只能执行读操作，不能写
 
 
 
+#### 配置
+
+- 在主从复制的基础上搭建哨兵
+
+- 启动哨兵服务，准备哨兵的配置文件
+
+  通过命令获取sentinel匹配
+
+  ```java
+  wget http://download.redis.io/redis-stable/sentinel.conf
+  ```
+
+- 修改配置文件
+
+  ```javascript
+  # 让sentinel服务后台运行
+  daemonize yes 
+  
+  # 修改日志文件的路径
+  logfile "/var/log/redis/sentinel.log"
+  
+  # 修改监控的主redis服务器(必须填写)
+  # 最后一个2表示，两台机器判定主被动下线后，就进行failover(故障转移)
+  sentinel monitor mymaster 35.236.172.131 6379 2
+  ```
+
+  
+
+
+
 
 
 ### 缓存穿透、缓存击穿、缓存雪崩
