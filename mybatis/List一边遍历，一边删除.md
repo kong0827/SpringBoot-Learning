@@ -1,8 +1,8 @@
 ### List一边遍历，一边删除
 
 ```java
- for (Student student : list) {     // 实际先调用itertor的hasNext方法，判断当前索引是否等于集合长											度，然后再次调用next方法
-     if (student.getName().equalsIgnoreCase("lucy")) {
+ for (String str : list) {     // 实际先调用itertor的hasNext方法，判断当前索引是否等于集合长											度，然后再次调用next方法
+     if ("a".equalsIgnoreCase(str)) {
          list.remove(student);
      }
  }
