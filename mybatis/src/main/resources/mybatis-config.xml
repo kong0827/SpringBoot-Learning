@@ -8,7 +8,7 @@
     </properties>
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
-        <setting name="defaultExecutorType" value="REUSE"/>
+        <!--<setting name="defaultExecutorType" value="REUSE"/>-->
 <!--        <setting name="localCacheScope" value="STATEMENT"/>-->
     </settings>
 

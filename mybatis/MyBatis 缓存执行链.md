@@ -1,4 +1,4 @@
-## MyBatis 二级缓存责任链的建立
+## MyBatis 缓存责任链
 
 ### 定义
 
@@ -29,7 +29,7 @@
   同时在`Mapper.xml`文件中配置`cache`，就可以开启二级缓存了。
 
   ```xml
-  ` `
+  <cache />
   ```
 
 这个简单语句的效果如下:
@@ -151,7 +151,7 @@ public Cache build() {
   }
 ```
 
-`MapperBuilderAssistant`
+**`MapperBuilderAssistant`**
 
 ```java
 // 创建新的缓存容器
@@ -166,9 +166,13 @@ public Cache useNewCache(Class<? extends Cache> typeClass,
         // 设置默认的缓存容器，若为null,默认为PerpetualCache，LruCache。可以替换
         .implementation(valueOrDefault(typeClass, PerpetualCache.class))
         .addDecorator(valueOrDefault(evictionClass, LruCache.class))
+        // 设置清理时间
         .clearInterval(flushInterval)
+        // 设置缓存容量
         .size(size)
+        // 同步
         .readWrite(readWrite)
+        // 设置防穿透
         .blocking(blocking)
         .properties(props)
         .build();
@@ -188,8 +192,148 @@ public Cache useNewCache(Class<? extends Cache> typeClass,
   }
 ```
 
+### 使用配置
+
+​	我们可以对二级缓存执行链进行配置，例如在执行链中默认`BlockingCache`和`ScheduledCache`是默认关闭的，我们可以通过配置进行修改，同时也修改默认的缓存容器。
+
+​	下面通过注解开发的方式，配置`XML`方式原理相同。
+
+​	使用二级缓存首先在相应的`Mapper`接口上添加`@CacheNameSpace`注解。` @CacheNamespace`注解主要用于`mybatis`二级缓存，等同于`<cache />`属性。 我们可以先查看其源码，进一步的了解。
+
+```java
+public @interface CacheNamespace {
+    // 缓存实现,默认PerpetualCache
+  Class<? extends org.apache.ibatis.cache.Cache> implementation() default 		PerpetualCache.class;
+
+    // 过期策略，默认LruCache
+  Class<? extends org.apache.ibatis.cache.Cache> eviction() default LruCache.class;
+
+    // 刷新缓存的时间，默认为0，执行下一条语句的时候进行刷新
+  long flushInterval() default 0;
+
+    // 缓存容量
+  int size() default 1024;
+
+    // 序列化，默认使用对应的Cache
+  boolean readWrite() default true;
+
+    // 防穿透，默认不使用
+  boolean blocking() default false;
+
+	// 缓存组件对应的属性    
+  Property[] properties() default {};
+}`
+```
 
 
-### 使用
 
-未完待续、、、
+- **修改默认的实现方式**
+
+  ```java
+  // 需要实现Cache接口
+  public class DiskCache implements Cache {
+     private final String id;
+      private String cachePath;
+  
+      public DiskCache(String id) {
+          this.id = id;
+      }
+      // ···
+      // 省略实现方式
+  }
+  ```
+
+  `Mapper`接口，修改默认的·实现方式
+
+  ```java
+  @CacheNamespace(implementation = DiskCache.class, properties = {@Property(name = "cachePath",
+          value ="E:\\githubResp\\SpringBoot-Demo\\mybatis\\src\\main\\resources" )})
+  public interface UserMapper {
+  }
+  ```
+
+  测试
+
+  ```java
+  @Test
+  public void test() {
+      Cache cache = configuration.getCache("UserMapper");
+      cache.putObject("cache store", "hahaha....");
+  }
+  ```
+
+- **修改缓存的溢出淘汰策略**
+
+  `Mapper`接口
+
+  ```java
+   @CacheNamespace(eviction = FifoCache.class, size = 10)
+  ```
+
+  测试
+
+  ```java
+   Cache cache = configuration.getCache("UserMapper");
+  for (int i = 0; i < 12; i++) {
+      cache.putObject("kxj:" + i, i);
+  }
+  ```
+
+  溢出淘汰策略，`MyBatis`提供了以下几种淘汰算法，默认是`Lru`
+
+  - LRU：最近最少使用
+  - FIFO：先进先出
+  - SOFT：软引用，基于垃圾回收器状态和软引用规则来移除对象
+  - WEAK：弱引用，基于垃圾回收器状态和弱引用规则来对象
+
+- **修改序列化**
+
+  序列化默认是开启的，我们可以通过配置将序列化关闭
+
+  ```java
+  @CacheNamespace(readWrite=false)
+  ```
+
+  测试
+
+  ```java
+   @Test
+      public void test4() {
+          Cache cache = configuration.getCache("UserMapper");
+          cache.putObject("user", Mock.newUser());
+          Object user = cache.getObject("user");
+          Object user1 = cache.getObject("user");
+          System.out.println(user == user1);  // 如果走序列化，为false，如果关闭序列化，则为true
+      }
+  ```
+
+- **过期清理时间**
+
+  ```java
+   @CacheNamespace(flushInterval = 10000)
+  ```
+
+  测试
+
+  ```java
+  @Test
+  public void test5() throws InterruptedException {
+      Cache cache = configuration.getCache("UserMapper");
+      cache.putObject("user", "hello");
+      System.out.println(cache.getObject("user")); // 缓存中有数据
+      Thread.sleep(11000);   // 当时间超过设置的刷新缓存的时间，缓存会被清空
+      System.out.println(cache.getObject("user")); // 查询不到值，缓存中已无数据
+  }
+  ```
+
+  
+
+### 总结
+
+1.  `MyBatis`二级缓存使用了*装饰者模式* 和 *责任链模式*
+2. 责任链模式中顺序不可修改，已经定义好执行链的顺序。但是可以修改默认的实现方式，缓存清理策略，开闭序列化，防穿透等缓存组件。
+
+​	
+
+
+

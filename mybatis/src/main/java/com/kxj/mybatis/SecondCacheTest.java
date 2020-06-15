@@ -93,6 +93,14 @@ public class SecondCacheTest {
     /**
      * 二级缓存命中条件
      * 1、必须提交
-     *
      */
+    @Test
+    public void cacheTest() {
+        SqlSession sqlSession = factory.openSession();
+        sqlSession.getMapper(UserMapper.class).selectById(10);
+        sqlSession.commit();
+        SqlSession sqlSession1 = factory.openSession();
+        sqlSession1.getMapper(UserMapper.class).selectById(10);
+
+    }
 }

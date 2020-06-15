@@ -8,12 +8,12 @@ import org.apache.ibatis.mapping.StatementType;
 
 import java.util.List;
 
-//@CacheNamespace //开启二级缓存
+@CacheNamespace //开启二级缓存
 /*@CacheNamespace(implementation = DiskCache.class, properties = {@Property(name = "cachePath",
         value ="E:\\githubResp\\SpringBoot-Demo\\mybatis\\src\\main\\resources" )}) //更换实现方式*/
 //@CacheNamespace(eviction = FifoCache.class, size = 10) // 设置缓存淘汰策略
 //@CacheNamespace(readWrite=false)
-@CacheNamespace(flushInterval = 10000, blocking=true)
+//@CacheNamespace(flushInterval = 10000, blocking=true)
 public interface UserMapper {
 
     @Select({"select * from users where id=#{1}"})
