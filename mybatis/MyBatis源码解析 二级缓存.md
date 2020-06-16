@@ -14,6 +14,8 @@
 
 ### 执行流程
 
+![1592238509238](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1592238509238.png)
+
 ```java
 @Test
 public void cacheTest() {
