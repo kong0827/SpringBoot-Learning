@@ -27,7 +27,7 @@ for (String str : list) {
 
 ### 报错原因
 
- 	上述代码产生` ConcurrentModfiicationException`真正原因是`modCount`不一致。当遍历`ArrayList`时， `Iterator`的`next()`方法将跟踪`modCount`。如果通过添加或删除元素来修改集合，则`modCount`将更改，并且与预期的`modCount`不匹配，因此`Iterator`将抛出 `ConcurrentModificationException `
+ 	上述代码产生`ConcurrentModificationException`真正原因是`modCount`不一致。当遍历`ArrayList`时， `Iterator`的`next()`方法将跟踪`modCount`。如果通过添加或删除元素来修改集合，则`modCount`将更改，并且与预期的`modCount`不匹配，因此`Iterator`将抛出 `ConcurrentModificationException `
 
 	#### 源码解析
 
