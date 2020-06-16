@@ -67,7 +67,7 @@ public class ExecutorTest {
     public void batchStatement() throws SQLException {
         BatchExecutor batchExecutor = new BatchExecutor(configuration, jdbcTransaction);
         MappedStatement mappedStatement = configuration.getMappedStatement("com.kxj.mybatis.UserMapper.setName");
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap();
         map.put("arg0", 10);
         map.put("arg1", "kxj go up");
         batchExecutor.doUpdate(mappedStatement, map);

@@ -182,7 +182,7 @@ redis:latest redis-server
    docker inspect 容器ID/容器名
    ```
 
-   ![1587052895139](E:\githubResp\SpringBoot-Demo\Cache\src\main\resources\images\1587052895139.png)
+   ![1587052895139](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587052895139.png)
 
 4. 配置从服务
 
@@ -204,7 +204,7 @@ redis:latest redis-server
    info replication
    ```
 
-   ![1587053397739](E:\githubResp\SpringBoot-Demo\Cache\src\main\resources\images\1587053397739.png)
+   ![1587053397739](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587053397739.png)
 
 ​     **配置**
 
@@ -222,11 +222,11 @@ config set masterauth master-password
 
 master-redis设值，salve-master会同步更新
 
-![1587053820188](E:\githubResp\SpringBoot-Demo\Cache\src\main\resources\images\1587053820188.png)
+![1587053820188](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587053820188.png)
 
 salve-redis只能执行读操作，不能写
 
-![1587053873453](E:\githubResp\SpringBoot-Demo\Cache\src\main\resources\images\1587053873453.png)
+![1587053873453](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587053873453.png)
 
 
 
@@ -240,6 +240,36 @@ salve-redis只能执行读操作，不能写
 缺点：
 
 - 无法解决现有系统单节点并发压力和物理上限问题
+
+
+
+#### 配置
+
+- 在主从复制的基础上搭建哨兵
+
+- 启动哨兵服务，准备哨兵的配置文件
+
+  通过命令获取sentinel匹配
+
+  ```java
+  wget http://download.redis.io/redis-stable/sentinel.conf
+  ```
+
+- 修改配置文件
+
+  ```javascript
+  # 让sentinel服务后台运行
+  daemonize yes 
+  
+  # 修改日志文件的路径
+  logfile "/var/log/redis/sentinel.log"
+  
+  # 修改监控的主redis服务器(必须填写)
+  # 最后一个2表示，两台机器判定主被动下线后，就进行failover(故障转移)
+  sentinel monitor mymaster 35.236.172.131 6379 2
+  ```
+
+  
 
 
 
@@ -287,7 +317,7 @@ salve-redis只能执行读操作，不能写
 
   2、设置过期时间为随机值
 
-  ![1587310814435](E:\githubResp\SpringBoot-Demo\Cache\src\main\resources\images\1587310814435.png)
+  ![1587310814435](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587310814435.png)
 
 
 

@@ -131,6 +131,10 @@
 
   ```shell
   git push <远程主机名> -d <分支名>
+  git push origin --delete Chapater6
+  
+   注：也可以直接推送一个空分支到远程分支，其实就相当于删除远程分支：
+  git push origin :demo  //推送本地的空分支(冒号前面的分支)到远程origin的demo(冒号后面的分支)(没有会自动创建)
   ```
 
 - 修改最近一次的提交记录
@@ -140,7 +144,19 @@
   ```
 
 - 将本地分支my-test关联到远程分支my-test上  
-git branch --set-upstream-to=origin/my-test
+```shell
+  git checkout -b my-test  //在当前分支下创建my-test的本地分支分支
+  git push origin my-test  //将my-test分支推送到远程
+  git branch --set-upstream-to=origin/my-test //将本地分支my-test关联到远程分支my-test上   
+  git branch -a //查看远程分支
+```
 
-
+撤销本地分支与远程分支的映射关系
+```shell
+git branch --unset-upstream
+```
+- 在本地创建分支dev并切换到该分支
+```shell
+  git checkout -b dev(本地分支名称) origin/dev(远程分支名称)
+```
 

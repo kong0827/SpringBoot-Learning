@@ -8,7 +8,7 @@
 发送者把消息发送给消息服务器，消息服务器将消息存放在若干队列/主题topic中，在合适的时候，消息服务器回将消息转发给接受者。在这个过程中，发送和接收是异步的，也就是发送无需等待，而且发送者和接受者的生命周期也没有必然的关系；
 尤其在发布pub/订阅sub模式下，也可以完成一对多的通信，即让一个消息有多个接受者。
 
-![1587655909336](E:\githubResp\SpringBoot-Demo\MQ\src\main\resources\images\1587655909336.png)
+![1587655909336](https://github.com/kong0827/SpringBoot-Demo/blob/master/MQ/src/main/resources/images/1587655909336.png)
 
 ### 作用
 
@@ -29,13 +29,13 @@
 
 消费者(consumer)订阅某个队列。生产者(producer)创建消息，然后发布到队列(queue)中，最后将消息发送到监听的消费者
 
- ![img](E:\githubResp\SpringBoot-Demo\MQ\src\main\resources\images\1579252955@f30eb4120b8a37bcc322f9341b83424b.png) 
+ ![img](https://github.com/kong0827/SpringBoot-Demo/blob/master/MQ/src/main/resources/images/1579252955@f30eb4120b8a37bcc322f9341b83424b.png) 
 
 ## RabbitMQ
 
 ### 结构图
 
-![1587658012733](E:\githubResp\SpringBoot-Demo\MQ\src\main\resources\images\1587658012733.png)
+![1587658012733](https://github.com/kong0827/SpringBoot-Demo/blob/master/MQ/src/main/resources/images/1587658012733.png)
 
 ### 执行流程
 
@@ -140,13 +140,13 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
 
 
 
-![1587650852301](E:\githubResp\SpringBoot-Demo\MQ\src\main\resources\images\1587650852301.png)
+![1587650852301](https://github.com/kong0827/SpringBoot-Demo/blob/master/MQ/src/main/resources/images/1587650852301.png)
 
-![1587651012322](E:\githubResp\SpringBoot-Demo\MQ\src\main\resources\images\1587651012322.png)
+![1587651012322](https://github.com/kong0827/SpringBoot-Demo/blob/master/MQ/src/main/resources/images/1587651012322.png)
 
 ![1587651064042](C:\Users\小K\AppData\Roaming\Typora\typora-user-images\1587651064042.png)
 
-![1587651099022](E:\githubResp\SpringBoot-Demo\MQ\src\main\resources\images\1587651099022.png)
+![1587651099022](https://github.com/kong0827/SpringBoot-Demo/blob/master/MQ/src/main/resources/images/1587651099022.png)
 
 
 
@@ -154,7 +154,7 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
 
 - 重新定义消息转换器
 
-  ![1587651177505](E:\githubResp\SpringBoot-Demo\MQ\src\main\resources\images\1587651177505.png)
+  ![1587651177505](https://github.com/kong0827/SpringBoot-Demo/blob/master/MQ/src/main/resources/images/1587651177505.png)
 
   ```java
   @Configuration

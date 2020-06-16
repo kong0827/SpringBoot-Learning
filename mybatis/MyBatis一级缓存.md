@@ -114,7 +114,7 @@
 
 ##### 总结命中场景
 
-![1591720580930](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591720580930.png)
+![1591720580930](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591720580930.png)
 
 
 
@@ -129,7 +129,7 @@
 - 存在从缓存中取
 - 不存在调用子类的`doQuery`方法，从数据库查询，并设置进缓存
 
-![1591720656046](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591720656046.png)
+![1591720656046](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591720656046.png)
 
 #### 源代码分析
 
@@ -137,33 +137,33 @@
 
 - `BaseExecutor`维护了`localCache`这个成员变量
 
-  ![1591721811550](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591721811550.png)
+  ![1591721811550](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591721811550.png)
 
 - `localCache`的作用范围（`SESSION,STATEMENT`），默认`SESSION`
 
-  ![1591723708542](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591723708542.png)
+  ![1591723708542](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591723708542.png)
 
 - 缓存的类型是`PrepetualCache`，查看源代码，内部实际上维护了一个`HashMap`，一级缓存的操作实际上是对这个`map`的操作。
 
-  ![1591721891146](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591721891146.png)
+  ![1591721891146](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591721891146.png)
 
 - `Executor`会调用`BaseExecutor`的`query`方法，同时会生成`CacheKey`
 
-  ![1591722361541](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591722361541.png)
+  ![1591722361541](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591722361541.png)
 
 - 这个`CacheKey`相同时，就会命中缓存，查看源代码查看到`CacheKey`的属性。它和 MappedStatement的ID，分页信息，Sql本身和Sql中的参数，环境相关。 
 
-  ![1591723080540](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591723080540.png)
+  ![1591723080540](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591723080540.png)
 
 - 查看`query`方法
 
-  ![1591723329168](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591723329168.png)
+  ![1591723329168](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591723329168.png)
 
 - 当执行提交，回滚，更新等操作时会清空缓存
 
-  ![1591723522457](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591723522457.png)
+  ![1591723522457](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591723522457.png)
 
-  ![1591723408137](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591723408137.png)
+  ![1591723408137](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591723408137.png)
 
 #### 总结
 

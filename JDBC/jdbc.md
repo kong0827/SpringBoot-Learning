@@ -6,11 +6,11 @@
 
 `org.springframework.boot.autoconfigure.jdbc.DataSourceInitializer`提供了创建数据表和插入数据的方法
 
-![1587363456346](E:\github_resp\SpringBoot-Demo\JDBC\src\main\resources\images\1587363456346.png)
+![1587363456346](https://github.com/kong0827/SpringBoot-Demo/blob/master/JDBC/src/main/resources/images/1587363456346.png)
 
-![1587364166987](E:\github_resp\SpringBoot-Demo\JDBC\src\main\resources\images\1587364166987.png)
+![1587364166987](https://github.com/kong0827/SpringBoot-Demo/blob/master/JDBC/src/main/resources/images/1587364166987.png)
 
-![1587366814546](E:\github_resp\SpringBoot-Demo\JDBC\src\main\resources\images\1587366814546.png)
+![1587366814546](https://github.com/kong0827/SpringBoot-Demo/blob/master/JDBC/src/main/resources/images/1587366814546.png)
 
 ### 使用步骤
 

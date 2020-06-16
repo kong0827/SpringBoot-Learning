@@ -6,7 +6,7 @@ MyBatis 源码解析
 
 - MyBatis的底层是JDBC实现的，首选回顾JDBC的执行过程
 
-  ![1591546157028](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591546157028.png)
+  ![1591546157028](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591546157028.png)
 
   注：新版本的JDBC提供了SPI，不需要显示的注册驱动，因此注册驱动这一步可以省略
 
@@ -35,7 +35,7 @@ MyBatis 源码解析
 
    - `Statement`继承自`Wrapper`、`PreparedStatement`继承自`Statement`、`CallableStatement`继承自`PreparedStatement `
 
-     ![1591547020025](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591547020025.png)
+     ![1591547020025](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591547020025.png)
 
    - 区别
 
@@ -51,7 +51,7 @@ MyBatis 源码解析
 
      ​		支持带参数的SQL操作，支持调用存储过程
 
-     ![1591547199951](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591547199951.png)
+     ![1591547199951](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591547199951.png)
 
      
 
@@ -61,7 +61,7 @@ MyBatis 源码解析
 
      2. setFetchSize:设置从数据库每次读取的数量单位。该举措是为了防止一次性从数据库加载数据过多，导致内存溢出。
 
-        ![1591547560992](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591547560992.png)
+        ![1591547560992](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591547560992.png)
 
 ### MyBatis执行过程
 
@@ -69,7 +69,7 @@ MyBatis 源码解析
 
 MyBatis的执行流程如下图（省略了加载配件文件，创建会话工厂等步骤）
 
-![1591548229827](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591548229827.png)
+![1591548229827](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591548229827.png)
 
 上图可用以下代码来表示
 
@@ -104,33 +104,33 @@ User user = userMapper.getUser(1)
   2. 这里的缓存维护指一级缓存
   3. 事务管理，提交，回滚，关闭，批处理刷新
 
-  ![1591549047833](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591549047833.png)
+  ![1591549047833](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591549047833.png)
 
 #### 执行体系
 
-![1591633589007](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591633589007.png)
+![1591633589007](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591633589007.png)
 
 - 简单执行器 - `SimpleExecutor`
 
   简单执行器是默认的执行器。一个`Statement`只执行一次，执行完毕后则进行销毁。
 
-  ![1591631749927](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591631749927.png)
+  ![1591631749927](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591631749927.png)
 
-  ![1591631860561](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591631860561.png)
+  ![1591631860561](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591631860561.png)
 
-  ![1591632183993](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591632183993.png)
+  ![1591632183993](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591632183993.png)
 
 - 可重用执行器 - `ReuseExecutor`
 
   可重用主要指的是`Statement`可以重复使用。利用Map将Statement进行缓存，每次执行前判断是否存在此`Statement`。
 
-  ![1591632303174](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591632303174.png)
+  ![1591632303174](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591632303174.png)
 
-  ![1591632497089](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591632497089.png)
+  ![1591632497089](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591632497089.png)
 
   - `SqlSession`和`ReuseExecutor`
 
-  ![1591626708493](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591626708493.png)
+  ![1591626708493](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591626708493.png)
 
   ​	
 
@@ -138,15 +138,15 @@ User user = userMapper.getUser(1)
 
   将多个`Statement`对应的SQL语句一次传输（调用`flushStatement`方法）到数据库中，进行批处理操作。
 
-  ![1591632779248](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591632779248.png)
+  ![1591632779248](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591632779248.png)
 
-  ![1591632722229](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591632722229.png)
+  ![1591632722229](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591632722229.png)
 
-  ![1591633004614](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591633004614.png)
+  ![1591633004614](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591633004614.png)
 
   `SqlSession`和`BatchExecutor`
 
-  ![1591626796262](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591626796262.png)
+  ![1591626796262](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591626796262.png)
 
 - 基础执行器 - `BaseExecutor`
 
@@ -156,9 +156,9 @@ User user = userMapper.getUser(1)
 
   利用装饰器模式对`Executor`进行包装，开启缓存后，默认先从缓存中获取数据，获取不到再从数据库中取数据。
 
-  ![1591633118209](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591633118209.png)
+  ![1591633118209](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591633118209.png)
 
-  ![1591633399295](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1591633399295.png)
+  ![1591633399295](https://github.com/kong0827/SpringBoot-Demo/blob/master/mybatis/src/main/resources/img/1591633399295.png)
 
 
 
