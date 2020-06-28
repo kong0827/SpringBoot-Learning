@@ -160,3 +160,80 @@ git branch --unset-upstream
   git checkout -b dev(本地分支名称) origin/dev(远程分支名称)
 ```
 
+
+
+### 撤销操作
+
+- 文件被修改，但未执行`git add`操作
+
+  ```powershell
+  git checkout fileName
+  git checkout .
+  ```
+
+- 同时对多个文件执行了`git add`操作，但本次只想提交其中的一部分文件
+
+  ```powershell
+  git add *
+  git status
+  # 取消暂存
+  git reset HEAD <filename>
+  ```
+
+-  文件执行了`git add`操作，但想撤销对其的修改（index内回滚）
+
+  ```powershell
+  # 取消暂存
+  git reset HEAD filename
+  # 撤销修改
+  git checkout filename
+  ```
+
+- 修改的文件已被`git commit`，但想再次修改不产生新的`commit`
+
+  ```powershell
+  # 修改最后一次提交
+  git add sample.txt
+  git commit --amend -m '说明'
+  ```
+
+- 已在本地进行了多次`git commit`操作，现在想撤销到其中某次Commit
+
+  ```git
+  git reset [--hard|soft|mixed|merge|keep] [commit|HEAD]
+  ```
+
+### 回滚操作
+
+ 已进行`git push`，即已推送到“远程仓库”中。我们将已被提交到“远程仓库”的代码还原操作叫做“回滚” 
+
+- 撤销指定文件到执行版本
+
+  ```powershell
+  # 查看指定文件的历史版本
+  git log <filename>
+  # 回滚到指定的commitId
+  git checkout <commitId> <filename>
+  ```
+
+- 删除最后一次远程提交
+
+  *方式一：使用 revert*
+
+  ```git
+  git revert HEAD
+  git push origin master
+  12
+  ```
+
+  *方式二：使用 reset*
+
+  ```git
+  git reset --hard HEAD^
+  git push origin master -f
+  ```
+
+  *二者区别：*
+
+  - **revert** 是放弃指定提交的修改，但是会生成一次新的提交，需要填写提交注释，以前的历史记录都在；
+  - **reset** 是指将HEAD指针指到指定提交，历史记录中不会出现放弃的提交记录。
