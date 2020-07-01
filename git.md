@@ -229,7 +229,7 @@ git branch --unset-upstream
   *方式二：使用 reset*
 
   ```git
-  git reset --hard HEAD^
+  git reset --hard HEAD
   git push origin master -f
   ```
 
