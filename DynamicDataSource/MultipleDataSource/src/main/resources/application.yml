@@ -1,0 +1,16 @@
+server:
+  port: 8890
+spring:
+  datasource:
+    #主数据源
+    master:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/master_database?useSSL=false&useUnicode=true&characterEncoding=UTF8
+      username: root
+      password: root
+    #从数据源
+    salve:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/salve_database?useSSL=false&useUnicode=true&characterEncoding=UTF8
+      username: root
+      password: root

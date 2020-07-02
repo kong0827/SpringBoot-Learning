@@ -30,6 +30,7 @@
         <module>mybatis</module>
         <module>WebSocket</module>
         <module>DataSource</module>
+        <module>MultipleDataSource</module>
     </modules>
 
     <dependencies>

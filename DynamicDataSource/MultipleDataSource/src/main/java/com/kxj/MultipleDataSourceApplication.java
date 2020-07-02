@@ -5,12 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author xiangjin.kong
- * @date 2020/7/1 10:18
+ * @date 2020/7/2 15:51
  * @desc
  */
 @SpringBootApplication
-public class DataSourceApplication {
+public class MultipleDataSourceApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(DataSourceApplication.class, args);
+        SpringApplication.run(MultipleDataSourceApplication.class, args);
     }
 }
