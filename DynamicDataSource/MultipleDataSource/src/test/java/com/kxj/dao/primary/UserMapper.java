@@ -15,6 +15,7 @@ import java.util.List;
  * @desc
  */
 @SpringBootTest
+@RunWith(SpringRunner.class)
 public class UserMapper {
 
     @Autowired
@@ -22,6 +23,7 @@ public class UserMapper {
 
     @Test
     public void test() {
+        System.out.println("-----------");
         List<User> users = masterUserDao.selectUsers();
         for (User user : users) {
             System.out.println(user);

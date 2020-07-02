@@ -4,13 +4,14 @@ spring:
   datasource:
     #主数据源
     master:
-      driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/master_database?useSSL=false&useUnicode=true&characterEncoding=UTF8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/master-database?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
       username: root
       password: root
     #从数据源
     salve:
-      driver-class-name: com.mysql.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/salve_database?useSSL=false&useUnicode=true&characterEncoding=UTF8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/salve-database?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
       username: root
       password: root
+    type: com.alibaba.druid.pool.DruidDataSource

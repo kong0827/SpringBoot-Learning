@@ -19,30 +19,32 @@ import javax.sql.DataSource;
  * @desc
  */
 @Configuration
-@MapperScan(basePackages = "com.kxj.dao.salve", sqlSessionFactoryRef = "salveSessionTemplate")
-public class SalveDataSourceConfig {
-
-    @Bean(name = "salveDataSource")
+@MapperScan(basePackages = "com.kxj.dao.salve", sqlSessionTemplateRef  = "SecondarySessionTemplate")
+public class SecondaryDataSourceConfig {
+    @Bean(name = "SecondaryDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.salve")
-    public DataSource salveDataSource() {
+    //  @Primary
+    public DataSource SecondaryDataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "salveSessionFactory")
-    public SqlSessionFactory salveSessionFactory(@Qualifier("salveDataSource") DataSource dataSource) throws Exception {
+    @Bean(name = "SecondarySessionFactory")
+    //  @Primary
+    public SqlSessionFactory SecondarySessionFactory(@Qualifier("SecondaryDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         return bean.getObject();
     }
 
-    @Bean("salveTransactionManager")
-    public DataSourceTransactionManager salveTransactionManager(@Qualifier("salveDataSource") DataSource dataSource) {
+    @Bean(name = "SecondaryTransactionManager")
+    //   @Primary
+    public DataSourceTransactionManager SecondaryTransactionManager(@Qualifier("SecondaryDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "salveSessionTemplate")
-    public SqlSessionTemplate primarySessionTemplate(@Qualifier("salveSessionFactory") SqlSessionFactory sqlSessionFactory) {
+    @Bean(name = "SecondarySessionTemplate")
+    //   @Primary
+    public SqlSessionTemplate SecondarySessionTemplate(@Qualifier("SecondarySessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
-
 }

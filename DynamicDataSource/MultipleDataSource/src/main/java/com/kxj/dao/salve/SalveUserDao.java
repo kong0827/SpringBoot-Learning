@@ -13,7 +13,8 @@ import java.util.List;
  */
 @Repository
 public interface SalveUserDao {
-
+    //View all Tuser information
     @Select("select * from user")
     List<User> selectUsers();
+
 }

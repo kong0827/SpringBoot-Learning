@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
 import javax.sql.DataSource;
 
 /**
@@ -19,33 +20,33 @@ import javax.sql.DataSource;
  * @desc
  */
 @Configuration
-@MapperScan(basePackages = "com.kxj.dao.primary", sqlSessionFactoryRef = "primarySessionTemplate")
+@MapperScan(basePackages = "com.kxj.dao.primary", sqlSessionTemplateRef  = "PrimarySessionTemplate")
 public class PrimaryDataSourceConfig {
 
-    @Bean(name="primaryDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.master")
-    @Primary            //标记主数据源
-    public DataSource primaryDataSource() {
+    @Bean(name = "PrimaryDataSource") //As a bean object and named
+    @ConfigurationProperties(prefix = "spring.datasource.master") //In the configuration file, the prefix of the data source
+    @Primary   //For marking up master data sources, this annotation is not added to any injected files other than master data sources
+    public DataSource PrimaryDataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "primarySessionFactory")
+    @Bean(name = "PrimarySessionFactory")
     @Primary
-    public SqlSessionFactory primarySessionFactory(@Qualifier("primaryDataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory PrimarySessionFactory(@Qualifier("PrimaryDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         return bean.getObject();
     }
 
-    @Bean("primaryTransactionManager")
+    @Bean(name = "PrimaryTransactionManager")
     @Primary
-    public DataSourceTransactionManager primaryTransactionManager(@Qualifier("primaryDataSource") DataSource dataSource) {
+    public DataSourceTransactionManager PrimaryTransactionManager(@Qualifier("PrimaryDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "primarySessionTemplate")
+    @Bean(name = "PrimarySessionTemplate")
     @Primary
-    public SqlSessionTemplate primarySessionTemplate(@Qualifier("primarySessionFactory") SqlSessionFactory sqlSessionFactory) {
+    public SqlSessionTemplate PrimarySessionTemplate(@Qualifier("PrimarySessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 
