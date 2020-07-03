@@ -19,32 +19,32 @@ import javax.sql.DataSource;
  * @desc
  */
 @Configuration
-@MapperScan(basePackages = "com.kxj.dao.salve", sqlSessionTemplateRef  = "SecondarySessionTemplate")
-public class SecondaryDataSourceConfig {
-    @Bean(name = "SecondaryDataSource")
+@MapperScan(basePackages = "com.kxj.dao.salve", sqlSessionTemplateRef  = "SalveSessionTemplate")
+public class SalveDataSourceConfig {
+    @Bean(name = "SalveDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.salve")
     //  @Primary
-    public DataSource SecondaryDataSource() {
+    public DataSource SalveDataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "SecondarySessionFactory")
+    @Bean(name = "SalveSessionFactory")
     //  @Primary
-    public SqlSessionFactory SecondarySessionFactory(@Qualifier("SecondaryDataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory SalveSessionFactory(@Qualifier("SalveDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         return bean.getObject();
     }
 
-    @Bean(name = "SecondaryTransactionManager")
+    @Bean(name = "SalveTransactionManager")
     //   @Primary
-    public DataSourceTransactionManager SecondaryTransactionManager(@Qualifier("SecondaryDataSource") DataSource dataSource) {
+    public DataSourceTransactionManager SalveTransactionManager(@Qualifier("SalveDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "SecondarySessionTemplate")
+    @Bean(name = "SalveSessionTemplate")
     //   @Primary
-    public SqlSessionTemplate SecondarySessionTemplate(@Qualifier("SecondarySessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
+    public SqlSessionTemplate SalveSessionTemplate(@Qualifier("SalveSessionFactory") SqlSessionFactory sqlSessionFactory) throws Exception {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 }

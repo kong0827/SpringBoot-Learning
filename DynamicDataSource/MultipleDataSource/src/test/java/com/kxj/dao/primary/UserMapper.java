@@ -1,5 +1,6 @@
 package com.kxj.dao.primary;
 
+import com.kxj.dao.salve.SalveUserDao;
 import com.kxj.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,12 +22,19 @@ public class UserMapper {
     @Autowired
     MasterUserDao masterUserDao;
 
+    @Autowired
+    SalveUserDao salveUserDao;
+
     @Test
     public void test() {
-        System.out.println("-----------");
         List<User> users = masterUserDao.selectUsers();
         for (User user : users) {
             System.out.println(user);
+        }
+
+        System.out.println("-------------------");
+        for (User selectUser : salveUserDao.selectUsers()) {
+            System.out.println(selectUser);
         }
 
     }
