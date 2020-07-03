@@ -1,0 +1,24 @@
+server:
+  port: 8891
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  datasource:
+    #主数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      master:
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/master_database
+        username: root
+        password: root
+      salve:
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/salve_database
+        username: root
+        password: root
+
+
+

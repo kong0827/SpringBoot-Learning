@@ -3,6 +3,13 @@ server:
 spring:
   datasource:
     #主数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      master:
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/master_database
+        username: root
+        password: root
     master:
       driver-class-name: com.mysql.jdbc.Driver
       jdbc-url: jdbc:mysql://localhost:3306/master_database
@@ -14,4 +21,3 @@ spring:
       jdbc-url: jdbc:mysql://localhost:3306/salve_database
       username: root
       password: root
-    type: com.alibaba.druid.pool.DruidDataSource

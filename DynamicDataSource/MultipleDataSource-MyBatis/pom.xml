@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>MultipleDataSource</artifactId>
+    <artifactId>MultipleDataSource-MyBatis</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -29,11 +29,6 @@
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>2.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.48</version>
-            <scope>runtime</scope>
-        </dependency>
+
     </dependencies>
 </project>
