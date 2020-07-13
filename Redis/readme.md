@@ -133,6 +133,8 @@ OK
 127.0.0.1:6379>set user:1 json字符串  // 设置某个用户的信     息 
 ```
 
+**总结**
+
 String类型的使用场景：value除了是字符串还可以是数字
 
 - 计数器
@@ -140,3 +142,79 @@ String类型的使用场景：value除了是字符串还可以是数字
 - 粉丝数
 - 对象缓存存储
 
+
+
+#### List
+
+所有的List命令都是以 **l** 开头的
+
+```shell
+127.0.0.1:6379> lpush list one
+(integer) 1
+127.0.0.1:6379> lpush list two
+(integer) 2
+127.0.0.1:6379> lpush list three
+(integer) 3
+127.0.0.1:6379> lrange list 0 -1   // 查看key的数据
+1) "three"
+2) "two"
+3) "one"
+127.0.0.1:6379> lrange list 0 1   //通过区间获取具体的值
+1) "three"
+2) "two"
+127.0.0.1:6379> rpush list rightr  // 从右边插入
+(integer) 4
+127.0.0.1:6379> lrange list 0 -1
+1) "three"
+2) "two"
+3) "one"
+4) "rightr"
+127.0.0.1:6379> lpop list    // 左边弹出
+"three"
+127.0.0.1:6379> rpop list    // 右边弹出
+"rightr"
+    
+127.0.0.1:6379> lindex list 0   // 根据索引查询
+"two"
+127.0.0.1:6379> rindex list 0   // 无此命令
+(error) ERR unknown command `rindex`, with args beginning with: `list`, `0`, 
+127.0.0.1:6379> llen list   //查询长度
+(integer) 2
+    
+    
+127.0.0.1:6379> lpush list five
+(integer) 3
+127.0.0.1:6379> lrange list 0 -1
+1) "five"
+2) "two"
+3) "one"
+127.0.0.1:6379> lpush list five
+(integer) 4
+127.0.0.1:6379> lpush list five
+(integer) 5
+127.0.0.1:6379> lrem list 1 five
+(integer) 1
+127.0.0.1:6379> lrange list 0 -1
+1) "five"
+2) "five"
+3) "two"
+4) "one"
+127.0.0.1:6379> lrem list 2 five  // 移除指定key指定个数
+(integer) 2
+127.0.0.1:6379> lrange list 0 -1
+1) "two"
+2) "one"
+127.0.0.1:6379> ltrim list 1 2  // 通过下标截取列表
+127.0.0.1:6379> lset list 1 'hello' // 更新指定下标的值，如果下标不存在，会报错
+
+127.0.0.1:6379> lset insert before/after key1 key2 // 将某个具体的value值插入到列的某个元素的前面或者后面
+```
+
+**总结**
+
+- 实际上就是一个链表，before node after ,left, right 都可以插入
+- 如果key不存在，创建新链表
+- 如果key存在，新增内容
+- 如果移除了所有值，空链表，也代表不存在
+- 在两边插入或者改动值，效率最高，中间元素，相对效率会低
+- 可用在消息排队，消息队列，栈
