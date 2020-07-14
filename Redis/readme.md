@@ -1130,23 +1130,24 @@ redis-benchmark -h localhost -p 6379 -c 100 -n 10000
 
  默认有 **16** 个数据库，默认使用第 **0** 个数据库
 
-```java
+```shell
 [root@iz2ze0obn92kpmakmtjw73z redis]# docker exec -it master-redis redis-cli
 127.0.0.1:6379> auth root
 OK
-127.0.0.1:6379> select 3   // 选择3号数据库
+127.0.0.1:6379> select 3   # 选择3号数据库
 OK
 127.0.0.1:6379[3]> dbsize 
 (integer) 0
-127.0.0.1:6379[3]> flushdb  // 清空当前库
+127.0.0.1:6379[3]> flushdb  # 清空当前库
 OK
-127.0.0.1:6379> FLUSHALL   // 清空所有数据库
+127.0.0.1:6379> FLUSHALL   #清空所有数据库
 OK
-127.0.0.1:6379> keys *   // 查看所有键
-127.0.0.1:6379> exists key   // 判断key是否存在
-127.0.0.1:6379> expire key seconds  // 设置过期时间
-127.0.0.1:6379> ttl key    // 查看当前key的剩余时间
-127.0.0.1:6379> type key   // 查看当前key的类型
+127.0.0.1:6379> keys *   # 查看所有键
+127.0.0.1:6379> exists key   # 判断key是否存在
+127.0.0.1:6379> expire key seconds  # 设置过期时间
+127.0.0.1:6379> ttl key    # 查看当前key的剩余时间
+127.0.0.1:6379> type key   # 查看当前key的类型
+127.0.0.1:6379> del key   # 删除指定key
 ```
 
 > Redis 是单线程的
@@ -1333,3 +1334,152 @@ String类型的使用场景：value除了是字符串还可以是数字
 - 如果移除了所有值，空链表，也代表不存在
 - 在两边插入或者改动值，效率最高，中间元素，相对效率会低
 - 可用在消息排队，消息队列，栈
+
+#### Set
+
+set 无序不重复
+
+```shell
+127.0.0.1:6379> sadd myset 'hello'   # set集合添加元素
+(integer) 1
+127.0.0.1:6379> sadd myset 'kxj'
+(integer) 1
+127.0.0.1:6379> sadd myset 'java'
+(integer) 1
+127.0.0.1:6379> SMEMBERS myset  # 查看指定set的所有值
+1) "java"
+2) "hello"
+3) "kxj"
+127.0.0.1:6379> sismember myset java   # 判断某一个值是否在集合中
+(integer) 1
+127.0.0.1:6379> sismember myset php
+(integer) 0
+
+127.0.0.1:6379> scard myset    # 获取集合个数
+(integer) 3
+127.0.0.1:6379> sadd myset 'java'  # 不允许重复
+(integer) 0
+
+127.0.0.1:6379> srem myset hello  # 移除指定元素
+(integer) 1
+
+# 随机抽选一个元素
+127.0.0.1:6379> SRANDMEMBER myset
+"kxj"
+127.0.0.1:6379> SRANDMEMBER myset
+"java"
+# 随机抽选指定个数元素
+127.0.0.1:6379> SRANDMEMBER myset 2
+"kxj"
+"java"
+
+127.0.0.1:6379> SPOP myset  # 随机移除元素
+"java"
+127.0.0.1:6379> SMEMBERS myset
+1) "php"
+2) "kxj"
+3) "python"
+
+127.0.0.1:6379> sadd myset1 'php'
+(integer) 1
+127.0.0.1:6379> sadd myset1 'java'
+(integer) 1
+127.0.0.1:6379> SDIFF myset myset1   # 差集
+1) "kxj"
+2) "python"
+127.0.0.1:6379> SINTER myset myset1 # 交集，共同好友
+1) "php"
+127.0.0.1:6379> SUNION myset myset1 # 并集
+1) "java"
+2) "php"
+3) "kxj"
+4) "python"
+```
+
+#### hash
+
+map集合，key-value
+
+```shell
+127.0.0.1:6379> hset myhash name kxj  # 设置key-value
+(integer) 1
+127.0.0.1:6379> hget myhash name    
+"kxj"
+127.0.0.1:6379> hmset myhash age 18 sex man  # 设置多个key-value 
+(integer) 2
+127.0.0.1:6379> hmget myhash name age sex  # 获取多个字段值
+1) "kxj"
+2) "18"
+3) "man"
+127.0.0.1:6379> HGETALL myhash # 获取所有
+1) "name"
+2) "kxj"
+3) "age"
+4) "18"
+5) "sex"
+6) "man"
+127.0.0.1:6379> hdel myhash sex  # 删除指定键
+(integer) 1
+127.0.0.1:6379> HGETALL myhash
+1) "name"
+2) "kxj"
+3) "age"
+4) "18"
+
+
+127.0.0.1:6379> hmset myhash  sex man work developer
+OK
+127.0.0.1:6379> hlen myhash  # 长度
+(integer) 4
+127.0.0.1:6379> HEXISTS myhash age  # 判断是否存在
+(integer) 1
+127.0.0.1:6379> HKEYS myhash  # 获取所有的key
+1) "name"
+2) "age"
+3) "sex"
+4) "work"
+127.0.0.1:6379> HVALS myhash # 获取所有的value
+1) "kxj"
+2) "18"
+3) "man"
+4) "developer"
+```
+
+hash变更的数据 user中name,age，尤其是用户信息之类的，经常变动的信息
+
+#### Zset
+
+有序集合，在set集合基础上加了排序
+
+```shell
+127.0.0.1:6379> ZADD myzset 1 one
+(integer) 1
+127.0.0.1:6379> ZADD myzset 2 two 3 three
+(integer) 2
+127.0.0.1:6379> ZRANGE myzset 0 -1
+1) "one"
+2) "two"
+3) "three"
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
