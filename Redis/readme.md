@@ -1452,26 +1452,179 @@ hash变更的数据 user中name,age，尤其是用户信息之类的，经常变
 有序集合，在set集合基础上加了排序
 
 ```shell
-127.0.0.1:6379> ZADD myzset 1 one
+127.0.0.1:6379> ZADD myzset 1 one  // 添加一个值
 (integer) 1
-127.0.0.1:6379> ZADD myzset 2 two 3 three
+127.0.0.1:6379> ZADD myzset 2 two 3 three   // 添加多个值
 (integer) 2
 127.0.0.1:6379> ZRANGE myzset 0 -1
 1) "one"
 2) "two"
 3) "three"
 
+127.0.0.1:6379> zadd salary 2500 xiaohong
+(integer) 1
+127.0.0.1:6379> zadd salary 5000 zhangsan
+(integer) 1
+127.0.0.1:6379> zadd salary 500 kxj
+(integer) 1
+127.0.0.1:6379> ZRANGEBYSCORE salary
+(error) ERR wrong number of arguments for 'zrangebyscore' command
+127.0.0.1:6379> ZRANGEBYSCORE salary -inf +inf
+1) "kxj"
+2) "xiaohong"
+3) "zhangsan"
+127.0.0.1:6379> ZRANGE myzset 0 -1 # 默认从小到大排序
+1) "xiaoming"
+2) "zhangsan"
+3) "lisi"
+127.0.0.1:6379> ZREVRANGE salary 0 -1 #从大到小排序
+1) "zhangsan"
+2) "kxj"
+127.0.0.1:6379> ZRANGEBYSCORE salary -inf +inf withscores
+1) "kxj"
+2) "500"
+3) "xiaohong"
+4) "2500"
+5) "zhangsan"
+6) "5000"
+
+
+127.0.0.1:6379> ZREM salary xiaohong  # 删除
+(integer) 1
+127.0.0.1:6379> zrange salary 0 -1
+1) "kxj"
+2) "zhangsan"
+127.0.0.1:6379> zcard salary  # 获取个数
+(integer) 2
+
+```
+
+### 三种特殊数据类型
+
+#### geospatial 地理位置
+
+命令
+
+```shell
+GEOADD # 添加
+GEODIST # 查询两个元素的直线距离
+GEOHASH
+GEOPOS # 查询元素的经纬度
+GEORADIUS # 以给定的经纬度为中心， 返回键包含的位置元素当中， 与中心的距离不超过给定最大距离的所有位置元素
+GEORADIUSBYMEMBER # 找出位于指定范围内的元素， 但是 GEORADIUSBYMEMBER 的中心点是由给定的位置元素决定的， 而不是像 GEORADIUS 那样， 使用输入的经度和纬度来决定中心点
+```
+
+#### hyperloglog
+
+基数统计的算法
+
+优点：占用的内存是固定的
+
+#### Bitmaps
+
+位存储
+
+适用于两个状态，例如，考勤，未考勤
+
+### 事务
+
+Redis单条命令是保证原子性，但是事务不保证原子性
+
+Redis事务没有隔离级别的概念
+
+所有命令在事务中，并没有直接被执行，只有发起执行命令的时候才会被执行
+
+Redis事务本质：一组命令的集合。一个事务中的所有命令都会被序列化，在事务执行的过程中，会按照顺序执行。
+
+特性：
+
+一次性，顺序性，排他性
+
+redis的事务
+
+- 开启事务（multi）
+
+- 命令入队
+
+- 执行事务（exec)
+
+  ```shell
+  127.0.0.1:6379> MULTI
+  OK
+  127.0.0.1:6379> set k1 v1 
+  QUEUED
+  127.0.0.1:6379> set k2 v2
+  QUEUED
+  127.0.0.1:6379> get v2
+  QUEUED
+  127.0.0.1:6379> set k3 v3
+  QUEUED
+  127.0.0.1:6379> EXEC
+  1) OK
+  2) OK
+  3 (nil)
+  4) OK
+  ```
+
+放弃事务
+
+```shell
+discard
 ```
 
 
 
+异常
 
+- 编译时异常
 
+  代码又问题，命令有错。事务中的所有命令都不会被执行
 
+  ```shell
+  127.0.0.1:6379> MULTI
+  OK
+  127.0.0.1:6379> set k1 v1
+  QUEUED
+  127.0.0.1:6379> set k2 v2
+  QUEUED
+  127.0.0.1:6379> getset k2  # 错误的命令
+  (error) ERR wrong number of arguments for 'getset' command
+  127.0.0.1:6379> EXEC # 执行事务报错
+  (error) EXECABORT Transaction discarded because of previous errors.
+  127.0.0.1:6379> get k1 # 所有的命令都不会执行
+  (nil)
+  
+  ```
 
+  
 
+- 运行时异常
 
+  如果事务中存在语法性，那么执行命令的时候，其他命令是可以正常执行的，错误命令抛出异常
 
+  ```shell
+  127.0.0.1:6379> MULTI
+  OK
+  127.0.0.1:6379> set k1 v1
+  QUEUED
+  127.0.0.1:6379> set k2 v2
+  QUEUED
+  127.0.0.1:6379> INCR k2
+  QUEUED
+  127.0.0.1:6379> set k3 v3
+  QUEUED
+  127.0.0.1:6379> EXEC
+  1) OK
+  2) OK
+  3) (error) ERR value is not an integer or out of range
+  4) OK
+  127.0.0.1:6379> get k1
+  "v1"
+  127.0.0.1:6379> get k3
+  "v3"
+  ```
+
+  
 
 
 
