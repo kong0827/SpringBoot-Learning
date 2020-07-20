@@ -1635,11 +1635,63 @@ discard
 
 认为什么时候都不会出现问题，所以不会上锁，更新数据的时候去判断一下。在此期间是否有人修改过这个数据，mysql通过version来进行判断
 
+redis 乐观锁使用watch(监控)
+
+```shell
+127.0.0.1:6379>watch money  # 监控
+OK 
+127.0.0.1:6379>multi
+OK 
+127.0.0.1:6379>decrby money 10
+OK 
+127.0.0.1:6379>incrby out 10
+OK 
+127.0.0.1:6379>exec	# 修改失败，执行之前另外另一个线程修改了我们的值
+nil # 修改失败，执行之前另外另一个线程修改了我们的值
+
+127.0.0.1:6379> unwatch # 如果事务执行失败，就先解锁
+OK
+127.0.0.1:6379> watch money # 获取最新的值，再次监视，select version
+127.0.0.1:6379> multi
+OK
+127.0.0.1:6379>decrby money 10
+OK 
+127.0.0.1:6379>incrby out 10
+OK 
+
+```
 
 
 
+### Jedis
+
+Jedis是Redis官方推荐的Java连接工具，使用 java 操作Redis中间件。
+
+1. 导入依赖
+
+   ```shell
+   
+   ```
+
+2. 编码测试
+
+   1、连接数据库
+
+   2、操作命令
+
+   3、断开命令
+
+### Spring Boot 集成 Redis 
+
+Spring Boot 2.x之后，原来使用的jedis被替换成了lettuce
+
+jedis： Jedis是直接连接Redis，非线程安全，在性能上，每个线程都去拿自己的 Jedis 实例，当连接数量增多时，资源消耗阶梯式增大，连接成本就较高了 。BIO
+
+luttuce：采用netty，实例可以在多个线程中进行共享，不存在线程不安全的情况，可以减少线程数据，NIO
 
 
+
+### Redis.conf
 
 
 

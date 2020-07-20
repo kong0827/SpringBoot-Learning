@@ -29,7 +29,8 @@
         <module>MQ</module>
         <module>mybatis</module>
         <module>WebSocket</module>
-        <module>DataSource</module>
+        <module>DynamicDataSource</module>
+        <module>Redis</module>
     </modules>
 
     <dependencies>
