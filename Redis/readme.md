@@ -1126,6 +1126,16 @@ redis-benchmark -h localhost -p 6379 -c 100 -n 10000
 
 
 
+### 多路复用
+
+Redis是单线程+多路复用技术
+
+多路复用是指使用一个线程来检查多个文件描述符（socket）的就绪状态，比如选择调用select和poll函数，传入多个文件描述符，如果有一个文件描述符就绪，则返回，否则阻塞直到超时，得到就绪状态后进行真正的操作可以在同一个线程里执行，也可以启动线程执行（比如使用线程池）
+
+多路复用有select,poll,epoll三种模式
+
+![1595351002550](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595351002550.png)
+
 ###  基本知识
 
  默认有 **16** 个数据库，默认使用第 **0** 个数据库
@@ -1799,7 +1809,7 @@ Redis 是内存数据库，如果不将内存中的数据库状态保存到磁�
 
 #### RDB 
 
-![1595321925965](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595321925965.png)
+![1595321925965](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595321925965.png)
 
 在指定的时间间隔内将内存中的数据集快照写入磁盘，也就是行话讲的Snapshot快照，它恢复时是将快 
 
@@ -1823,7 +1833,7 @@ rdb保存的文件是dump.rdb 都是在我们的配置文件中快照中进行�
 
 rdb保存的文件是dump.rdb 都是在我们的配置文件中快照中进行配置的！
 
-![1595321987644](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595321987644.png)
+![1595321987644](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595321987644.png)
 
 触发机制 
 
@@ -1835,7 +1845,7 @@ rdb保存的文件是dump.rdb 都是在我们的配置文件中快照中进行�
 
 备份就自动生成一个 dump.rdb 
 
-![1595322079749](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595322079749.png)
+![1595322079749](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595322079749.png)
 
 如果恢复rdb文件！ 
 
@@ -1871,7 +1881,7 @@ rdb保存的文件是dump.rdb 都是在我们的配置文件中快照中进行�
 
 将我们的所有命令都记录下来，history，恢复的时候就把这个文件全部在执行一遍！ 
 
-![1595323194348](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323194348.png)
+![1595323194348](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595323194348.png)
 
 以日志的形式来记录每个写操作，将Redis执行过的所有指令记录下来（读操作不记录），只许追加文件 
 
@@ -1883,7 +1893,7 @@ Aof保存的是 appendonly.aof 文件
 
 **append**
 
-![1595323229020](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323229020.png)
+![1595323229020](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595323229020.png)
 
 默认是不开启的，我们需要手动进行配置！我们只需要将 appendonly 改为yes就开启了 aof！ 
 
@@ -1893,11 +1903,11 @@ Aof保存的是 appendonly.aof 文件
 
 redis 给我们提供了一个工具 **redis-check-aof --fix **
 
-![1595323686642](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323686642.png)
+![1595323686642](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595323686642.png)
 
 如果文件正常，重启就可以直接恢复了！
 
-![1595323714661](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323714661.png)
+![1595323714661](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595323714661.png)
 
 重写规则说明
 
@@ -1989,11 +1999,11 @@ Redis 客户端可以订阅任意数量的频道。
 
 第一个：消息发送者， 第二个：频道 第三个：消息订阅者！
 
-![1595325898241](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595325898241.png)
+![1595325898241](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595325898241.png)
 
 下图展示了频道 channel1 ， 以及订阅这个频道的三个客户端 —— client2 、 client5 和 client1 之间的 关系：
 
-![1595326023991](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595326023991.png)
+![1595326023991](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595326023991.png)
 
 当有新消息通过 PUBLISH 命令发送给频道 channel1 时， 这个消息就会被发送给订阅它的三个客户端：
 
@@ -2003,7 +2013,7 @@ Redis 客户端可以订阅任意数量的频道。
 
 这些命令被广泛用于构建即时通信应用，比如网络聊天室(chatroom)和实时广播、实时提醒等。
 
-![1595326075918](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595326075918.png)
+![1595326075918](https://github.com/kong0827/SpringBoot-Learning/blob/master/Redis/src/main/resources/img\1595326075918.png)
 
 订阅端：
 
@@ -2089,3 +2099,352 @@ key值进行消息发布及消息订阅，当一个key值上进行了消息发�
 
 稍微复杂的场景我们就会使用 消息中间件 MQ
 
+### Redis主从复制
+
+**概念** 
+
+主从复制，是指将一台Redis服务器的数据，复制到其他的Redis服务器。前者称为主节点 
+
+(master/leader)，后者称为从节点(slave/follower)；数据的复制是单向的，只能由主节点到从节点。 
+
+Master以写为主，Slave 以读为主。 
+
+默认情况下，每台Redis服务器都是主节点； 
+
+且一个主节点可以有多个从节点(或没有从节点)，但一个从节点只能有一个主节点。（） 
+
+**主从复制的作用主要包括：** 
+
+1、数据冗余：主从复制实现了数据的热备份，是持久化之外的一种数据冗余方式。 
+
+2、故障恢复：当主节点出现问题时，可以由从节点提供服务，实现快速的故障恢复；实际上是一种服务 
+
+的冗余。 
+
+3、负载均衡：在主从复制的基础上，配合读写分离，可以由主节点提供写服务，由从节点提供读服务 
+
+（即写Redis数据时应用连接主节点，读Redis数据时应用连接从节点），分担服务器负载；尤其是在写 
+
+少读多的场景下，通过多个从节点分担读负载，可以大大提高Redis服务器的并发量。 
+
+4、高可用（集群）基石：除了上述作用以外，主从复制还是哨兵和集群能够实施的基础，因此说主从复 
+
+制是Redis高可用的基础。
+
+一般来说，要将Redis运用于工程项目中，只使用一台Redis是万万不能的（宕机），原因如下： 
+
+1、从结构上，单个Redis服务器会发生单点故障，并且一台服务器需要处理所有的请求负载，压力较 
+
+大； 
+
+2、从容量上，单个Redis服务器内存容量有限，就算一台Redis服务器内存容量为256G，也不能将所有 
+
+内存用作Redis存储内存，一般来说，单台Redis最大使用内存不应该超过20G。 
+
+电商网站上的商品，一般都是一次上传，无数次浏览的，说专业点也就是"多读少写"。 
+
+对于这种场景，我们可以使如下这种架构：
+
+![1595351576046](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595351576046.png)
+
+主从复制，读写分离！ 80% 的情况下都是在进行读操作！减缓服务器的压力！架构中经常使用！ 一主 
+
+二从！ 
+
+只要在公司中，主从复制就是必须要使用的，因为在真实的项目中不可能单机使用Redis！ 
+
+**环境配置** 
+
+```shell
+127.0.0.1:6379> info replication # 查看当前库的信息
+# Replication
+role:master # 角色 master
+connected_slaves:0 # 没有从机
+master_replid:b63c90e6c501143759cb0e7f450bd1eb0c70882a master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:0
+second_repl_offset:-1
+repl_backlog_active:0
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:0
+repl_backlog_histlen:0
+```
+
+复制3个配置文件，然后修改对应的信息 
+
+1、端口 
+
+2、pid 名字 
+
+3、log文件名字 
+
+4、dump.rdb 名字 
+
+修改完毕之后，启动我们的3个redis服务器，可以通过进程信息查看！
+
+![1595351727095](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595351727095.png)
+
+
+
+**一主二从** 
+
+默认情况下，每台Redis服务器都是主节点； 我们一般情况下只用配置从机就好了！ 
+
+认老大！ 一主 （79）二从（80，81） 
+
+```shell
+127.0.0.1:6380> SLAVEOF 127.0.0.1 6379 # SLAVEOF host 6379 找谁当自己的老大！ OK
+127.0.0.1:6380> info replication
+# Replication
+role:slave # 当前角色是从机
+master_host:127.0.0.1 # 可以的看到主机的信息
+master_port:6379 
+master_link_status:up
+master_last_io_seconds_ago:3
+master_sync_in_progress:0
+slave_repl_offset:14
+slave_priority:100
+slave_read_only:1 connected_slaves:0 master_replid:a81be8dd257636b2d3e7a9f595e69d73ff03774e master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:14
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:14
+# 在主机中查看！
+127.0.0.1:6379> info replication
+# Replication
+role:master connected_slaves:1 # 多了从机的配置 slave0:ip=127.0.0.1,port=6380,state=online,offset=42,lag=1 # 多了从机的配置 master_replid:a81be8dd257636b2d3e7a9f595e69d73ff03774e master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:42
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:42
+```
+
+真实的从主配置应该在配置文件中配置，这样的话是永久的
+
+细节 
+
+主机可以写，从机不能写只能读！主机中的所有信息和数据，都会自动被从机保存！ 
+
+主机写：
+
+**复制原理**
+
+Slave 启动成功连接到 master 后会发送一个sync同步命令 
+
+Master 接到命令，启动后台的存盘进程，同时收集所有接收到的用于修改数据集命令，在后台进程执行 
+
+完毕之后，master将传送整个数据文件到slave，并完成一次完全同步。 
+
+全量复制：而slave服务在接收到数据库文件数据后，将其存盘并加载到内存中。 
+
+增量复制：Master 继续将新的所有收集到的修改命令依次传给slave，完成同步 
+
+但是只要是重新连接master，一次完全同步（全量复制）将被自动执行！ 我们的数据一定可以在从机中 
+
+看到！ 
+
+### **哨兵模式** 
+
+（自动选举老大的模式） 
+
+概述 
+
+主从切换技术的方法是：当主服务器宕机后，需要手动把一台从服务器切换为主服务器，这就需要人工 
+
+干预，费事费力，还会造成一段时间内服务不可用。这不是一种推荐的方式，更多时候，我们优先考虑 
+
+哨兵模式。Redis从2.8开始正式提供了Sentinel（哨兵） 架构来解决这个问题。 
+
+谋朝篡位的自动版，能够后台监控主机是否故障，如果故障了根据投票数自动将从库转换为主库。 
+
+哨兵模式是一种特殊的模式，首先Redis提供了哨兵的命令，哨兵是一个独立的进程，作为进程，它会独 
+
+立运行。其原理是哨兵通过发送命令，等待Redis服务器响应，从而监控运行的多个Redis实例。*
+
+![1595351969075](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595351969075.png)
+
+这里的哨兵有两个作用 
+
+通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器。 
+
+当哨兵监测到master宕机，会自动将slave切换成master，然后通过**发布订阅模式**通知其他的从服 
+
+务器，修改配置文件，让它们切换主机。 
+
+然而一个哨兵进程对Redis服务器进行监控，可能会出现问题，为此，我们可以使用多个哨兵进行监控。 
+
+各个哨兵之间还会进行监控，这样就形成了多哨兵模式。
+
+![1595352016647](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595352016647.png)
+
+假设主服务器宕机，哨兵1先检测到这个结果，系统并不会马上进行failover过程，仅仅是哨兵1主观的认 
+
+为主服务器不可用，这个现象成为**主观下线**。当后面的哨兵也检测到主服务器不可用，并且数量达到一 
+
+定值时，那么哨兵之间就会进行一次投票，投票的结果由一个哨兵发起，进行failover[故障转移]操作。 
+
+切换成功后，就会通过发布订阅模式，让各个哨兵把自己监控的从服务器实现切换主机，这个过程称为 
+
+**客观下线**。
+
+我们目前的状态是 一主二从！ 
+
+1、配置哨兵配置文件 sentinel.conf
+
+```shell
+# sentinel monitor 被监控的名称 host port 1 
+sentinel monitor myredis 127.0.0.1 6379 1
+```
+
+后面的这个数字1，代表主机挂了，slave投票看让谁接替成为主机，票数最多的，就会成为主机！
+
+2、启动哨兵！ 
+
+![1595352164354](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595352164354.png)
+
+如果Master 节点断开了，这个时候就会从从机中随机选择一个服务器！
+
+![1595352196796](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595352196796.png)
+
+**哨兵模式 **
+
+优点： 
+
+1、哨兵集群，基于主从复制模式，所有的主从配置优点，它全有 
+
+2、 主从可以切换，故障可以转移，系统的可用性就会更好 
+
+3、哨兵模式就是主从模式的升级，手动到自动，更加健壮！ 
+
+缺点： 
+
+1、Redis 不好啊在线扩容的，集群容量一旦到达上限，在线扩容就十分麻烦！ 
+
+2、实现哨兵模式的配置其实是很麻烦的，里面有很多选择！
+
+
+
+### **Redis**缓存穿透和雪崩
+
+Redis缓存的使用，极大的提升了应用程序的性能和效率，特别是数据查询方面。但同时，它也带来了一 
+
+些问题。其中，最要害的问题，就是数据的一致性问题，从严格意义上讲，这个问题无解。如果对数据 
+
+的一致性要求很高，那么就不能使用缓存。 
+
+另外的一些典型问题就是，缓存穿透、缓存雪崩和缓存击穿。目前，业界也都有比较流行的解决方案。 
+
+**缓存穿透（查不到）** 
+
+概念 
+
+缓存穿透的概念很简单，用户想要查询一个数据，发现redis内存数据库没有，也就是缓存没有命中，于 
+
+是向持久层数据库查询。发现也没有，于是本次查询失败。当用户很多的时候，缓存都没有命中（秒 
+
+杀！），于是都去请求了持久层数据库。这会给持久层数据库造成很大的压力，这时候就相当于出现了 
+
+缓存穿透。 
+
+解决方案 
+
+**布隆过滤器** 
+
+布隆过滤器是一种数据结构，对所有可能查询的参数以hash形式存储，在控制层先进行校验，不符合则 
+
+丢弃，从而避免了对底层存储系统的查询压力； 
+
+![1595352354049](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595352354049.png)
+
+**缓存空对象** 
+
+当存储层不命中后，即使返回的空对象也将其缓存起来，同时会设置一个过期时间，之后再访问这个数 
+
+据将会从缓存中获取，保护了后端数据源； 
+
+![1595352391423](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595352391423.png)
+
+但是这种方法会存在两个问题： 
+
+1、如果空值能够被缓存起来，这就意味着缓存需要更多的空间存储更多的键，因为这当中可能会有很多的空值的键； 
+
+2、即使对空值设置了过期时间，还是会存在缓存层和存储层的数据会有一段时间窗口的不一致，这对于需要保持一致性的业务会有影响
+
+**缓存击穿（量太大，缓存过期！）** 
+
+概述 
+
+这里需要注意和缓存击穿的区别，缓存击穿，是指一个key非常热点，在不停的扛着大并发，大并发集中 
+
+对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就穿破缓存，直接请求数据库，就像在一 
+
+个屏障上凿开了一个洞。 
+
+当某个key在过期的瞬间，有大量的请求并发访问，这类数据一般是热点数据，由于缓存过期，会同时访 
+
+问数据库来查询最新数据，并且回写缓存，会导使数据库瞬间压力过大。 
+
+解决方案 
+
+**设置热点数据永不过期** 
+
+从缓存层面来看，没有设置过期时间，所以不会出现热点 key 过期后产生的问题。 
+
+**加互斥锁** 
+
+分布式锁：使用分布式锁，保证对于每个key同时只有一个线程去查询后端服务，其他线程没有获得分布 
+
+式锁的权限，因此只需要等待即可。这种方式将高并发的压力转移到了分布式锁，因此对分布式锁的考 
+
+验很大。
+
+![1595352439236](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595352439236.png)
+
+**缓存雪崩** 
+
+概念 
+
+缓存雪崩，是指在某一个时间段，缓存集中过期失效。Redis 宕机！ 
+
+产生雪崩的原因之一，比如在写本文的时候，马上就要到双十二零点，很快就会迎来一波抢购，这波商 
+
+品时间比较集中的放入了缓存，假设缓存一个小时。那么到了凌晨一点钟的时候，这批商品的缓存就都 
+
+过期了。而对这批商品的访问查询，都落到了数据库上，对于数据库而言，就会产生周期性的压力波 
+
+峰。于是所有的请求都会达到存储层，存储层的调用量会暴增，造成存储层也会挂掉的情况
+
+![1595352486115](E:\githubResp\SpringBoot-Demo\Redis\src\main\resources\img\1595352486115.png)
+
+其实集中过期，倒不是非常致命，比较致命的缓存雪崩，是缓存服务器某个节点宕机或断网。因为自然 
+
+形成的缓存雪崩，一定是在某个时间段集中创建缓存，这个时候，数据库也是可以顶住压力的。无非就 
+
+是对数据库产生周期性的压力而已。而缓存服务节点的宕机，对数据库服务器造成的压力是不可预知 
+
+的，很有可能瞬间就把数据库压垮
+
+解决方案 
+
+**redis**高可用
+
+这个思想的含义是，既然redis有可能挂掉，那我多增设几台redis，这样一台挂掉之后其他的还可以继续 
+
+工作，其实就是搭建的集群。（异地多活！） 
+
+**限流降级**
+
+这个解决方案的思想是，在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对 
+
+某个key只允许一个线程查询数据和写缓存，其他线程等待。 
+
+**数据预热** 
+
+数据加热的含义就是在正式部署之前，我先把可能的数据先预先访问一遍，这样部分可能大量访问的数 
+
+据就会加载到缓存中。在即将发生大并发访问前手动触发加载缓存不同的key，设置不同的过期时间，让 
+
+缓存失效的时间点尽量均匀。
