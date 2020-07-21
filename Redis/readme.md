@@ -1693,9 +1693,398 @@ luttuce：采用netty，实例可以在多个线程中进行共享，不存在�
 
 ### Redis.conf
 
+#### 网络
+
+#### 通用 GENERAL
+
+```
+bind 127 .0.0.1  # 绑定的ip
+protected-mode yes # 保护模式
+port 6379 # 端口设置
+```
+
+```
+daemonize yes # 以守护进程的方式运行，默认是 no，我们需要自己开启为yes！
+```
+
+```
+pidfile /var/run/redis_6379.pid  # 如果以后台的方式运行，我们就需要指定一个 pid 文件！
+```
+
+```
+# 日志
+# Specify the server verbosity level.
+# This can be one of:
+```
+
+#### 快照
+
+持久化， 在规定的时间内，执行了多少次操作，则会持久化到文件 .rdb. aof
+
+redis 是内存数据库，如果没有持久化，那么数据断电及失！
 
 
 
+#### SECURITY 安全
+
+可以在这里设置redis的密码，默认是没有密码！
+
+```
+# debug (a lot of information, useful for development/testing)
+# verbose (many rarely useful info, but not a mess like the debug level)
+# notice (moderately verbose, what you want in production probably) 生产环境
+# warning (only very important / critical messages are logged)
+loglevel notice
+logfile "" # 日志的文件位置名
+databases 16 # 数据库的数量，默认是 16 个数据库
+always-show-logo yes # 是否总是显示LOGO
+```
+
+```
+# 如果900s内，如果至少有一个1 key进行了修改，我们及进行持久化操作
+save 900 1
+# 如果300s内，如果至少10 key进行了修改，我们及进行持久化操作
+save 300 10
+# 如果60s内，如果至少10000 key进行了修改，我们及进行持久化操作
+save 60 10000
+# 我们之后学习持久化，会自己定义这个测试！
+```
+
+```
+stop-writes-on-bgsave-error yes # 持久化如果出错，是否还需要继续工作！
+```
+
+```
+rdbcompression yes # 是否压缩 rdb 文件，需要消耗一些cpu资源！
+```
+
+```
+rdbchecksum yes # 保存rdb文件的时候，进行错误的检查校验！
+```
+
+```
+dir ./  # rdb 文件保存的目录！
+```
+
+```shell
+127 .0.0.1:6379> ping
+PONG
+127 .0.0.1:6379> config get requirepass # 获取redis的密码
+1 ) "requirepass"
+2 ) ""
+127 .0.0.1:6379> config set requirepass "123456" # 设置redis的密码
+OK
+127 .0.0.1:6379> config get requirepass # 发现所有的命令都没有权限了
+(error) NOAUTH Authentication required.
+127 .0.0.1:6379> ping
+(error) NOAUTH Authentication required.
+127 .0.0.1:6379> auth 123456 # 使用密码进行登录！
+OK
+127 .0.0.1:6379> config get requirepass
+1 ) "requirepass"
+2 ) "123456"
+```
+
+#### 限制 CLIENTS
+
+```
+APPEND ONLY 模式 aof配置
+```
 
 
 
+### 持久化
+
+Redis 是内存数据库，如果不将内存中的数据库状态保存到磁盘，那么一旦服务器进程退出，服务器中的数据库状态也会消失。所以 Redis 提供了持久化功能！
+
+#### RDB 
+
+![1595321925965](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595321925965.png)
+
+在指定的时间间隔内将内存中的数据集快照写入磁盘，也就是行话讲的Snapshot快照，它恢复时是将快 
+
+照文件直接读到内存里。 
+
+Redis会单独创建（fork）一个子进程来进行持久化，会先将数据写入到一个临时文件中，待持久化过程 
+
+都结束了，再用这个临时文件替换上次持久化好的文件。整个过程中，主进程是不进行任何IO操作的。 
+
+这就确保了极高的性能。如果需要进行大规模数据的恢复，且对于数据恢复的完整性不是非常敏感，那 
+
+RDB方式要比AOF方式更加的高效。RDB的缺点是最后一次持久化后的数据可能丢失。我们默认的就是 
+
+RDB，一般情况下不需要修改这个配置！ 
+
+有时候在生产环境我们会将这个文件进行备份！ 
+
+rdb保存的文件是dump.rdb 都是在我们的配置文件中快照中进行配置的！
+
+有时候在生产环境我们会将这个文件进行备份！ 
+
+rdb保存的文件是dump.rdb 都是在我们的配置文件中快照中进行配置的！
+
+![1595321987644](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595321987644.png)
+
+触发机制 
+
+1、save的规则满足的情况下，会自动触发rdb规则 
+
+2、执行 flflushall 命令，也会触发我们的rdb规则！ 
+
+3、退出redis，也会产生 rdb 文件！ 
+
+备份就自动生成一个 dump.rdb 
+
+![1595322079749](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595322079749.png)
+
+如果恢复rdb文件！ 
+
+1、只需要将rdb文件放在我们redis启动目录就可以，redis启动的时候会自动检查dump.rdb 恢复其中 
+
+的数据！ 
+
+2、查看需要存在的位置 
+
+```shell
+127.0.0.1:6379> config get dir 
+1) "dir" 
+2) "/usr/local/bin" # 如果在这个目录下存在 dump.rdb 文件，启动就会自动恢复其中的数据
+```
+
+几乎就他自己默认的配置就够用了，但是我们还是需要去学习！
+
+优点：
+
+1 、适合大规模的数据恢复！
+
+2 、对数据的完整性要不高！
+
+缺点：
+
+1 、需要一定的时间间隔进程操作！如果redis意外宕机了，这个最后一次修改数据就没有的了！
+
+2 、fork进程的时候，会占用一定的内容空间！！
+
+
+
+#### AOF 
+
+将我们的所有命令都记录下来，history，恢复的时候就把这个文件全部在执行一遍！ 
+
+![1595323194348](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323194348.png)
+
+以日志的形式来记录每个写操作，将Redis执行过的所有指令记录下来（读操作不记录），只许追加文件 
+
+但不可以改写文件，redis启动之初会读取该文件重新构建数据，换言之，redis重启的话就根据日志文件 
+
+的内容将写指令从前到后执行一次以完成数据的恢复工作 
+
+Aof保存的是 appendonly.aof 文件 
+
+**append**
+
+![1595323229020](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323229020.png)
+
+默认是不开启的，我们需要手动进行配置！我们只需要将 appendonly 改为yes就开启了 aof！ 
+
+重启，redis 就可以生效了！ 
+
+如果这个 aof 文件有错误，这时候 redis 是启动不起来的吗，我们需要修复这个aof文件 
+
+redis 给我们提供了一个工具 **redis-check-aof --fix **
+
+![1595323686642](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323686642.png)
+
+如果文件正常，重启就可以直接恢复了！
+
+![1595323714661](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595323714661.png)
+
+重写规则说明
+
+aof 默认就是文件的无限追加，文件会越来越大！
+
+如果 aof 文件大于 64m，太大了！ fork一个新的进程来将我们的文件进行重写！
+
+```shell
+appendonly no # 默认是不开启aof模式的，默认是使用rdb方式持久化的，在大部分所有的情况下， rdb完全够用！
+appendfilename "appendonly.aof" # 持久化的文件的名字 
+# appendfsync always # 每次修改都会 sync。消耗性能 appendfsync everysec # 每秒执行一次 sync，可能会丢失这1s的数据！ 
+# appendfsync no # 不执行 sync，这个时候操作系统自己同步数据，速度最快！
+# rewrite 重写，
+```
+
+优点： 
+
+1、每一次修改都同步，文件的完整会更加好！ 
+
+2、每秒同步一次，可能会丢失一秒的数据 
+
+3、从不同步，效率最高的！ 
+
+缺点： 
+
+1、相对于数据文件来说，aof远远大于 rdb，修复的速度也比 rdb慢！ 
+
+2、Aof 运行效率也要比 rdb 慢，所以我们redis默认的配置就是rdb持久化
+
+
+
+#### **扩展：** 
+
+1、RDB 持久化方式能够在指定的时间间隔内对你的数据进行快照存储 
+
+2、AOF 持久化方式记录每次对服务器写的操作，当服务器重启的时候会重新执行这些命令来恢复原始 
+
+的数据，AOF命令以Redis 协议追加保存每次写的操作到文件末尾，Redis还能对AOF文件进行后台重 
+
+写，使得AOF文件的体积不至于过大。 
+
+3、只做缓存，如果你只希望你的数据在服务器运行的时候存在，你也可以不使用任何持久化 
+
+4、同时开启两种持久化方式 
+
+在这种情况下，当redis重启的时候会优先载入AOF文件来恢复原始的数据，因为在通常情况下AOF 
+
+文件保存的数据集要比RDB文件保存的数据集要完整。 
+
+RDB 的数据不实时，同时使用两者时服务器重启也只会找AOF文件，那要不要只使用AOF呢？作者 
+
+建议不要，因为RDB更适合用于备份数据库（AOF在不断变化不好备份），快速重启，而且不会有 
+
+AOF可能潜在的Bug，留着作为一个万一的手段。 
+
+5、性能建议 
+
+因为RDB文件只用作后备用途，建议只在Slave上持久化RDB文件，而且只要15分钟备份一次就够 
+
+了，只保留 save 900 1 这条规则。 
+
+如果Enable AOF ，好处是在最恶劣情况下也只会丢失不超过两秒数据，启动脚本较简单只load自 
+
+己的AOF文件就可以了，代价一是带来了持续的IO，二是AOF rewrite 的最后将 rewrite 过程中产 
+
+生的新数据写到新文件造成的阻塞几乎是不可避免的。只要硬盘许可，应该尽量减少AOF rewrite 
+
+的频率，AOF重写的基础大小默认值64M太小了，可以设到5G以上，默认超过原大小100%大小重 
+
+写可以改到适当的数值。 
+
+如果不Enable AOF ，仅靠 Master-Slave Repllcation 实现高可用性也可以，能省掉一大笔IO，也 
+
+减少了rewrite时带来的系统波动。代价是如果Master/Slave 同时倒掉，会丢失十几分钟的数据， 
+
+启动脚本也要比较两个 Master/Slave 中的 RDB文件，载入较新的那个，微博就是这种架构。 
+
+
+
+### Redis发布订阅
+
+Redis 发布订阅(pub/sub)是一种消息通信模式：发送者(pub)发送消息，订阅者(sub)接收消息。微信、 
+
+微博、关注系统！ 
+
+Redis 客户端可以订阅任意数量的频道。 
+
+订阅/发布消息图： 
+
+第一个：消息发送者， 第二个：频道 第三个：消息订阅者！
+
+![1595325898241](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595325898241.png)
+
+下图展示了频道 channel1 ， 以及订阅这个频道的三个客户端 —— client2 、 client5 和 client1 之间的 关系：
+
+![1595326023991](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595326023991.png)
+
+当有新消息通过 PUBLISH 命令发送给频道 channel1 时， 这个消息就会被发送给订阅它的三个客户端：
+
+![1595326043114](C:\Users\kongxiangjin\AppData\Roaming\Typora\typora-user-images\1595326043114.png)
+
+命令 
+
+这些命令被广泛用于构建即时通信应用，比如网络聊天室(chatroom)和实时广播、实时提醒等。
+
+![1595326075918](E:\github_resp\SpringBoot-Demo\Redis\src\main\resources\img\1595326075918.png)
+
+订阅端：
+
+```
+127.0.0.1:6379> SUBSCRIBE kuangshenshuo # 订阅一个频道 kuangshenshuo 
+
+Reading messages... (press Ctrl-C to quit) 
+
+1) "subscribe" 
+
+2) "kuangshenshuo" 
+
+3) (integer) 1 
+
+\# 等待读取推送的信息 
+
+1) "message" # 消息 
+
+2) "kuangshenshuo" # 那个频道的消息 
+
+3) "hello,kuangshen" # 消息的具体内容 
+
+1) "message" 
+
+2) "kuangshenshuo" 
+
+3) "hello,redis"  
+```
+
+发送端： 
+
+原理 
+
+```
+Redis是使用C实现的，通过分析 Redis 源码里的 pubsub.c 文件，了解发布和订阅机制的底层实现，籍 
+
+此加深对 Redis 的理解。 
+
+127.0.0.1:6379> PUBLISH kuangshenshuo "hello,kuangshen" # 发布者发布消息到频道！ 
+
+(integer) 1 
+
+127.0.0.1:6379> PUBLISH kuangshenshuo "hello,redis" # 发布者发布消息到频道！ 
+
+(integer) 1 
+
+127.0.0.1:6379> 
+```
+
+原理 
+
+Redis是使用C实现的，通过分析 Redis 源码里的 pubsub.c 文件，了解发布和订阅机制的底层实现，籍 
+
+此加深对 Redis 的理解。 
+
+Redis 通过 PUBLISH 、SUBSCRIBE 和 PSUBSCRIBE 等命令实现发布和订阅功能。 
+
+微信： 
+
+通过 SUBSCRIBE 命令订阅某频道后，redis-server 里维护了一个字典，字典的键就是一个个 频道！， 
+
+而字典的值则是一个链表，链表中保存了所有订阅这个 channel 的客户端。SUBSCRIBE 命令的关键， 
+
+就是将客户端添加到给定 channel 的订阅链表中。 
+
+通过 PUBLISH 命令向订阅者发送消息，redis-server 会使用给定的频道作为键，在它所维护的 channel 
+
+字典中查找记录了订阅这个频道的所有客户端的链表，遍历这个链表，将消息发布给所有订阅者。 
+
+Pub/Sub 从字面上理解就是发布（Publish）与订阅（Subscribe），在Redis中，你可以设定对某一个 
+
+key值进行消息发布及消息订阅，当一个key值上进行了消息发布后，所有订阅它的客户端都会收到相应 
+
+的消息。这一功能最明显的用法就是用作实时消息系统，比如普通的即时聊天，群聊等功能。 
+
+**使用场景：** 
+
+1、实时消息系统！ 
+
+2、事实聊天！（频道当做聊天室，将信息回显给所有人即可！） 
+
+3、订阅，关注系统都是可以的！ 
+
+稍微复杂的场景我们就会使用 消息中间件 MQ （）
