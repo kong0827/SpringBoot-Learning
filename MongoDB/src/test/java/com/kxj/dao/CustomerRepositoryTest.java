@@ -34,4 +34,5 @@ public class CustomerRepositoryTest {
         List<Customer> customers = customerRepository.findAll();
         customers.stream().forEach(customer -> System.out.println());
     }
+
 }
