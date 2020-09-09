@@ -33,6 +33,7 @@
         <module>Redis</module>
         <module>MongoDB</module>
         <module>Scheduler</module>
+        <module>Async</module>
     </modules>
 
     <dependencies>
