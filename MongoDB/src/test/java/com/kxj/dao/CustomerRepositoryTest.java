@@ -45,7 +45,8 @@ public class CustomerRepositoryTest {
 
         while (true) {
             if (future.isDone()) {
-                Customer customer1 = future.get(); break;
+                Customer customer1 = future.get();
+                break;
             }
         }
     }
