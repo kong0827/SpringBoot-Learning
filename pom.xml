@@ -23,7 +23,7 @@
         <module>GlobalException</module>
         <module>Thymeleaf</module>
         <module>WebMvc</module>
-        <module>autoConfiguration</module>
+        <module>AutoConfiguration</module>
         <module>Cache</module>
         <module>JDBC</module>
         <module>MQ</module>
