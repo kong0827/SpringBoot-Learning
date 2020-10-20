@@ -151,10 +151,48 @@
   git branch -a //查看远程分支
 ```
 
-撤销本地分支与远程分支的映射关系
+- 撤销本地分支与远程分支的映射关系
+
 ```shell
 git branch --unset-upstream
 ```
+- 回到rebase操作之前的状态，之前的提交的不会丢弃 
+
+  ```shell
+  git rebase --abort 
+  ```
+
+-   用于修复冲突，提示开发者，一步一步地有没有解决冲突 
+
+  ```shell
+  git rebase --continue 
+  ```
+
+-  查看最近三次commit 
+
+  ```shell
+  git rebase -i HEAD~3
+  
+  # 进入编辑模式，第一列为操作指令，第二列为commit号，第三列为commit信息。
+  # pick：保留该commit；
+  # reword：保留该commit但是修改commit信息；
+  # edit：保留该commit但是要修改commit内容；
+  # squash：将该commit和前一个commit合并；
+  # fixup：将该commit和前一个commit合并，并不保留该commit的commit信息；
+  # exec：执行shell命令；
+  # drop：删除该commit。
+  ```
+
+-  查看commit信息 
+
+  ```shell
+  git log
+  # 或者使用
+  git rebase -i
+  ```
+
+  
+
 - 在本地创建分支dev并切换到该分支
 ```shell
   git checkout -b dev(本地分支名称) origin/dev(远程分支名称)
