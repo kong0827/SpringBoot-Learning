@@ -1,9 +1,9 @@
 server:
   port: 8902
-
-# 存储在数据库中
-spring:
-    job-store-type: jdbc
-    # 使用jdbc存储时，启动时被初始化
-    jdbc:
-      initialize-schema: always
+logging:
+  level:
+    root: info
+  # logging.path和logging.file只会生效一个
+  path: D:/github/SpringBoot-Learning/Scheduler/src/main/resources
+  # 默认的文件名是：spring.log
+#  file: my.log

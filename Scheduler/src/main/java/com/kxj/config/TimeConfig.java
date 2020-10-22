@@ -17,15 +17,15 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 @Configuration
 public class TimeConfig {
 
-    @Bean
-    public void schedule() {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("TimerTask run" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-            }
-        },1000,5000);//延时1s，之后每隔5s运行一次
-
-    }
+//    @Bean
+//    public void schedule() {
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                System.out.println("TimerTask run" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+//            }
+//        },1000,5000);//延时1s，之后每隔5s运行一次
+//
+//    }
 }
