@@ -34,6 +34,7 @@
         <module>MongoDB</module>
         <module>Scheduler</module>
         <module>Async</module>
+        <module>test</module>
     </modules>
 
     <dependencies>
