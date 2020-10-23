@@ -2,6 +2,7 @@ package com.kxj.web;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * @author kxj
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @desc
  */
 @SpringBootApplication
+@EnableAsync
 public class WebMVCSpringApplication {
     public static void main(String[] args) {
         SpringApplication.run(WebMVCSpringApplication.class, args);
