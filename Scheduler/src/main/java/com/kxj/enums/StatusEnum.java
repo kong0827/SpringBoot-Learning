@@ -9,8 +9,7 @@ import javafx.scene.input.KeyCodeCombination;
 public enum  StatusEnum {
     ENABLED(1),
 
-    DISABLED(2),
-            ;
+    DISABLED(2);
 
     private Integer code;
 
