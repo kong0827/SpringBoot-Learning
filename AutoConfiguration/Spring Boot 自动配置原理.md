@@ -25,7 +25,7 @@ public class AutoConfigurationApplication {
 
 我们进入**@SpringBootApplication**注解中进一步探索自动配置的原理
 
-![1586185500830](https://github.com/kong0827/SpringBoot-Demo/blob/master/AutoConfiguration/src/main/resources/images/1586185500830.png)
+![1586185500830](.src/main/resources/images/1586185500830.png)
 
 我们可以发现这个主要是三个注解
 
@@ -35,7 +35,7 @@ public class AutoConfigurationApplication {
 
 ​	我们点击进入查看这个注解的作用，发现此注解被**Configuration**标注，表明这是一个配置类，是容器中的一个组件；
 
-![1586185846983](https://github.com/kong0827/SpringBoot-Demo/blob/master/AutoConfiguration/src/main/resources/images/1586185846983.png)
+![1586185846983](.src/main/resources/images/1586185846983.png)
 
 #### @ComponentScan
 
@@ -45,15 +45,15 @@ public class AutoConfigurationApplication {
 
 **开启自动配置的功能**，这个注解是自动配置的关键所在。
 
-![1586186406656](https://github.com/kong0827/SpringBoot-Demo/blob/master/AutoConfiguration/src/main/resources/images/1586186406656.png)
+![1586186406656](.src/main/resources/images/1586186406656.png)
 
 - **@AutoConfigurationPackage**
 
-  <img src="https://github.com/kong0827/SpringBoot-Demo/blob/master/AutoConfiguration/src/main/resources/images/1586186652929.png" alt="1586186652929" style="zoom:150%;" />
+  <img src=".src/main/resources/images/1586186652929.png" alt="1586186652929" style="zoom:150%;" />
 
-  ![1586187161934](https://github.com/kong0827/SpringBoot-Demo/blob/master/AutoConfiguration/src/main/resources/images/1586187161934.png)
+  ![1586187161934](.src/main/resources/images/1586187161934.png)
 
-  ![1586187393312](https://github.com/kong0827/SpringBoot-Demo/blob/master/AutoConfiguration/src/main/resources/images/1586187393312.png)
+  ![1586187393312](.src/main/resources/images/1586187393312.png)
 
 
 

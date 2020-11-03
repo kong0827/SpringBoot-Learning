@@ -182,7 +182,7 @@ redis:latest redis-server
    docker inspect 容器ID/容器名
    ```
 
-   ![1587052895139](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587052895139.png)
+   ![1587052895139](./src/main/resources/images/1587052895139.png)
 
 4. 配置从服务
 
@@ -204,7 +204,7 @@ redis:latest redis-server
    info replication
    ```
 
-   ![1587053397739](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587053397739.png)
+   ![1587053397739](./src/main/resources/images/1587053397739.png)
 
 ​     **配置**
 
@@ -222,11 +222,11 @@ config set masterauth master-password
 
 master-redis设值，salve-master会同步更新
 
-![1587053820188](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587053820188.png)
+![1587053820188](./src/main/resources/images/1587053820188.png)
 
 salve-redis只能执行读操作，不能写
 
-![1587053873453](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587053873453.png)
+![1587053873453](./src/main/resources/images/1587053873453.png)
 
 
 
@@ -317,7 +317,7 @@ salve-redis只能执行读操作，不能写
 
   2、设置过期时间为随机值
 
-  ![1587310814435](https://github.com/kong0827/SpringBoot-Demo/blob/master/Cache/src/main/resources/images/1587310814435.png)
+  ![1587310814435](./src/main/resources/images/1587310814435.png)
 
 
 
