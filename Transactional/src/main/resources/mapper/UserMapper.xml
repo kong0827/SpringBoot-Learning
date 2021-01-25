@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kxj.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.kxj.entity.User">
+        <result column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="pass_word" jdbcType="VARCHAR" property="passWord" />
+        <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.kxj.entity.User">
+        insert into user(user_name, pass_word, real_name) values (userName, passWord, realName);
+    </insert>
+
+
+</mapper>
