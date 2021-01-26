@@ -35,6 +35,7 @@
         <module>Scheduler</module>
         <module>Async</module>
         <module>MultiDataSourceJPA</module>
+        <module>Distribute</module>
     </modules>
 
     <dependencies>
