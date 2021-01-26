@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 /**
  * @author xiangjin.kong
  * @date 2021/1/25 18:04
+ * @desc 从数据库配置数据源
  */
 @Configuration
 public class SecondDataSourceConfig {

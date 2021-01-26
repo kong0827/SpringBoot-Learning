@@ -3,9 +3,9 @@ server:
 spring:
   datasource:
     primary:
-      url: jdbc:mysql://127.0.0.1:3306/world?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
-      username: root
-      password: root
+      url: jdbc:mysql://8.133.128.126:3306/spring-boot-demo-1?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
+      username: kongxiangjin
+      password: Kong123456
       driver-class-name: com.mysql.cj.jdbc.Driver
       type: com.zaxxer.hikari.HikariDataSource
       hikari:
@@ -17,9 +17,9 @@ spring:
         max-lifetime: 60000
         connection-timeout: 30000
     second:
-      url: jdbc:mysql://127.0.0.1:3306/world?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
-      username: root
-      password: root
+      url: jdbc:mysql://8.133.128.126:3306/spring-boot-demo-2?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
+      username: kongxiangjin
+      password: Kong123456
       driver-class-name: com.mysql.cj.jdbc.Driver
       type: com.zaxxer.hikari.HikariDataSource
       hikari:
