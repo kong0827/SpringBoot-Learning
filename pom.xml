@@ -36,6 +36,7 @@
         <module>Async</module>
         <module>MultiDataSourceJPA</module>
         <module>Distribute</module>
+        <module>DateSerialization</module>
     </modules>
 
     <dependencies>

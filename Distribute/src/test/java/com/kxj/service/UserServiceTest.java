@@ -25,7 +25,7 @@ public class UserServiceTest {
     @Test
     public void getAll() {
         List<User> list = userService.getAll();
-        list.forEach(e -> System.out.println(e));
+        list.forEach(System.out::println);
     }
 
     @Test
