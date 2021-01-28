@@ -1,0 +1,25 @@
+server:
+  port: 8893
+  servlet:
+    context-path: /demo
+# 若要访问端点信息，需要配置用户名密码
+spring:
+  security:
+    user:
+      name: kongxiangjin
+      password: 123456
+management:
+  # 端点信息接口使用的端口，为了和主系统接口使用的端口分离
+  server:
+    port: 8090
+    servlet:
+      context-path: /sys
+  # 端点健康情况，默认值为never，设置为always可以显示硬盘使用情况和线程情况
+  endpoint:
+    health:
+      show-details: always
+  # 设置端点暴露那些内容，默认为【health, info】, 设置 * 代表暴露所有可访问的端点
+  endpoints:
+    web:
+      exposure:
+        include: '*'
