@@ -6,11 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.scripting.support.ResourceScriptSource;
 
 import java.net.UnknownHostException;
 
@@ -70,6 +74,16 @@ public class RedisConfig {
         template.setConnectionFactory(redisConnectionFactory);
         template.setDefaultSerializer(new JdkSerializationRedisSerializer(Object.class.getClassLoader()));
         return template;
+    }
+
+
+    @Bean
+    @SuppressWarnings("unchecked")
+    public RedisScript<Long> limitRedisScript() {
+        DefaultRedisScript redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("scripts/redis/limit.lua")));
+        redisScript.setResultType(Long.class);
+        return redisScript;
     }
 
 }
