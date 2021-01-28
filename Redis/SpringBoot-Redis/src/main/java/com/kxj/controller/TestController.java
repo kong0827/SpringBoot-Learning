@@ -31,6 +31,7 @@ public class TestController {
     @GetMapping("/test3")
     public Dict test3() {
         log.info("【test3】被执行了。。。。。");
+        log.info("ceshi");
         return Dict.create().set("msg", "hello,world!").set("description", "别想一直看到我，不信你快速刷新看看~");
     }
 }
