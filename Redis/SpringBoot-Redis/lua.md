@@ -1,9 +1,14 @@
-## 分布式系统限流
+
+
+# Redis Lua 
+
+### Redis Lua 分布式系统限流
+
 Spring Boot 项目如何通过 AOP 结合 Redis + Lua 脚本实现分布式限流，旨在保护 API 被恶意频繁访问的问题，是 spring-boot-demo-ratelimit-guava 的升级版。
 
-### 1. 主要代码
+#### 1. 主要代码
 
-#### 1.1. pom.xml
+##### 1.1. pom.xml
 
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -83,7 +88,7 @@ Spring Boot 项目如何通过 AOP 结合 Redis + Lua 脚本实现分布式限�
 </project>
 ```
 
-### 1.2. 限流注解
+##### 1.2. 限流注解
 
 ```
 /**
@@ -128,7 +133,7 @@ public @interface RateLimiter {
 }
 ```
 
-### 1.3. AOP处理限流
+##### 1.3. AOP处理限流
 
 ```
 /**
@@ -208,7 +213,7 @@ public class RateLimiterAspect {
 }
 ```
 
-### 1.4. lua 脚本
+##### 1.4. lua 脚本
 
 ```
 -- 下标从 1 开始
@@ -240,7 +245,7 @@ else
 end
 ```
 
-### 1.5. 接口测试
+##### 1.5. 接口测试
 
 ```
 /**
@@ -277,11 +282,90 @@ public class TestController {
 }
 ```
 
-### 1.6. 其余代码参见 demo
+##### 1.6. 其余代码参见 demo
 
-## 2. 测试
+#### 2. 测试
 
 - 触发限流时控制台打印
 
 - https://segmentfault.com/a/1190000016042927)
+
+
+
+
+
+-----------------------------------
+
+
+
+### Redis Lua 模拟银行账户转账
+
+假设有a,b两个账户，redis中维护着这两个账号及余额
+
+```json
+{
+    "a": "100",
+    "b": "20"
+}
+```
+
+
+
+#### Lua 脚本
+
+这个Lua脚本负责两个账户进行转账
+
+- 这个脚本将被执行包含 两个键 (账户) 和 一个参数 (转账金额)
+- 如果账户余额充足，允许转账
+
+```lua
+-- moneyTransfer.lua
+local account = 'account'
+local fromBalance = tonumber(redis.call('HGET', account, KEYS[1]))
+local toBalance = tonumber(redis.call('HGET'), account, KEYS[2])
+local amount = tonumber(ARGV[1])
+if fromBalance >= amount
+then 
+    redis.call('HSET', account, KEYS[1], fromBalance - amount)
+    redis.call('HSET', account, KEYS[2], toBalance + amount)
+    return true
+else
+    return false
+```
+
+放在src/main/resources/script下
+
+#### 代码
+
+```java
+@Configuration
+public class ScriptConfig {
+    
+    @Bean
+    public RedisScript<Boolean> script() {
+        Resource scriptSource = new ClassPathResource("scripts/moneyTransfer.lua");
+        return RedisScript.of(scriptSource, Boolean.class);
+    }
+}
+```
+
+```java
+@service
+public class MoneyTransferService {
+    
+    @Autowired
+    RedisScript<Boolean> script;
+    
+    @Autowired
+    RedisTemplate<String, String> redisTemplate;
+    
+    public void transfer(String fromAccount, String toAccount, int amount) {
+        redisTemplate.execute(script, List.of(fromAccount, toAccount), String.valueOf(amout))
+    }
+}
+```
+
+
+
+
 

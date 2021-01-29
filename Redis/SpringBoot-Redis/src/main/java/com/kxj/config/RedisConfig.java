@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -83,6 +84,15 @@ public class RedisConfig {
         DefaultRedisScript redisScript = new DefaultRedisScript<>();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("scripts/redis/limit.lua")));
         redisScript.setResultType(Long.class);
+        return redisScript;
+    }
+
+    @Bean
+    public RedisScript<Boolean> script() {
+        Resource scriptSource = new ClassPathResource("scripts/redis/transferMoney.lua");
+        DefaultRedisScript<Boolean> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptSource(new ResourceScriptSource(scriptSource));
+        redisScript.setResultType(Boolean.class);
         return redisScript;
     }
 
