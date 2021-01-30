@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
  * @desc
  */
 @RestController
-
+@Validated
 public class TeacherController {
 
     /**
@@ -28,8 +28,8 @@ public class TeacherController {
      * @param age
      */
     @GetMapping("/teacher")
-    public void getTeacher(@Validated @NotEmpty(message = "用户名不能为空") String username,
-                           @Validated @Min(value = 18, message = "年龄不能小于18岁") Integer age) {
+    public void getTeacher(@NotEmpty(message = "用户名不能为空") String username,
+                           @Min(value = 18, message = "年龄不能小于18岁") Integer age) {
         System.out.println("username:" + username + "    age:" + age);
     }
 

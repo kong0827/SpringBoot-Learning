@@ -27,10 +27,10 @@ public class TimeInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println(((HandlerMethod)handler).getBean().getClass().getName());
+//        System.out.println(((HandlerMethod)handler).getBean().getClass().getName());
         LocalDateTime startTime = LocalDateTime.now();
         request.setAttribute("startTime", startTime);
-        System.out.println("拦截的方法" + ((HandlerMethod)handler).getMethod().getName());
+//        System.out.println("拦截的方法" + ((HandlerMethod)handler).getMethod().getName());
         //
         return true;
 //        return false;

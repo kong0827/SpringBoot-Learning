@@ -33,6 +33,10 @@
         <module>MongoDB</module>
         <module>Scheduler</module>
         <module>Async</module>
+        <module>MultiDataSourceJPA</module>
+        <module>Distribute</module>
+        <module>DateSerialization</module>
+        <module>Actuator</module>
     </modules>
 
     <dependencies>

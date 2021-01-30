@@ -2,6 +2,8 @@
 # 自动配置类都会绑定一个properties 配置文件
 spring:
   redis:
-    host: 39.107.57.111
+    host: 47.102.218.26
     password: root
     port: 6379
+server:
+  port: 8887

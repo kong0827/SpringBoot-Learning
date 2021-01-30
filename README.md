@@ -1,1 +1,1 @@
-springboot集成swagger，mybatis，redis，mybatis等
+Spring Boot tutorial

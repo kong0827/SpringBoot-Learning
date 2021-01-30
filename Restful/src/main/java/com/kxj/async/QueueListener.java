@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
  * @date 2020/3/12 23:30
  * @desc 模拟消息队列的监听器
  */
-@Component
+//@Component
 @Slf4j
 public class QueueListener implements ApplicationListener<ContextRefreshedEvent> {
 
