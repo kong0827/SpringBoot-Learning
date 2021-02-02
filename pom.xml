@@ -37,6 +37,7 @@
         <module>Distribute</module>
         <module>DateSerialization</module>
         <module>Actuator</module>
+        <module>EasyExcel</module>
     </modules>
 
     <dependencies>
