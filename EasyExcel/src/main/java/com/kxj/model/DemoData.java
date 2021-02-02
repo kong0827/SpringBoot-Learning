@@ -1,6 +1,7 @@
 package com.kxj.model;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -21,7 +22,10 @@ public class DemoData {
     @ExcelIgnore
     private Long id;
 
+    @ExcelProperty("字符串标题")
     private String string;
+    @ExcelProperty("日期标题")
     private Date data;
+    @ExcelProperty("数字标题")
     private Double doubleData;
 }
