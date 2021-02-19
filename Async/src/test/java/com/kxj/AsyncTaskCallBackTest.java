@@ -40,7 +40,7 @@ public class AsyncTaskCallBackTest {
             Thread.sleep(1000);
         }
 
-            System.out.println(Duration.between(startTime, LocalDateTime.now()).toMillis());
+        System.out.println(Duration.between(startTime, LocalDateTime.now()).toMillis());
     }
 
 

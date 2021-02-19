@@ -38,6 +38,7 @@
         <module>DateSerialization</module>
         <module>Actuator</module>
         <module>EasyExcel</module>
+        <module>RabbitMQ</module>
     </modules>
 
     <dependencies>
