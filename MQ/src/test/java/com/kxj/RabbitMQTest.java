@@ -75,7 +75,7 @@ public class RabbitMQTest {
     public void testCreateExchange() {
         Exchange exchange = new DirectExchange("direct-exchange-02");
         amqpAdmin.declareExchange(exchange);
-    }
+}
 
     /**
      * 创建队列
