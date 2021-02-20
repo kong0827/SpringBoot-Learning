@@ -24,7 +24,7 @@ public class SecondCacheTest {
     @Before
     public void configuration() {
         SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-        factory = sqlSessionFactoryBuilder.build(SecondCacheTest.class.getResourceAsStream("/mybatis-config.xml"));
+        factory = sqlSessionFactoryBuilder.build(SecondCacheTest.class.getResourceAsStream("/mybatis-com.kxj.config.xml"));
         configuration = factory.getConfiguration();
     }
 

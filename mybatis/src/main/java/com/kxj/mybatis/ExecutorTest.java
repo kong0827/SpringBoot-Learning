@@ -31,7 +31,7 @@ public class ExecutorTest {
         // 获取构建器
         SqlSessionFactoryBuilder factoryBuilder = new SqlSessionFactoryBuilder();
         // 解析XML 并构造会话工厂
-        factory = factoryBuilder.build(ExecutorTest.class.getResourceAsStream("/mybatis-config.xml"));
+        factory = factoryBuilder.build(ExecutorTest.class.getResourceAsStream("/mybatis-com.kxj.config.xml"));
         configuration = factory.getConfiguration();
         jdbcTransaction = new JdbcTransaction(factory.openSession().getConnection());
         // 获取SQL映射

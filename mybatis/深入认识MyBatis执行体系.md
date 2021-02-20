@@ -77,7 +77,7 @@ MyBatis的执行流程如下图（省略了加载配件文件，创建会话工�
 // 获取构建器
 SqlSessionFactoryBuilder factoryBuilder = new SqlSessionFactoryBuilder();
 // 解析XML 并构造会话工厂
-factory = factoryBuilder.build(ExecutorTest.class.getResourceAsStream("/mybatis-config.xml"));
+factory = factoryBuilder.build(ExecutorTest.class.getResourceAsStream("/mybatis-com.kxj.config.xml"));
 // 常见SqlSession
 SqlSession sqlSession = factory.openSession(true);
 // 操作Mapper接口

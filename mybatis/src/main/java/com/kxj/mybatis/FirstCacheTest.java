@@ -23,7 +23,7 @@ public class FirstCacheTest {
     public void init() {
         // 获取构建器
         SqlSessionFactoryBuilder sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
-        sqlSessionFactory = sqlSessionFactoryBuilder.build(FirstCacheTest.class.getResourceAsStream("/mybatis-config.xml"));
+        sqlSessionFactory = sqlSessionFactoryBuilder.build(FirstCacheTest.class.getResourceAsStream("/mybatis-com.kxj.config.xml"));
         sqlSession = sqlSessionFactory.openSession();
     }
 

@@ -3,26 +3,21 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>springboot</artifactId>
+        <artifactId>RabbitMQ</artifactId>
         <groupId>com.kxj</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>RabbitMQ</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>spring-boot-rabbitmq-01-direct</module>
-        <module>spring-boot-rabbitmq-02-topic</module>
-    </modules>
-
+    <artifactId>spring-boot-rabbitmq-02-topic</artifactId>
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
+            <groupId>com.kxj</groupId>
+            <artifactId>spring-boot-rabbitmq-01-direct</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
-
-
     </dependencies>
+
 
 </project>

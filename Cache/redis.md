@@ -163,14 +163,14 @@ redis:latest redis-server
 1. 复制一份redis.conf的文件
 
    ```shell
-   mv redis.conf redis-salve-1.config
+   mv redis.conf redis-salve-1.com.kxj.config
    ```
 
 2. 启动容器
 
    ```shell
    docker run -d -p 6380:6379 --name salve-redis
-   -v /root/redis/redis.conf:/etc/redis/redis-salve-1.config
+   -v /root/redis/redis.conf:/etc/redis/redis-salve-1.com.kxj.config
    redis:latest redis-server 
    /etc/redis/redis.conf
    --appendonly yes
@@ -215,7 +215,7 @@ slaveof master-redis-IP master-redis-port
 ​	如果master-redis设置了密码
 
 ```shell
-config set masterauth master-password
+com.kxj.config set masterauth master-password
 ```
 
 #### 测试

@@ -723,18 +723,18 @@ dir ./  # rdb 文件保存的目录！
 ```shell
 127 .0.0.1:6379> ping
 PONG
-127 .0.0.1:6379> config get requirepass # 获取redis的密码
+127 .0.0.1:6379> com.kxj.config get requirepass # 获取redis的密码
 1 ) "requirepass"
 2 ) ""
-127 .0.0.1:6379> config set requirepass "123456" # 设置redis的密码
+127 .0.0.1:6379> com.kxj.config set requirepass "123456" # 设置redis的密码
 OK
-127 .0.0.1:6379> config get requirepass # 发现所有的命令都没有权限了
+127 .0.0.1:6379> com.kxj.config get requirepass # 发现所有的命令都没有权限了
 (error) NOAUTH Authentication required.
 127 .0.0.1:6379> ping
 (error) NOAUTH Authentication required.
 127 .0.0.1:6379> auth 123456 # 使用密码进行登录！
 OK
-127 .0.0.1:6379> config get requirepass
+127 .0.0.1:6379> com.kxj.config get requirepass
 1 ) "requirepass"
 2 ) "123456"
 ```
@@ -800,7 +800,7 @@ rdb保存的文件是dump.rdb 都是在我们的配置文件中快照中进行�
 2、查看需要存在的位置 
 
 ```shell
-127.0.0.1:6379> config get dir 
+127.0.0.1:6379> com.kxj.config get dir 
 1) "dir" 
 2) "/usr/local/bin" # 如果在这个目录下存在 dump.rdb 文件，启动就会自动恢复其中的数据
 ```

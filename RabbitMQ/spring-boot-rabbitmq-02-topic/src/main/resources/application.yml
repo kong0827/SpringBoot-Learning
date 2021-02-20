@@ -1,0 +1,13 @@
+server:
+  port: 8897
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    # 手动确认消息
+#    listener:
+#      simple:
+#        acknowledge-mode: manual
