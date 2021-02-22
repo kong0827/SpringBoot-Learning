@@ -14,6 +14,7 @@
     <modules>
         <module>spring-boot-rabbitmq-01-direct</module>
         <module>spring-boot-rabbitmq-02-topic</module>
+        <module>spring-boot-rabbitmq</module>
     </modules>
 
     <dependencies>

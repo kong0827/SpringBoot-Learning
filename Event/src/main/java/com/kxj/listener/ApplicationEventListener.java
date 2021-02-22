@@ -2,7 +2,6 @@ package com.kxj.listener;
 
 import org.springframework.boot.context.event.*;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**

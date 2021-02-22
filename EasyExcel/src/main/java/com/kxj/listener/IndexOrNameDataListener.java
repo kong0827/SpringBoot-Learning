@@ -3,9 +3,7 @@ package com.kxj.listener;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.fastjson.JSON;
-import com.kxj.dao.DemoDao;
 import com.kxj.dao.IndexOrNameDemoDao;
-import com.kxj.model.DemoData;
 import com.kxj.model.IndexOrNameData;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,5 +1,4 @@
 import com.kxj.EventApplication;
-import com.kxj.listener.ApplicationEventListener;
 import com.kxj.publisher.ApplicationEventPublisher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
