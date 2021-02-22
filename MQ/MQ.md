@@ -27,7 +27,7 @@
 
 所有 MQ 产品从模型抽象上来说都是一样的过程：
 
-消费者(consumer)订阅某个队列。生产者(producer)创建消息，然后发布到队列(queue)中，最后将消息发送到监听的消费者
+消费者(consumer)订阅某个队列。生产者(com.kxj.producer)创建消息，然后发布到队列(queue)中，最后将消息发送到监听的消费者
 
  ![img](./src/main/resources/images/1579252955@f30eb4120b8a37bcc322f9341b83424b.png) 
 

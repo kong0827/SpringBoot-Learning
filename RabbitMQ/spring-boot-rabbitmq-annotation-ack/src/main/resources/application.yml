@@ -1,0 +1,24 @@
+server:
+  port: 8893
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        # 手动ack, 默认为auto
+        acknowledge-mode: manual
+log:
+  exchange: log.exchange
+  info:
+    queue: info.log.queue
+    binding-key: info.log.key
+  error:
+    queue: error.log.queue
+    binding-key: error.log.key
+  all:
+    queue: all.log.queue
+    binding-key: '*.log.key'

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>spring-boot-rabbitmq</artifactId>
+    <artifactId>spring-boot-rabbitmq-annotation</artifactId>
 
 
 </project>
