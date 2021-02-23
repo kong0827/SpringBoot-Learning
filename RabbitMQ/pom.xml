@@ -16,6 +16,7 @@
         <module>spring-boot-rabbitmq-02-topic</module>
         <module>spring-boot-rabbitmq-annotation</module>
         <module>spring-boot-rabbitmq-annotation-ack</module>
+        <module>spring-boot-rabbitmq-config</module>
     </modules>
 
     <dependencies>

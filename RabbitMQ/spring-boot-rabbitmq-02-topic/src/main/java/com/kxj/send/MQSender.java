@@ -1,7 +1,7 @@
 package com.kxj.send;
 
 
-import com.kxj.config.RabbitMqConfig;
+import com.kxj.RabbitMqConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;

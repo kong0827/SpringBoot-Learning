@@ -1,6 +1,6 @@
 package com.kxj.receive;
 
-import com.kxj.config.RabbitMqConfig;
+import com.kxj.RabbitMqConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;

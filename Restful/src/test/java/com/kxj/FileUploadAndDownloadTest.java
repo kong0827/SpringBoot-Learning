@@ -1,6 +1,5 @@
 package com.kxj;
 
-import com.kxj.config.WebMVCInterceptorConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
