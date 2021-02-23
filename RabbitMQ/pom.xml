@@ -17,6 +17,7 @@
         <module>spring-boot-rabbitmq-annotation</module>
         <module>spring-boot-rabbitmq-annotation-ack</module>
         <module>spring-boot-rabbitmq-config</module>
+        <module>spring-boot-rabbitmq-delay-queue</module>
     </modules>
 
     <dependencies>
