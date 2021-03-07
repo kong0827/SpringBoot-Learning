@@ -22,6 +22,7 @@
         <module>02-work-queue</module>
         <module>03-pub-sub</module>
         <module>04-direct</module>
+        <module>05-topics</module>
     </modules>
 
     <dependencies>

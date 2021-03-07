@@ -524,19 +524,134 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
      
      ```
 
-     
+   **小结**
+
+   ​	Routing模式要求队列在绑定交换机时要指定routing key，消息会转发到符合routing key的队列。
 
 
 
+#### topics
+
+![img](https://www.rabbitmq.com/img/tutorials/python-five.png)
+
+`Topic`类型与`Direct`相比，都是可以根据`RoutingKey`把消息路由到不同的队列。只不过`Topic`类型`Exchange`可以让队列在绑定`Routing key` 的时候**使用通配符**！
 
 
 
+`Routingkey` 一般都是有一个或多个单词组成，多个单词之间以”.”分割，例如： `item.insert`
+
+ 通配符规则：
+
+`#`：匹配一个或多个词
+
+`*`：匹配不多不少恰好1个词
+
+举例：
+
+`item.#`：能够匹配`item.insert.abc` 或者 `item.insert`
+
+`item.*`：只能匹配`item.insert`
 
 
 
+**生产者**
+
+```java
+public class producer {
+
+    private final static String TOPIC_QUEUE_1 = "topic-queue-1";
+    private final static String TOPIC_QUEUE_2 = "topic-queue-2";
+    private static final String TOPIC_EXCHANGE = "topic-exchange";
+
+    public static void main(String[] args) {
+
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("47.102.218.26");
+        connectionFactory.setPort(5672);
+        try (Connection connection = connectionFactory.newConnection()) {
+            Channel channel = connection.createChannel();
+
+            channel.exchangeDeclare(TOPIC_EXCHANGE, BuiltinExchangeType.TOPIC, true, false, false, null);
+
+            channel.queueDeclare(TOPIC_QUEUE_1, true, false, false, null);
+            channel.queueDeclare(TOPIC_QUEUE_2, true, false, false, null);
+
+            // 绑定交换机和队列，根据路由
+            channel.queueBind(TOPIC_QUEUE_1, TOPIC_EXCHANGE, "*.orange.*");
+            channel.queueBind(TOPIC_QUEUE_1, TOPIC_EXCHANGE, "lazy.*");
+            channel.queueBind(TOPIC_QUEUE_2, TOPIC_EXCHANGE, "*.*.rabbit");
+            channel.queueBind(TOPIC_QUEUE_2, TOPIC_EXCHANGE, "lazy.#");
+
+            // 发送消息
+            channel.basicPublish(TOPIC_EXCHANGE, "fruit.orange.weight", null, "*.orange.*".getBytes());
+            channel.basicPublish(TOPIC_EXCHANGE, "user.info.rabbit", null, "*.*.rabbit".getBytes());
+            channel.basicPublish(TOPIC_EXCHANGE, "lazy.rabbit", null, "lazy.# / lazy.*".getBytes());
+            channel.close();
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+```
 
 
 
+**消费者**
+
+```java
+public class consumer01 {
+    private final static String TOPIC_QUEUE_1 = "topic-queue-1";
+
+    public static void main(String[] args) throws Exception {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("47.102.218.26");
+        factory.setPort(5672);
+
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.queueDeclare(TOPIC_QUEUE_1, true, false, false, null);
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println(" message: " + message + "'");
+        };
+        channel.basicConsume(TOPIC_QUEUE_1, true, deliverCallback, consumerTag -> {
+        });
+
+    }
+}
+
+public class consumer02 {
+    private final static String TOPIC_QUEUE_2 = "topic-queue-2";
+
+    public static void main(String[] args) throws Exception {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("47.102.218.26");
+        factory.setPort(5672);
+
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.queueDeclare(TOPIC_QUEUE_2, true, false, false, null);
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println(" message: " + message + "'");
+        };
+        channel.basicConsume(TOPIC_QUEUE_2, true, deliverCallback, consumerTag -> {
+        });
+
+    }
+}
+```
+
+
+
+**小结**
+
+Topic主题模式可以实现 `Publish/Subscribe发布与订阅模式` 和 ` Routing路由模式` 的功能；只是Topic在配置routing key 的时候可以使用通配符，显得更加灵活
 
 
 
