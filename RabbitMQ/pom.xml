@@ -18,7 +18,9 @@
         <module>spring-boot-rabbitmq-annotation-ack</module>
         <module>spring-boot-rabbitmq-config</module>
         <module>spring-boot-rabbitmq-delay-queue</module>
-        <module>direct</module>
+        <module>01-hello-world</module>
+        <module>02-work-queue</module>
+        <module>03-pub-sub</module>
     </modules>
 
     <dependencies>

@@ -197,21 +197,131 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
   }
   ```
 
-  
 
 
 
+### 入门案例
+
+#### hello world
+
+1. 引入依赖
+
+   ```xml
+   <dependency>
+       <groupId>com.rabbitmq</groupId>
+       <artifactId>amqp-client</artifactId>
+   </dependency>
+   ```
+
+2. 生产者
+
+   ```java
+   public class producer {
+   
+       private static final String QUEUE_NAME = "hello";
+   
+       public static void main(String[] args) {
+           ConnectionFactory connectionFactory = new ConnectionFactory();
+           connectionFactory.setHost("47.102.218.26");
+           connectionFactory.setPort(5672);
+           try (Connection connection = connectionFactory.newConnection()) {
+               Channel channel = connection.createChannel();
+               /**
+                *
+                * queueDeclare(String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> arguments)
+                *
+                * queue：队列名称
+                * durable：是否持久化，当mq重启后，消息还在
+                * exclusive：
+                *      1、是否独占，只能有一个消费者监听这队列
+                *      2、当Connection关闭时，是否删除队列
+                * autoDelete：是否自动删除。当没有Consumer时，自动删除掉
+                * arguments：参数
+                */
+   
+               channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+               // 使用默认的交换器，路由键需要设置队列名
+               channel.basicPublish("", QUEUE_NAME, null, "hello world".getBytes());
+               channel.close();
+           } catch (IOException | TimeoutException e) {
+               e.printStackTrace();
+           }
+   
+       }
+   }
+   ```
+
+3. 消费者
+
+   ```java
+   public class consumer {
+   
+       private final static String QUEUE_NAME = "hello";
+   
+       public static void main(String[] args) throws IOException, TimeoutException {
+           ConnectionFactory factory = new ConnectionFactory();
+           factory.setHost("47.102.218.26");
+           factory.setPort(5672);
+   
+           Connection connection = factory.newConnection();
+           Channel channel = connection.createChannel();
+   
+           /**
+            * 注意
+            * Rabbitmq服务通道是持久通道,该queue 已经存在, 而且通道属性需要保持一致
+            */
+           channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+   
+   //        DefaultConsumer consumer = new DefaultConsumer(channel) {
+   //            /**
+   //             *
+   //             * @param consumerTag 标识
+   //             * @param envelope 获取的一些信息 包括交换机 路由
+   //             * @param properties 配置信息
+   //             * @param body 数据
+   //             * @throws IOException
+   //             */
+   //            @Override
+   //            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+   //                System.out.println("consumerTag:" + consumerTag);
+   //                System.out.println("envelope:" + envelope);
+   //                System.out.println("properties:" + properties);
+   //                System.out.println("message:" + new String(body));
+   //            }
+   //        };
+   //        channel.basicConsume(QUEUE_NAME, true, consumer);
+   
+           DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+               String message = new String(delivery.getBody(), "UTF-8");
+               System.out.println(" message: " + message + "'");
+           };
+           /**
+            * 启动一个消费者，并返回服务端生成的消费者标识
+            * queue:队列名
+            * autoAck：true 接收到传递过来的消息后acknowledged（应答服务器），false 接收到消息后不应答服务器
+            * deliverCallback： 当一个消息发送过来后的回调接口
+            * cancelCallback：当一个消费者取消订阅时的回调接口;取消消费者订阅队列时除了使用{@link Channel#basicCancel}之外的所有方式都会调用该回调方法
+            * @return 服务端生成的消费者标识
+            */
+           channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+           });
+   
+       }
+   }
+   ```
+
+#### work queue
+
+![img](https://www.rabbitmq.com/img/tutorials/python-two.png)
+
+**应用场景**：对于 任务过重或任务较多情况使用工作队列可以提高任务处理的速度
+
+生产者同`hello wolrd`生产者代码
+
+消费者同`hello wolrd`消费者代码，并复制一份
+
+在一个队列中如果有多个消费者，那么消费者之间对于同一个消息的关系是**竞争**的关系
 
 
 
-
-## ActiveMQ
-
-### 安装
-
-```安装
-docker search activemq
-docker pull webcenter/activemq
-docker run -d --name activemq -p 61616:61616 -p 8161:8161 webcenter/activemq:latest
-```
-
+#### pub/sub 订阅模式
