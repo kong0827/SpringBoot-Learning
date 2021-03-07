@@ -204,6 +204,8 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
 
 #### hello world
 
+![img](https://www.rabbitmq.com/img/tutorials/python-one-overall.png)
+
 1. 引入依赖
 
    ```xml
@@ -321,6 +323,94 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
 消费者同`hello wolrd`消费者代码，并复制一份
 
 在一个队列中如果有多个消费者，那么消费者之间对于同一个消息的关系是**竞争**的关系
+
+
+
+**生产者**
+
+```java
+ConnectionFactory connectionFactory = new ConnectionFactory();
+connectionFactory.setHost("47.102.218.26");
+connectionFactory.setPort(5672);
+try (Connection connection = connectionFactory.newConnection()) {
+    Channel channel = connection.createChannel();
+    /**
+     *
+     * queueDeclare(String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String, Object> arguments)
+     *
+     * queue：队列名称
+     * durable：是否持久化，当mq重启后，消息还在
+     * exclusive：
+     *      1、是否独占，只能有一个消费者监听这队列
+     *      2、当Connection关闭时，是否删除队列
+     * autoDelete：是否自动删除。当没有Consumer时，自动删除掉
+     * arguments：参数
+     */
+
+    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+    // 使用默认的交换器，路由键需要设置队列名
+    for (int i = 0; i < 10; i++) {
+        channel.basicPublish("", QUEUE_NAME, null, (i+"hello world").getBytes());
+    }
+    channel.close();
+} catch (IOException | TimeoutException e) {
+    e.printStackTrace();
+}
+```
+
+
+
+**消费者**
+
+```java
+public class consumer01 {
+
+    private final static String QUEUE_NAME = "hello";
+
+    public static void main(String[] args) throws IOException, TimeoutException {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("47.102.218.26");
+        factory.setPort(5672);
+
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println(" message: " + message + "'");
+        };
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+        });
+
+    }
+}
+
+public class consumer02 {
+
+    private final static String QUEUE_NAME = "hello";
+
+    public static void main(String[] args) throws IOException, TimeoutException {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("47.102.218.26");
+        factory.setPort(5672);
+
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println(" message: " + message + "'");
+        };
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> {
+        });
+
+    }
+}
+
+```
 
 
 
