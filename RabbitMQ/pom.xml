@@ -21,6 +21,7 @@
         <module>01-hello-world</module>
         <module>02-work-queue</module>
         <module>03-pub-sub</module>
+        <module>04-direct</module>
     </modules>
 
     <dependencies>

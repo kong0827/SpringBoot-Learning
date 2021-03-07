@@ -401,3 +401,176 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
 2、发布/订阅模式的生产方是面向交换机发送消息，工作队列模式的生产方是面向队列发送消息(底层使用默认交换机)。
 
 3、发布/订阅模式需要设置队列和交换机的绑定，工作队列模式不需要设置，实际上工作队列模式会将队列绑 定到默认的交换机 
+
+
+
+#### routing
+
+![img](https://www.rabbitmq.com/img/tutorials/python-four.png)
+
+
+
+- P：生产者，向Exchange发送消息，发送消息时，会指定一个routing key。
+
+- X：Exchange（交换机），接收生产者的消息，然后把消息递交给 与routing key完全匹配的队列
+
+- C1：消费者，其所在队列指定了需要routing key 为 error 的消息
+
+- C2：消费者，其所在队列指定了需要routing key 为 info、error、warning 的消息
+
+  
+
+路由模式特点：
+
+- 队列与交换机的绑定，不能是任意绑定了，而是要指定一个`RoutingKey`（路由key）
+- 消息的发送方在 向 Exchange发送消息时，也必须指定消息的 `RoutingKey`。
+- Exchange不再把消息交给每一个绑定的队列，而是根据消息的`Routing Key`进行判断，只有队列的`Routingkey`与消息的 `Routing key`完全一致，才会接收到消息
+
+
+
+交换机的类型为：Direct，还有队列绑定交换机的时候需要指定routing key。
+
+1. **生产者**
+
+   ```java
+   private final static String DIRECT_QUEUE_1 = "direct-queue-1";
+   private final static String DIRECT_QUEUE_2 = "direct-queue-2";
+   private static final String DIRECT_EXCHANGE = "direct-exchange";
+   
+   public static void main(String[] args) {
+   
+       ConnectionFactory connectionFactory = new ConnectionFactory();
+       connectionFactory.setHost("47.102.218.26");
+       connectionFactory.setPort(5672);
+       try (Connection connection = connectionFactory.newConnection()) {
+           Channel channel = connection.createChannel();
+   
+           channel.exchangeDeclare(DIRECT_EXCHANGE, BuiltinExchangeType.DIRECT, true, false, false, null);
+   
+           channel.queueDeclare(DIRECT_QUEUE_1, true, false, false, null);
+           channel.queueDeclare(DIRECT_QUEUE_2, true, false, false, null);
+   
+           // 绑定交换机和队列，根据路由
+           channel.queueBind(DIRECT_QUEUE_1, DIRECT_EXCHANGE, "error");
+           channel.queueBind(DIRECT_QUEUE_2, DIRECT_EXCHANGE, "warning");
+           channel.queueBind(DIRECT_QUEUE_2, DIRECT_EXCHANGE, "info");
+           channel.queueBind(DIRECT_QUEUE_2, DIRECT_EXCHANGE, "error");
+   
+           // 发送消息
+           channel.basicPublish(DIRECT_EXCHANGE, "error", null, "error 级别".getBytes());
+           channel.basicPublish(DIRECT_EXCHANGE, "info", null, "info 级别".getBytes());
+           channel.close();
+       } catch (IOException | TimeoutException e) {
+           e.printStackTrace();
+       }
+   }
+   ```
+
+   
+
+2. **消费者**
+
+   - 消费者1
+
+     ```java
+     public class consumer01 {
+         private final static String FANOUT_QUEUE_1 = "direct-queue-1";
+     
+         public static void main(String[] args) throws Exception {
+             ConnectionFactory factory = new ConnectionFactory();
+             factory.setHost("47.102.218.26");
+             factory.setPort(5672);
+     
+             Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel();
+     
+             channel.queueDeclare(FANOUT_QUEUE_1, true, false, false, null);
+     
+             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                 String message = new String(delivery.getBody(), "UTF-8");
+                 System.out.println(" message: " + message + "'");
+             };
+             channel.basicConsume(FANOUT_QUEUE_1, true, deliverCallback, consumerTag -> {
+             });
+     
+         }
+     }
+     ```
+
+   - 消费者2
+
+     ```java
+     public class consumer02 {
+         private final static String FANOUT_QUEUE_2 = "direct-queue-2";
+     
+         public static void main(String[] args) throws Exception {
+             ConnectionFactory factory = new ConnectionFactory();
+             factory.setHost("47.102.218.26");
+             factory.setPort(5672);
+     
+             Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel();
+     
+             channel.queueDeclare(FANOUT_QUEUE_2, true, false, false, null);
+     
+             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                 String message = new String(delivery.getBody(), "UTF-8");
+                 System.out.println(" message: " + message + "'");
+             };
+             channel.basicConsume(FANOUT_QUEUE_2, true, deliverCallback, consumerTag -> {
+             });
+         }
+     }
+     
+     ```
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
