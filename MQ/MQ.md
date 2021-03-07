@@ -325,3 +325,79 @@ RabbitMQ 服务器，拥有自己的队列、交换器、绑定和权限机制�
 
 
 #### pub/sub 订阅模式
+
+![img](https://www.rabbitmq.com/img/tutorials/exchanges.png)
+
+发布订阅模式：
+1、每个消费者监听自己的队列。
+2、生产者将消息发给broker，由交换机将消息转发到绑定此交换机的每个队列，每个绑定交换机的队列都将接收
+到消息
+
+
+
+1. ##### 生产者
+
+   ```java
+   private final static String FANOUT_QUEUE_1 = "fanout-queue-1";
+   private final static String FANOUT_QUEUE_2 = "fanout-queue-2";
+   private static final String FANOUT_EXCHANGE = "fanout-exchange";
+   
+   public static void main(String[] args) {
+       ConnectionFactory connectionFactory = new ConnectionFactory();
+       connectionFactory.setHost("47.102.218.26");
+       connectionFactory.setPort(5672);
+       try (Connection connection = connectionFactory.newConnection()) {
+           Channel channel = connection.createChannel();
+   
+           /**
+                * 声明交换机
+                * exchangeDeclare(String exchange,BuiltinExchangeType type,boolean durable,boolean autoDelete,boolean internal,Map<String, Object> arguments)
+                * exchange：交换机名称
+                * type：交换机类型
+                * durable：是否持久化
+                * autoDelete：是否自动删除
+                * internal：设置是否是RabbitMQ内部使用，默认false。如果设置为 true ，则表示是内置的交换器，客户端程序无法直接发送消息到这个交换器中，只能通过交换器路由到交换器这种方式
+                * arguments：扩展参数，用于扩展AMQP协议自制定化使用
+                */
+           channel.exchangeDeclare(FANOUT_EXCHANGE, BuiltinExchangeType.FANOUT, true, false, false, null);
+   
+           // 设置交换机和队列的绑定
+           channel.queueDeclare(FANOUT_QUEUE_1, true, false, false, null);
+           channel.queueDeclare(FANOUT_QUEUE_2, true, false, false, null);
+   
+           /**
+                * queueBind(String queue, String exchange, String routingKey)
+                *
+                * 1、queue：队列名称
+                * 2、exchange：交换机名称
+                * 3、routingKey：路由 fanout 路由设置为空字符转即可
+                */
+           channel.queueBind(FANOUT_QUEUE_1, FANOUT_EXCHANGE, "");
+           channel.queueBind(FANOUT_QUEUE_2, FANOUT_EXCHANGE, "");
+   
+           // 发送消息
+           channel.basicPublish(FANOUT_EXCHANGE, "", null, "hello topic".getBytes());
+           channel.close();
+       } catch (IOException | TimeoutException e) {
+           e.printStackTrace();
+       }
+   }
+   ```
+
+2. 消费者同`hello world`消费者，修改监听队列名即可
+
+   
+
+**小结**
+
+交换机需要与队列进行绑定，绑定之后；一个消息可以被多个消费者都收到。
+
+
+
+**发布订阅模式与工作队列模式的区别**
+
+1、工作队列模式不用定义交换机，而发布/订阅模式需要定义交换机。 
+
+2、发布/订阅模式的生产方是面向交换机发送消息，工作队列模式的生产方是面向队列发送消息(底层使用默认交换机)。
+
+3、发布/订阅模式需要设置队列和交换机的绑定，工作队列模式不需要设置，实际上工作队列模式会将队列绑 定到默认的交换机 
