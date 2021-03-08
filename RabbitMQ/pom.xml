@@ -23,6 +23,8 @@
         <module>03-pub-sub</module>
         <module>04-direct</module>
         <module>05-topics</module>
+        <module>06-spring-boot-rabbitmq-producer</module>
+        <module>06-spring-boot-rabbitmq-consumer</module>
     </modules>
 
     <dependencies>
