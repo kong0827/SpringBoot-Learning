@@ -753,15 +753,155 @@ Topic主题模式可以实现 `Publish/Subscribe发布与订阅模式` 和 ` Rou
 
 
 
+**生产者工程：**
+
+1. application.yml文件配置RabbitMQ相关信息；
+2. 在生产者工程中编写配置类，用于创建交换机和队列，并进行绑定
+
+3. 注入RabbitTemplate对象，通过RabbitTemplate对象发送消息到交换机
 
 
 
+**消费者工程：**
+
+1. application.yml文件配置RabbitMQ相关信息
+2. 创建消息处理类，用于接收队列中的消息并进行处理
 
 
 
+### 生产者
 
+1. 添加依赖
 
+   ```xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-amqp</artifactId>
+   </dependency>
+   ```
 
+2. 启动类
+
+   ```java
+   @SpringBootApplication
+   public class ProducerApplication {
+   
+       public static void main(String[] args) {
+           SpringApplication.run(ProducerApplication.class, args);
+       }
+   }
+   ```
+
+3. 配置文件
+
+   ```yml
+   server:
+     port: 8894
+   spring:
+     rabbitmq:
+       host: 47.102.218.26
+       port: 5672
+       username: guest
+       password: guest
+       virtual-host: /
+   ```
+
+4. 绑定交换机和队列
+
+   ```java
+   @Configuration
+   public class TopicConfig {
+   
+       public static final String SPRING_BOOT_QUEUE = "spring-boot-queue";
+       public static final String SPRING_BOOT_EXCHANGE = "spring-boot-exchange";
+   
+       /**
+        * 1、定义交换机
+        * 2、定义队列
+        * 3、定义队列和交换机的绑定
+        */
+   
+       @Bean
+       public Exchange exchange() {
+           return ExchangeBuilder.topicExchange(SPRING_BOOT_EXCHANGE).build();
+       }
+   
+       @Bean
+       public Queue queue() {
+           return QueueBuilder.durable(SPRING_BOOT_QUEUE).build();
+       }
+   
+       @Bean
+       public Binding binding(@Qualifier(value = "exchange") Exchange exchange, @Qualifier(value = "queue") Queue queue) {
+           return BindingBuilder.bind(queue).to(exchange).with("#.user").noargs();
+       }
+   }
+   ```
+
+5. 发送消息
+
+   ```java
+   @Autowired
+       RabbitTemplate rabbitTemplate;
+   
+       public void producer() {
+           rabbitTemplate.convertAndSend(TopicConfig.SPRING_BOOT_EXCHANGE, "kxj.user", "hello rabbitmq");
+       }
+   ```
+
+   
+
+### 消费者
+
+1. 添加依赖
+
+   ```xml
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-amqp</artifactId>
+   </dependency>
+   ```
+
+2. 启动类
+
+   ```java
+   @SpringBootApplication
+   public class ConsumerApplication {
+   
+       public static void main(String[] args) {
+           SpringApplication.run(ConsumerApplication.class, args);
+       }
+   }
+   ```
+
+3. 配置文件
+
+   ```yml
+   server:
+     port: 8895
+   spring:
+     rabbitmq:
+       host: 47.102.218.26
+       port: 5672
+       username: guest
+       password: guest
+       virtual-host: /
+   ```
+
+4. 消息监听类
+
+   ```java
+   @Component
+   public class TopicConsumer {
+   
+       @RabbitListener(queues = "spring-boot-queue")
+       public void listener(Message message) {
+           System.out.println(message);
+       }
+   }
+   ```
+
+   
 
 
 
