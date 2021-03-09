@@ -54,6 +54,10 @@ public class producer {
 
             // 发送消息
             channel.basicPublish(FANOUT_EXCHANGE, "", null, "hello topic".getBytes());
+            /**
+             * 即使指定任意路由 也会发送到绑定的队列
+             */
+            channel.basicPublish(FANOUT_EXCHANGE, "", null, "hello topic".getBytes());
             channel.close();
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();

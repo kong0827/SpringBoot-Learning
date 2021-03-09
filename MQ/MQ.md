@@ -467,6 +467,10 @@ public class consumer02 {
    
            // 发送消息
            channel.basicPublish(FANOUT_EXCHANGE, "", null, "hello topic".getBytes());
+           /**
+             * 即使指定任意路由 也会发送到绑定的队列
+             */
+           channel.basicPublish(FANOUT_EXCHANGE, "", null, "hello topic".getBytes());
            channel.close();
        } catch (IOException | TimeoutException e) {
            e.printStackTrace();
@@ -481,6 +485,8 @@ public class consumer02 {
 **小结**
 
 交换机需要与队列进行绑定，绑定之后；一个消息可以被多个消费者都收到。
+
+**fanoutExchange 路由设置为空字符串或者设置任意字符串，发送消息时即使指定了路由，也不会生效，会发到绑定的队列中**
 
 
 
@@ -749,7 +755,7 @@ Topic主题模式可以实现 `Publish/Subscribe发布与订阅模式` 和 ` Rou
 
 
 
-## `Spring Boot` 整合 `RabbitMQ`
+## Spring Boot整合 RabbitMQ
 
 
 
@@ -903,9 +909,31 @@ Topic主题模式可以实现 `Publish/Subscribe发布与订阅模式` 和 ` Rou
 
    
 
+### RabbitMQ 自动配置
 
 
 
+
+
+### 消息的可靠投递
+
+https://blog.csdn.net/pan_junbiao/article/details/112956537
+
+https://blog.csdn.net/qq_40869428/article/details/113867406
+
+https://my.oschina.net/xiaominmin/blog/4503811
+
+
+
+### 发布者确认模式 批量确认
+
+### 发布者确认模式 异步监听
+
+
+
+### 延迟队列
+
+在rabbitmq 3.5.7及以上的版本提供了一个插件（rabbitmq-delayed-message-exchange）来实现延迟队列功能。同时插件依赖Erlang/OPT 18.0及以上
 
 
 
