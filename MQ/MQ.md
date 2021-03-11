@@ -927,6 +927,86 @@ https://my.oschina.net/xiaominmin/blog/4503811
 
 ### 发布者确认模式 批量确认
 
+rabbitmq 整个消息投递的路径为：
+**producer--->rabbitmq broker--->exchange--->queue--->consumer**
+**消息从 producer 到 exchange 则会返回一个 confirmCallback **
+**消息从 exchange-->queue 投递失败则会返回一个 returnCallback **
+
+**RabitMQ配置**
+
+```java
+@Configuration
+public class RabbitMQConfig {
+
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+                                         @Qualifier("confirmCallback") ConfirmCallback confirmCallback,
+                                         @Qualifier("returnCallback") ReturnCallback returnCallback) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setConfirmCallback(confirmCallback);
+        rabbitTemplate.setReturnCallback(returnCallback);
+        // 设置交换机处理消息的模式 要想使 returnCallback 生效，必须设置为true
+        rabbitTemplate.setMandatory(true);
+        return rabbitTemplate;
+    }
+
+    @Bean
+    public Exchange exchange() {
+        return ExchangeBuilder.topicExchange("exchange-7").durable(true).build();
+    }
+
+    @Bean
+    public Queue queue() {
+        return QueueBuilder.durable("queue-7").build();
+    }
+
+    @Bean
+    public Binding binding(@Qualifier("exchange") Exchange exchange, @Qualifier("queue") Queue queue) {
+        return BindingBuilder.bind(queue).to(exchange).with("test").noargs();
+    }
+
+}
+
+```
+
+**confirm 确认模式**
+
+```java
+@Component
+public class ConfirmCallback implements RabbitTemplate.ConfirmCallback {
+    @Override
+    public void confirm(CorrelationData correlationData, boolean ack, String cause) {
+        if (ack) {
+            System.out.println("传递消息到交换机成功");
+        } else {
+            System.out.println("传递消息到交换机失败");
+        }
+    }
+}
+
+```
+
+**return 退回模式**
+
+```java 
+@Component
+public class ReturnCallback implements RabbitTemplate.ReturnCallback {
+    @Override
+    public void returnedMessage(Message message, int replyCode, String replyText, String exchange, String routingKey) {
+        String msg = new String(message.getBody());
+        System.out.println(String.format("消息{%s}不能被正确路由，routingKey为{%s}", msg, routingKey));
+    }
+}
+```
+
+**总结**
+
+- 设置ConnectionFactory的publisher-confirms="true" 开启 确认模式。
+- 使用rabbitTemplate.setConfirmCallback设置回调函数。当消息发送到exchange后回调confirm方法。在方法中判断ack，如果为true，则发送成功，如果为false，则发送失败，需要处理。
+- 设置ConnectionFactory的publisher-returns="true" 开启 退回模式。
+- 使用rabbitTemplate.setReturnCallback设置退回函数，当消息从exchange路由到queue失败后，如果设置了rabbitTemplate.setMandatory(true)参数，则会将消息退回给producer。并执行回调函数returnedMessage。
+
 ### 发布者确认模式 异步监听
 
 
