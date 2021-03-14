@@ -917,22 +917,44 @@ Topic主题模式可以实现 `Publish/Subscribe发布与订阅模式` 和 ` Rou
 
 ### 消息的可靠投递
 
-https://blog.csdn.net/pan_junbiao/article/details/112956537
-
-https://blog.csdn.net/qq_40869428/article/details/113867406
-
-https://my.oschina.net/xiaominmin/blog/4503811
-
-
-
-### 发布者确认模式 批量确认
-
 rabbitmq 整个消息投递的路径为：
 **producer--->rabbitmq broker--->exchange--->queue--->consumer**
 **消息从 producer 到 exchange 则会返回一个 confirmCallback **
 **消息从 exchange-->queue 投递失败则会返回一个 returnCallback **
 
-**RabitMQ配置**
+**配置文件**
+
+```yml
+server:
+  port: 8894
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    
+    # 老版本
+    #开启消息发送确认机制，默认为false
+    #如果没有本条配置信息，当消费者收到生产者发送的消息后，生产者无法收到确认成功的回调信息
+    publisher-confirms: true
+    #支持消息发送失败返回队列,默认为false
+    publisher-returns: true
+    
+    # 新版本
+     #    对于ReturnCallback来说：
+    #    exchange到queue成功,则不回调return
+    #    exchange到queue失败,则回调return(需设置mandatory=true,否则不回回调,消息就丢了)
+    #    比如路由不到队列时触发回调
+    publisher-returns: true
+    #    对于ConfirmCallback来说：
+    #    如果消息没有到exchange,则confirm回调,ack=false
+    #    如果消息到达exchange,则confirm回调,ack=true
+    publisher-confirm-type: correlated
+```
+
+
 
 ```java
 @Configuration
@@ -1007,9 +1029,141 @@ public class ReturnCallback implements RabbitTemplate.ReturnCallback {
 - 设置ConnectionFactory的publisher-returns="true" 开启 退回模式。
 - 使用rabbitTemplate.setReturnCallback设置退回函数，当消息从exchange路由到queue失败后，如果设置了rabbitTemplate.setMandatory(true)参数，则会将消息退回给producer。并执行回调函数returnedMessage。
 
+### ACK
+
+步骤
+
+1. 设置手动签收 `acknowledge = "manual"`
+2. 监听方法添加`Channel`参数
+3. 如果消息处理成功，则调用`channel`的`basicAck()`签收
+4. 如果消息处理失败，则调用`channel`的`basicNack()`拒绝签收，`broker`重新发送给`Consumer`
+
+配置文件
+
+**配置文件**
+
+```yml
+server:
+  port: 8894
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+      direct:
+        acknowledge-mode: manual
+```
+
+**配置类**
+
+```java
+@Configuration
+public class RabbitMQConfig {
+
+    public static final String AKC_TOPIC_EXCHANGE = "ack-topic-exchange";
+    public static final String ACK_TOPIC_QUEUE = "ack-topic-queue";
+    public static final String ACK_TOPIC = "topic-ack.#";
+
+    public static final String ACK_DIRECT_EXCHANGE = "ack-direct-exchange";
+    public static final String ACK_DIRECT_QUEUE = "ack-direct-queue";
+    public static final String ACK_DIRECT = "direct-ack";
+
+    @Bean
+    public Exchange topicExchange() {
+        return ExchangeBuilder.topicExchange(AKC_TOPIC_EXCHANGE).durable(true).build();
+    }
+
+    @Bean
+    public Queue topicQueue() {
+        return QueueBuilder.durable(ACK_TOPIC_QUEUE).build();
+    }
+
+    @Bean
+    public Binding topicBinding(@Qualifier(value = "topicExchange") Exchange exchange, @Qualifier(value = "topicQueue") Queue queue) {
+        return BindingBuilder.bind(queue).to(exchange).with(ACK_TOPIC).noargs();
+    }
+
+    @Bean
+    public Exchange directExchange() {
+        return ExchangeBuilder.directExchange(ACK_DIRECT_EXCHANGE).durable(true).build();
+    }
+
+    @Bean
+    public Queue directQueue() {
+        return QueueBuilder.durable(ACK_DIRECT_QUEUE).build();
+    }
+
+    @Bean
+    public Binding directBinding(@Qualifier(value = "directExchange") Exchange exchange, @Qualifier(value = "directQueue") Queue queue) {
+        return BindingBuilder.bind(queue).to(exchange).with(ACK_DIRECT).noargs();
+    }
+
+}
+```
+
+**生产者**
+
+```java
+@Component
+public class RabbitProducer {
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+    public void topicProducer() {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.AKC_TOPIC_EXCHANGE, "topic-ack.test", "hello topic");
+    }
+
+    public void directProducer() {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.ACK_DIRECT_EXCHANGE, RabbitMQConfig.ACK_DIRECT, "hello direct");
+    }
+}
+```
+
+**消费者**
+
+```java
+@Component
+public class RabbitMQListener {
+
+    @RabbitListener(queues = RabbitMQConfig.ACK_DIRECT_QUEUE)
+    public void consumer(Message message, Channel channel) throws IOException {
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        try {
+            System.out.println(new String(message.getBody()));
+            System.out.println("业务逻辑1....");
+            channel.basicAck(deliveryTag, false);
+        } catch (Exception e) {
+            channel.basicNack(deliveryTag, false, true);
+        }
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.ACK_TOPIC_QUEUE)
+    public void consumer2(Message message, Channel channel) throws IOException {
+        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        try {
+            System.out.println(new String(message.getBody()));
+            System.out.println("业务逻辑2....");
+            channel.basicAck(deliveryTag, false);
+        } catch (Exception e) {
+            channel.basicNack(deliveryTag, false, true);
+        }
+    }
+}
+```
+
+**总结**
+
+忘记通过basicAck返回确认信息是常见的错误。这个错误非常严重，将导致消费者客户端退出或者关闭后，消息会被退回RabbitMQ服务器，这会使RabbitMQ服务器内存爆满，而且RabbitMQ也不会主动删除这些被退回的消息。只要程序还在运行，没确认的消息就一直是 Unacked 状态，无法被 RabbitMQ 重新投递。更厉害的是，RabbitMQ 消息消费并没有超时机制，也就是说，程序不重启，消息就永远是 Unacked 状态。处理运维事件时不要忘了这些 Unacked 状态的消息。当程序关闭时（实际只要 消费者 关闭就行），消息会恢复为 Ready 状态
+
 ### 发布者确认模式 异步监听
 
-
+### 发布者确认模式 批量确认
 
 ### 延迟队列
 
