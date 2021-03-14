@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+
 /**
  * @author xiangjin.kong
  * @date 2021/1/15 17:02
@@ -15,8 +17,9 @@ public class CustomSpringEventPublisherTest {
     CustomSpringEventPublisher customSpringEventPublisher;
 
     @Test
-    public void publishMessage() {
+    public void publishMessage() throws IOException {
         customSpringEventPublisher.publishCustomEvent("自定义事件");
+        System.in.read();
     }
 
 }

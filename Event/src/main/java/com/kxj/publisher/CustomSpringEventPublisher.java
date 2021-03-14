@@ -4,6 +4,7 @@ import com.kxj.listener.CustomSpringEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author xiangjin.kong
@@ -15,9 +16,10 @@ public class CustomSpringEventPublisher {
     @Autowired
     ApplicationEventPublisher applicationEventPublisher;
 
+    @Transactional(rollbackFor = Exception.class)
     public void publishCustomEvent(String message) {
-        System.out.println("发布自定义事件");
         CustomSpringEvent customSpringEvent = new CustomSpringEvent(this, message);
         applicationEventPublisher.publishEvent(customSpringEvent);
+        int i = 1 / 0;
     }
 }

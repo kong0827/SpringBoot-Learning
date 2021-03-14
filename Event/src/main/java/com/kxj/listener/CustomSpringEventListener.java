@@ -34,4 +34,9 @@ public class CustomSpringEventListener implements ApplicationListener<CustomSpri
     public void handleCustom(CustomSpringEvent event) {
         System.out.println("事务提交之前");
     }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
+    public void handleCustom1(CustomSpringEvent event) {
+        System.out.println("事务回滚");
+    }
 }
