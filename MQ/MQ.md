@@ -859,6 +859,29 @@ Topic主题模式可以实现 `Publish/Subscribe发布与订阅模式` 和 ` Rou
 
 ### 消费者
 
+@RabbitListener 和 @RabbitHandler 搭配使用
+
+- @RabbitListener 可以标注在类上面，需配合 @RabbitHandler 注解一起使用
+- @RabbitListener 标注在类上面表示当有收到消息的时候，就交给 @RabbitHandler 的方法处理，具体使用哪个方法处理，根据 MessageConverter 转换后的参数类型
+
+```java
+@Component
+@RabbitListener(queues = "consumer_queue")
+public class Receiver {
+
+    @RabbitHandler
+    public void processMessage1(String message) {
+        System.out.println(message);
+    }
+
+    @RabbitHandler
+    public void processMessage2(byte[] message) {
+        System.out.println(new String(message));
+    }
+    
+}
+```
+
 1. 添加依赖
 
    ```xml
@@ -1160,6 +1183,112 @@ public class RabbitMQListener {
 **总结**
 
 忘记通过basicAck返回确认信息是常见的错误。这个错误非常严重，将导致消费者客户端退出或者关闭后，消息会被退回RabbitMQ服务器，这会使RabbitMQ服务器内存爆满，而且RabbitMQ也不会主动删除这些被退回的消息。只要程序还在运行，没确认的消息就一直是 Unacked 状态，无法被 RabbitMQ 重新投递。更厉害的是，RabbitMQ 消息消费并没有超时机制，也就是说，程序不重启，消息就永远是 Unacked 状态。处理运维事件时不要忘了这些 Unacked 状态的消息。当程序关闭时（实际只要 消费者 关闭就行），消息会恢复为 Ready 状态
+
+
+
+### 并发与限流
+
+https://blog.csdn.net/linsongbin1/article/details/100658415
+
+#### 并发
+
+一个listener对应多个consumer
+默认情况一下，一个listener对应一个consumer，如果想对应多个，有两种方式。
+
+方式一：直接在application.yml文件中配置
+
+```yml
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        # 消费者最小数量 消费端的监听个数(即@RabbitListener开启几个线程去处理数据。)
+        concurrency: 5
+        # 消费者最大数量
+        max-concurrency: 5
+```
+
+这个是个全局配置，应用里的任何队列对应的listener都至少有5个consumer，但是千万别这么做，因为一般情况下，一个listener对应一个consumer是够用的。只是针对部分场景，才需要一对多。
+
+ 
+
+方式二：直接在@RabbitListener上配置
+
+```java
+@Component
+public class SpringBootMsqConsumer {
+    @RabbitListener(queues = "spring-boot-direct-queue",concurrency = "5-10")
+    public void receive(Message message) {
+        System.out.println("receive message:" + new String(message.getBody()));
+    }
+}利用@RabbitListener中的concurrency属性进行指定就行。例如上面的
+```
+
+concurrency = “5-10”
+
+就表示最小5个，最大10个consumer。启动消费端应用后，找到spring-boot-direct-queue这个队列的consumer，会发现有5个
+
+![image-20210316002925783](E:%5CgithubResp%5CSpringBoot-Demo%5CRabbitMQ%5Cdoc%5Cimage-20210316002925783.png)
+
+![image-20210316003120886](E:%5CgithubResp%5CSpringBoot-Demo%5CRabbitMQ%5Cdoc%5Cimage-20210316003120886.png)
+
+
+
+#### **限流机制**
+
+1. 确保为ack机制为手动确认
+
+2. `listener-container`配置属性 `perfetch = 1`
+
+   prefetch = 1, 表示消费端一次从mq中拿取一条数据消费，知道手动确认消费完毕后， 才会继续拉取下一条消息
+
+**全局配置**
+
+```yml
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        # 在单个请求中处理的消息个数，他应该大于等于事务数量(unack的最大数量)
+        prefetch: 10
+      direct:
+        prefetch: 10
+```
+
+**特定消费者配置**
+
+```java
+@Component
+public class SpringBootMsqConsumer {
+    @RabbitListener(queues = "spring-boot-direct-queue",concurrency = "5-10",containerFactory = "consumerListenerContainer")
+    public void receive(Message message) {
+        System.out.println("receive message:" + new String(message.getBody()));
+    }
+}
+
+@Configuration
+public class RabbitMqConfig {
+
+    @Autowired
+    private CachingConnectionFactory connectionFactory;
+
+    @Bean(name = "consumerListenerContainer")
+    public SimpleRabbitListenerContainerFactory consumerListenerContainer(){
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setPrefetchCount(50);
+        return factory;
+    }
+}
+```
+
+
 
 ### 发布者确认模式 异步监听
 
