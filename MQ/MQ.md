@@ -1290,6 +1290,55 @@ public class RabbitMqConfig {
 
 
 
+### TTL
+
+- 队列统一过期
+
+  ```java
+  @Bean
+  public Queue queue() {
+      Map<String, Object> map = new HashMap<>(10);
+      // 队列中的消息未被消费则30秒后过期
+      map.put("x-message-ttl", 30000);
+      return QueueBuilder.durable(TTL_QUEUE).withArguments(map).build();
+  }
+  ```
+
+- 消息单独过期
+
+  ```java
+   /**
+     * 消息单独过期
+     */
+  public void producer2() {
+      MessageProperties messageProperties = new MessageProperties();
+      messageProperties.setExpiration("10000");
+      Message message = new Message("hello rabbitmq".getBytes(StandardCharsets.UTF_8), messageProperties);
+      rabbitTemplate.convertAndSend(RabbitConfig.TTL_EXCHANGE, "kxj.user", message);
+  }
+  
+  /**
+    * 消息单独过期
+    */
+  public void producer3() {
+      MessagePostProcessor messagePostProcessor = message -> {
+          message.getMessageProperties().setExpiration("20000");
+          return message;
+      };
+      rabbitTemplate.convertAndSend(RabbitConfig.TTL_EXCHANGE, "kxj.user", "hello rabbitmq", messagePostProcessor);
+  }
+  ```
+
+  
+
+
+
+**小结**
+
+- 如果设置了消息的过期时间，也设置了消息过期时间，以时间短的为准
+- 设置队列过期时间使用参数：x-message-ttl，单位：ms(毫秒)。会对整个队列消息统一过期
+- 设置消息过期时间使用参数：expiration，单位：ms(毫秒)，当消息在队列头部时（消费时），会单独判断这一消息是否过期
+
 ### 发布者确认模式 异步监听
 
 ### 发布者确认模式 批量确认
