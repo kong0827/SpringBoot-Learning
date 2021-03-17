@@ -28,6 +28,7 @@
         <module>07-spring-boot-rabbitmq-confirm-callback-producer</module>
         <module>08-spring-boot-rabbitmq-ack</module>
         <module>09-spring-boot-rabbitmq-qos</module>
+        <module>10-spring-boot-rabbitmq-ttl</module>
     </modules>
 
     <dependencies>
