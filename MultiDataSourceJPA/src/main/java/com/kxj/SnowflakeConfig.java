@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author xiangjin.kong
  * @date 2021/1/26 15:07
+ * 雪花算法
  */
 @Configuration
 public class SnowflakeConfig {

@@ -1,0 +1,20 @@
+server:
+  port: 8994
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        # 消费者最小数量 消费端的监听个数(即@RabbitListener开启几个线程去处理数据。)
+        concurrency: 5
+        # 消费者最大数量
+        max-concurrency: 5
+        # 在单个请求中处理的消息个数，他应该大于等于事务数量(unack的最大数量)
+        prefetch: 10
+      direct:
+        prefetch: 10

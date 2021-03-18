@@ -19,6 +19,17 @@
         <module>spring-boot-rabbitmq-config</module>
         <module>spring-boot-rabbitmq-delay-queue</module>
         <module>spring-boot-rabbitmq-ticket</module>
+        <module>01-hello-world</module>
+        <module>02-work-queue</module>
+        <module>03-pub-sub</module>
+        <module>04-direct</module>
+        <module>05-topics</module>
+        <module>06-spring-boot-rabbitmq-producer</module>
+        <module>06-spring-boot-rabbitmq-consumer</module>
+        <module>07-spring-boot-rabbitmq-confirm-callback-producer</module>
+        <module>08-spring-boot-rabbitmq-ack</module>
+        <module>09-spring-boot-rabbitmq-qos</module>
+        <module>10-spring-boot-rabbitmq-ttl</module>
     </modules>
 
     <dependencies>
