@@ -4,6 +4,7 @@ import javafx.application.Application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author xiangjin.kong
@@ -16,6 +17,7 @@ public class ApplicationEventPublisher {
     @Autowired
     ApplicationContext applicationContext;
 
+    @Transactional
     public void publish(String message) {
         applicationContext.publishEvent(message);
     }
