@@ -1339,6 +1339,210 @@ public class RabbitMqConfig {
 - 设置队列过期时间使用参数：x-message-ttl，单位：ms(毫秒)。会对整个队列消息统一过期
 - 设置消息过期时间使用参数：expiration，单位：ms(毫秒)，当消息在队列头部时（消费时），会单独判断这一消息是否过期
 
+
+
+### 死信队列
+
+Dead-Letter-Exchange
+
+消息成为死信的三种情况 
+
+1. 队列消息长度到达限制
+2. 消费者拒绝接收消费信息，basicNack/basicReject, 并且不把消息重新放入原目标队列，requeue=false
+3. 原队列存在消息过期设置，消息到达超时时间未被消费
+
+队列绑定死信交换机
+
+给队列设置参数：x-dead-letter-exchange 和 x-dead-letter-routing-key
+
+
+
+RabbitMQ连接信息配置
+
+```yml
+server:
+  port: 8894
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        retry:
+          enabled: true # 允许消息消费失败的重试
+          max-attempts: 3 # 消息最多消费次数3次
+          initial-interval: 1000 # 消息多次消费的间隔1秒
+        default-requeue-rejected: false #  设置为false，会丢弃消息或者重新发布到死信队列
+```
+
+业务队列配置类
+
+```java
+package com.kxj.config;
+
+import org.springframework.amqp.core.*;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @author kxj
+ * @date 2021/3/20 21:46
+ * @desc
+ */
+@Configuration
+public class RabbitConfig {
+    public static final String COMMON_EXCHANGE = "common_exchange";//消息接收的交换机
+    public static final String COMMON_ROUTING_KEY = "common_key";//消息routing key
+    public static final String COMMON_QUEUE = "common_queue"; //消息存储queue
+
+    public static final String DLX_EXCHANGE = "dlx_exchange";//重定向交换机
+    public static final String DLX_ROUTING_KEY = "dlx_key"; //重定向队列routing key
+    public static final String DLX_QUEUE = "dlx_queue"; //重定向消息存储queue
+
+    /**
+     * 正常交换机的定义
+     * @return
+     */
+    @Bean
+    public Exchange commonExchange() {
+
+
+        return ExchangeBuilder.directExchange(COMMON_EXCHANGE).build();
+    }
+
+    @Bean
+    public Queue commonQueue() {
+        Map<String, Object> args = new HashMap<>(8);
+
+        /**
+         * 消息成为死信后重定向到死信交换机
+         */
+        args.put("x-dead-letter-exchange", DLX_EXCHANGE);
+        args.put("x-dead-letter-routing-key", DLX_ROUTING_KEY);
+
+
+        // 设置超时时间
+        args.put("x-message-ttl", 10000);
+        // 设置队列的最大长度
+        args.put("x-max-length", 10);
+        return QueueBuilder.durable(COMMON_QUEUE).withArguments(args).build();
+    }
+
+    @Bean
+    public Binding commonBinding() {
+        return BindingBuilder.bind(commonQueue()).to(commonExchange()).with(COMMON_ROUTING_KEY).noargs();
+    }
+
+    /**
+     * 定义死信交换机
+     */
+    @Bean
+    public Exchange dlxExchange() {
+        return ExchangeBuilder.directExchange(DLX_EXCHANGE).build();
+    }
+
+    /**
+     * 私信队列
+     * @return
+     */
+    @Bean
+    public Queue dlxQueue() {
+        return QueueBuilder.durable(DLX_QUEUE).build();
+    }
+
+    /**
+     * 死信交换机和队列的绑定
+     */
+    @Bean
+    public Binding dlxBinding() {
+        return BindingBuilder.bind(dlxQueue()).to(dlxExchange()).with(DLX_ROUTING_KEY).noargs();
+    }
+
+
+}
+```
+
+业务队列生产者
+
+```java
+@Component
+public class RabbitProducer {
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+    public void producer(String message) {
+        rabbitTemplate.convertAndSend(RabbitConfig.COMMON_EXCHANGE, RabbitConfig.COMMON_ROUTING_KEY, message);
+    }
+
+}
+```
+
+业务消费者
+
+```java
+@Component
+@org.springframework.amqp.rabbit.annotation.RabbitListener(queues = RabbitConfig.COMMON_QUEUE)
+public class RabbitListener {
+
+    @RabbitHandler
+    public void listener(String message) {
+        System.out.println(message);
+        int i = 1 / 0;
+    }
+}
+```
+
+测试类
+
+```java
+@SpringBootTest
+@RunWith(SpringRunner.class)
+public class ProducerTest {
+
+    @Autowired
+    RabbitProducer rabbitProducer;
+
+    /**
+     * 超时
+     */
+    @Test
+    public void test() {
+        rabbitProducer.producer("hello 死信队列");
+    }
+
+    /**
+     * 队列消息长度到达限制
+     */
+    @Test
+    public void test2() {
+        for (int i = 0; i < 30; i++) {
+
+            rabbitProducer.producer("hello 死信队列");
+        }
+    }
+
+    /**
+     * 消息拒收
+     */
+    @Test
+    public void test3() {
+        rabbitProducer.producer("hello 消费者拒收");
+    }
+}
+```
+
+
+
+
+
 ### 发布者确认模式 异步监听
 
 ### 发布者确认模式 批量确认

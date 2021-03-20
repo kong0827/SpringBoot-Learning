@@ -29,6 +29,7 @@
         <module>08-spring-boot-rabbitmq-ack</module>
         <module>09-spring-boot-rabbitmq-qos</module>
         <module>10-spring-boot-rabbitmq-ttl</module>
+        <module>11-spring-boot-rabbitmq-dlx</module>
     </modules>
 
     <dependencies>

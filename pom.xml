@@ -39,6 +39,7 @@
         <module>Actuator</module>
         <module>EasyExcel</module>
         <module>RabbitMQ</module>
+        <module>11-spring-boot-rabbitmq-dlx</module>
     </modules>
 
     <dependencies>
