@@ -10,6 +10,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>12-spring-boot-rabbitmq-delay-queue</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.kxj</groupId>
+            <artifactId>11-spring-boot-rabbitmq-dlx</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.kxj</groupId>
+            <artifactId>11-spring-boot-rabbitmq-dlx</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

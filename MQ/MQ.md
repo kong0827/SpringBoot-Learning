@@ -1541,6 +1541,107 @@ public class ProducerTest {
 
 
 
+### 延迟队列
+
+延迟队列，即消息进入队列不会立即被消费，只有达到指定时间后，才会被消费
+
+#### TTL + 死信队列
+
+- 代码大致同死信队列
+
+- rabbitmq-delayed-message-exchange
+
+  在rabbitmq 3.5.7及以上的版本提供了一个插件（rabbitmq-delayed-message-exchange）来实现延迟队列功能。同时插件依赖Erlang/OPT 18.0及以上
+
+  `yml`配置
+
+  ```yml
+  server:
+    port: 8895
+  spring:
+    rabbitmq:
+      host: 47.102.218.26
+      port: 5672
+      username: guest
+      password: guest
+  ```
+
+  `RabbitMq` 配置类
+
+  ```java
+  @Configuration
+  public class QueueConfig {
+  
+      /**
+       * 使用的是CustomExchange,不是DirectExchange，另外CustomExchange的类型必须是x-delayed-message。
+       * @return
+       */
+      @Bean
+      public CustomExchange delayExchange() {
+          Map<String, Object> args = new HashMap<>();
+          args.put("x-delayed-type", "direct");
+          return new CustomExchange("test_exchange", "x-delayed-message",true, false,args);
+      }
+  
+      @Bean
+      public Queue queue() {
+          return new Queue("test_queue_1", true);
+      }
+  
+      @Bean
+      public Binding binding() {
+          return BindingBuilder.bind(queue()).to(delayExchange()).with("test_queue_1").noargs();
+      }
+  }
+  ```
+
+  生产者
+
+  ```java
+  @Component
+  public class MessageSender {
+  
+      @Autowired
+      RabbitTemplate rabbitTemplate;
+  
+      /**
+       * 注意在发送的时候，必须加上一个header
+       *
+       * x-delay
+       * @param queueName
+       * @param msg
+       */
+      public void sendMessage(String queueName, String msg) {
+          System.out.println("消息发送时间："+ LocalDateTime.now());
+          rabbitTemplate.convertAndSend("test_exchange", queueName, msg, message -> {
+              message.getMessageProperties().setHeader("x-delay",30000);
+              return message;
+          });
+      }
+  }
+  
+  ```
+
+  消费者
+
+  ```java
+  @Component
+  public class MessageConsumer {
+  
+      @RabbitListener(queues = "test_queue_1")
+      public void receive(String msg) {
+          System.out.println("消息接收时间："+ LocalDateTime.now());
+          System.out.println("接收的消息：" + msg);
+      }
+  }
+  ```
+
+  
+
+  
+
+
+
 
 
 ### 发布者确认模式 异步监听
@@ -1549,7 +1650,7 @@ public class ProducerTest {
 
 ### 延迟队列
 
-在rabbitmq 3.5.7及以上的版本提供了一个插件（rabbitmq-delayed-message-exchange）来实现延迟队列功能。同时插件依赖Erlang/OPT 18.0及以上
+
 
 
 
