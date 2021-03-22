@@ -39,6 +39,4 @@ public class RabbitMQConfig {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         return rabbitTemplate;
     }
-
-
 }
