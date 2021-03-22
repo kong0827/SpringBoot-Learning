@@ -30,6 +30,7 @@
         <module>09-spring-boot-rabbitmq-qos</module>
         <module>10-spring-boot-rabbitmq-ttl</module>
         <module>11-spring-boot-rabbitmq-dlx</module>
+        <module>12-spring-boot-rabbitmq-delay-queue</module>
     </modules>
 
     <dependencies>
