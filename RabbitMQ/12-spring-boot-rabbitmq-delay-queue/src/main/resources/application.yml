@@ -1,0 +1,16 @@
+server:
+  port: 8894
+spring:
+  rabbitmq:
+    host: 47.102.218.26
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        retry:
+          enabled: true # 允许消息消费失败的重试
+          max-attempts: 3 # 消息最多消费次数3次
+          initial-interval: 1000 # 消息多次消费的间隔1秒
+        default-requeue-rejected: false #  设置为false，会丢弃消息或者重新发布到死信队列
