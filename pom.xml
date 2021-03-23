@@ -39,6 +39,7 @@
         <module>Actuator</module>
         <module>EasyExcel</module>
         <module>RabbitMQ</module>
+        <module>SpringAnnotation</module>
     </modules>
 
     <dependencies>

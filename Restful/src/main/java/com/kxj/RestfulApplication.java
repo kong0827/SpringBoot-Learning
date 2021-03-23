@@ -9,7 +9,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class RestfulApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(RestfulApplication.class, args);
+        ConfigurableApplicationContext run = SpringApplication.run(RestfulApplication.class, args);
+        String[] beanDefinitionNames = run.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            System.out.println(beanDefinitionName);
+        }
 
     }
 

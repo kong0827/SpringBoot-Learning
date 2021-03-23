@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -28,7 +29,7 @@ public class TeacherController {
      * @param age
      */
     @GetMapping("/teacher")
-    public void getTeacher(@NotEmpty(message = "用户名不能为空") String username,
+    public void getTeacher(@NotBlank(message = "用户名不能为空") String username,
                            @Min(value = 18, message = "年龄不能小于18岁") Integer age) {
         System.out.println("username:" + username + "    age:" + age);
     }

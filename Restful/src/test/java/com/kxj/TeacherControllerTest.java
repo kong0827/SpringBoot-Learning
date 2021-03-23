@@ -39,8 +39,8 @@ public class TeacherControllerTest {
     @Test
     public void test() throws Exception {
         String content = mockMvc.perform(MockMvcRequestBuilders.get("/teacher")
-                .param("username", "x")
-                .param("id", "120")
+                .param("username", "")
+                .param("age", "120")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString();
