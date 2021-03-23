@@ -1,0 +1,46 @@
+mail:
+  port: 443
+  name: mail.com
+  list:
+    - 1@qq.com
+    - 2@qq.com
+    - 3@qq.com
+  success:
+    true
+  map:
+    k1: v1
+    k2: v2
+    k3: v3
+  mapList:
+    k1:
+      - v1
+      - v11
+      - v111
+    k2:
+      - v2
+      - v22
+      - v222
+  userMap:
+    user1:
+      name: 张三
+      password: 123
+    user2:
+      name: 李四
+      password: 123
+  listMap:
+    - k1: v1
+    - k2: v2
+  userList:
+    - user1:
+        name: zhangsan
+        password: 123
+    - user2:
+        name: lisi
+        password: 123
+  users:
+    - {name: zhangsan, password: 123}
+    - {name: lisi, password: 123}
+  user:
+    name: haha
+    password: 666
+
