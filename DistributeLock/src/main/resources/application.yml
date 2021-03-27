@@ -1,7 +1,7 @@
+server:
+  port: 9000
 spring:
   redis:
     host: 47.102.218.26
     password: root
     port: 6379
-server:
-  port: 8887
