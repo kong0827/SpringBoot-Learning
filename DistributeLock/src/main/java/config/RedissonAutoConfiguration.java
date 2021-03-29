@@ -24,7 +24,6 @@ public class RedissonAutoConfiguration {
 
     @Autowired
     private static RedissonProperties redissonProperties;
-
     /**
      * 单机
      * @return
