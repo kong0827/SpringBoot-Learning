@@ -5,5 +5,4 @@ spring:
     host: 47.102.218.26
     password: root
     port: 6379
-  redisson:
 
