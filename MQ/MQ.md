@@ -1221,8 +1221,11 @@ public class SpringBootMsqConsumer {
     public void receive(Message message) {
         System.out.println("receive message:" + new String(message.getBody()));
     }
-}利用@RabbitListener中的concurrency属性进行指定就行。例如上面的
+}
+
 ```
+
+利用@RabbitListener中的concurrency属性进行指定就行。例如上面的
 
 concurrency = “5-10”
 
@@ -1640,9 +1643,9 @@ public class ProducerTest {
 
   
 
+![image-20210401001014021](E:%5CgithubResp%5CSpringBoot-Demo%5CMQ%5Csrc%5Cmain%5Cresources%5Cimages%5Capplication.yml)
 
-
-
+![image-20210401001159006](E:%5CgithubResp%5CSpringBoot-Demo%5CMQ%5Csrc%5Cmain%5Cresources%5Cimages%5Cimage-20210401001159006.png)
 
 ### 发布者确认模式 异步监听
 
