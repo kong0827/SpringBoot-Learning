@@ -5,4 +5,27 @@ spring:
     host: 47.102.218.26
     password: root
     port: 6379
-
+    cluster:
+      failed-attempts: 3
+      master-connection-pool-size: 64
+      nodes: ''
+      read-mode: SLAVE
+      retry-attempts: 3
+      retry-interval: 1500
+      scan-interval: 1000
+      slave-connection-pool-size: 64
+    pool:
+      conn-timeout: 3000
+      max-active: 8
+      max-idle: 16
+      max-wait: 3000
+      min-idle: 8
+      size: 10
+      so-timeout: 3000
+    sentinel:
+      fail-max: ''
+      master: business-master
+      master-onlyWrite: true
+      nodes: ''
+    single:
+      address: 192.168.60.23:6379
