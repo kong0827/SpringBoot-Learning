@@ -109,11 +109,310 @@ Redisson是在redis基础上实现Java驻内存数据网格的综合中间件，
 2. 配置文件
 
    ```yml
+   server:
+     port: 9000
+spring:
+     redis:
+    host: 47.102.218.26
+       password: root
+       port: 6379
+       cluster:
+         failed-attempts: 3
+         master-connection-pool-size: 64
+         nodes: ''
+         read-mode: SLAVE
+         retry-attempts: 3
+         retry-interval: 1500
+         scan-interval: 1000
+         slave-connection-pool-size: 64
+       pool:
+         conn-timeout: 3000
+         max-active: 8
+         max-idle: 16
+         max-wait: 3000
+         min-idle: 8
+         size: 10
+         so-timeout: 3000
+       sentinel:
+         fail-max: ''
+         master: business-master
+         master-onlyWrite: true
+         nodes: ''
+       single:
+         address: 192.168.60.23:6379
    
    ```
-
    
-
+   
+   
+   **配置**
+   
+   ```java
+   @Data
+   @ConfigurationProperties(prefix = "redisson")
+   public class RedissonProperties {
+   
+       private String address;
+   
+       private int database = 0;
+   
+       private String password;
+   
+       private int timeout;
+   
+       /**
+        * 池配置
+        */
+       private RedisPoolProperties pool;
+   
+       /**
+        * 单机
+        */
+       private RedisSingleProperties single;
+   
+       /**
+        * 哨兵
+        */
+       private RedissonSentinelProperties sentinel;
+   
+       /**
+        * 主从
+        */
+       private RedissonMasterSlaveProperties masterSlave;
+   
+       /**
+        * 集群
+        */
+       private RedissonClusterProperties cluster;
+   
+   
+   }
+   
+   ```
+   
+   
+   
+   ```java
+   /**
+    * @author xiangjin.kong
+    * @date 2021/3/25 10:32
+    */
+   @Configuration
+   @ConditionalOnClass({Redisson.class, RedisOperations.class})
+   @EnableAutoConfiguration
+   @EnableConfigurationProperties(RedissonProperties.class)
+   public class RedissonAutoConfiguration {
+   
+       @Autowired
+       RedissonProperties redisProperties;
+       /**
+        * 单机
+        * @return
+        */
+       /**
+        * 单机模式 redisson 客户端
+        */
+   
+       @Bean
+       @ConditionalOnProperty(name = "spring.redis.mode", havingValue = "single")
+       RedissonClient redissonSingle() {
+           Config config = new Config();
+           String node = redisProperties.getSingle().getAddress();
+           node = node.startsWith("redis://") ? node : "redis://" + node;
+           SingleServerConfig serverConfig = config.useSingleServer()
+                   .setAddress(node)
+                   .setTimeout(redisProperties.getPool().getConnTimeout())
+                   .setConnectionPoolSize(redisProperties.getPool().getSize())
+                   .setConnectionMinimumIdleSize(redisProperties.getPool().getMinIdle());
+           if (StringUtils.isNotBlank(redisProperties.getPassword())) {
+               serverConfig.setPassword(redisProperties.getPassword());
+           }
+           return Redisson.create(config);
+       }
+   
+   
+       /**
+        * 集群模式的 redisson 客户端
+        *
+        * @return
+        */
+       @Bean
+       @ConditionalOnProperty(name = "spring.redis.mode", havingValue = "cluster")
+       RedissonClient redissonCluster() {
+           System.out.println("cluster redisProperties:" + redisProperties.getCluster());
+   
+           Config config = new Config();
+           String[] nodes = redisProperties.getCluster().getNodes().split(",");
+           List<String> newNodes = new ArrayList(nodes.length);
+           Arrays.stream(nodes).forEach((index) -> newNodes.add(
+                   index.startsWith("redis://") ? index : "redis://" + index));
+   
+           ClusterServersConfig serverConfig = config.useClusterServers()
+                   .addNodeAddress(newNodes.toArray(new String[0]))
+                   .setScanInterval(
+                           redisProperties.getCluster().getScanInterval())
+                   .setIdleConnectionTimeout(
+                           redisProperties.getPool().getSoTimeout())
+                   .setConnectTimeout(
+                           redisProperties.getPool().getConnTimeout())
+                   .setRetryAttempts(
+                           redisProperties.getCluster().getRetryAttempts())
+                   .setRetryInterval(
+                           redisProperties.getCluster().getRetryInterval())
+                   .setMasterConnectionPoolSize(redisProperties.getCluster()
+                           .getMasterConnectionPoolSize())
+                   .setSlaveConnectionPoolSize(redisProperties.getCluster()
+                           .getSlaveConnectionPoolSize())
+                   .setTimeout(redisProperties.getTimeout());
+           if (StringUtils.isNotBlank(redisProperties.getPassword())) {
+               serverConfig.setPassword(redisProperties.getPassword());
+           }
+           return Redisson.create(config);
+       }
+   
+       /**
+        * 哨兵模式 redisson 客户端
+        * @return
+        */
+   
+       @Bean
+       @ConditionalOnProperty(name = "spring.redis.mode", havingValue = "sentinel")
+       RedissonClient redissonSentinel() {
+           System.out.println("sentinel redisProperties:" + redisProperties.getSentinel());
+           Config config = new Config();
+           String[] nodes = redisProperties.getSentinel().getNodes().split(",");
+           List<String> newNodes = new ArrayList(nodes.length);
+           Arrays.stream(nodes).forEach((index) -> newNodes.add(
+                   index.startsWith("redis://") ? index : "redis://" + index));
+   
+           SentinelServersConfig serverConfig = config.useSentinelServers()
+                   .addSentinelAddress(newNodes.toArray(new String[0]))
+                   .setMasterName(redisProperties.getSentinel().getMaster())
+                   .setReadMode(ReadMode.SLAVE)
+                   .setTimeout(redisProperties.getTimeout())
+                   .setMasterConnectionPoolSize(redisProperties.getPool().getSize())
+                   .setSlaveConnectionPoolSize(redisProperties.getPool().getSize());
+   
+           if (StringUtils.isNotBlank(redisProperties.getPassword())) {
+               serverConfig.setPassword(redisProperties.getPassword());
+           }
+   
+           return Redisson.create(config);
+       }
+   }
+   
+   ```
+   
+   ```java
+   @Data
+   public class RedisPoolProperties {
+       private int maxIdle;
+   
+       private int minIdle;
+   
+       private int maxActive;
+   
+       private int maxWait;
+   
+       private int connTimeout;
+   
+       private int soTimeout;
+   
+       /**
+        * 池大小
+        */
+       private  int size;
+   
+   }
+   
+   
+   @Data
+   public class RedisSingleProperties {
+   
+       private String address;
+   }
+   
+   
+   @Data
+   public class RedissonClusterProperties {
+   
+       /**
+        * 集群状态扫描间隔时间，单位是毫秒
+        */
+       private int scanInterval;
+   
+       /**
+        * 集群节点
+        */
+       private String nodes;
+   
+       /**
+        * 默认值： SLAVE（只在从服务节点里读取）设置读取操作选择节点的模式。 可用值为： SLAVE - 只在从服务节点里读取。
+        * MASTER - 只在主服务节点里读取。 MASTER_SLAVE - 在主从服务节点里都可以读取
+        */
+       private String readMode;
+       /**
+        * （从节点连接池大小） 默认值：64
+        */
+       private int slaveConnectionPoolSize;
+       /**
+        * 主节点连接池大小）默认值：64
+        */
+       private int masterConnectionPoolSize;
+   
+       /**
+        * （命令失败重试次数） 默认值：3
+        */
+       private int retryAttempts;
+   
+       /**
+        * 命令重试发送时间间隔，单位：毫秒 默认值：1500
+        */
+       private int retryInterval;
+   
+       /**
+        * 执行失败最大次数默认值：3
+        */
+       private int failedAttempts;
+   }
+   
+   
+   @Data
+   public class RedissonMasterSlaveProperties {
+   
+       private String masterAddress;
+       private String slaveAddress;
+   
+   }
+   
+   
+   @Data
+   public class RedissonSentinelProperties {
+   
+       /**
+        * 哨兵master 名称
+        */
+       private String master;
+   
+       /**
+        * 哨兵节点
+        */
+       private String nodes;
+   
+       /**
+        * 哨兵配置
+        */
+       private boolean masterOnlyWrite;
+   
+       /**
+        *
+        */
+       private int failMax;
+   
+   }
+   
+   ```
+   
    
 
 
