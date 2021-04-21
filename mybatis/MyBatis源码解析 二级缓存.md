@@ -20,6 +20,18 @@
 
 
 
+#### 为什么提交后才能命中缓存
+
+![image-20210414002708968](E:%5CgithubResp%5CSpringBoot-Demo%5Cmybatis%5Csrc%5Cmain%5Cresources%5Cimg%5Cimage-20210414002708968.png)
+
+如果不是提交后才能命中，会造成脏读的问题
+
+![image-20210414003816582](C:%5CUsers%5C%E5%B0%8FK%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20210414003816582.png)
+
+每个会话会有单独的事务缓存管理器，事务的缓存管理器会有多个暂存区（查询的数据，例如一个会话可以查多个表数据），每个暂存器都会指向唯一一个缓存区。
+
+commit后会将暂存区的数据放到缓存区
+
 ### 执行流程
 
 ![1592238509238](E:\githubResp\SpringBoot-Demo\mybatis\src\main\resources\img\1592238509238.png)
