@@ -16,8 +16,15 @@ import java.util.List;
 //@CacheNamespace(flushInterval = 10000, blocking=true)
 public interface UserMapper {
 
-    @Select({"select * from users where id=#{1}"})
+    @Select({"select * from users where id=#{id}"})
     User selectById(Integer id);
+
+    @Select({"select * from users where id=#{id}"})
+    User selectById1(@Param("id") Integer id);
+
+
+    @Select({"select * from users where id=#{1} and name = #{name}"})
+    User selectByIdAndName(Integer id, String name);
 
 
     @Select({"select * from users where id=#{1}"})

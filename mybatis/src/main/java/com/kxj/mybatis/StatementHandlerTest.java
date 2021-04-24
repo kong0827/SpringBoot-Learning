@@ -33,4 +33,35 @@ public class StatementHandlerTest {
         User user = mapper.selectById(10);
         System.out.println(user);
     }
+
+    /**
+     * 单个参数测试
+     */
+    @Test
+    public void testParamAnnotation() {
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        User user = mapper.selectById1(10);
+        System.out.println(user);
+    }
+
+    /**
+     * 多个参数测试
+     */
+    @Test
+    public void testManyParam() {
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        User user = mapper.selectByIdAndName(10, "张三");
+        System.out.println(user);
+    }
+
+
+    /**
+     * 对象参数测试
+     */
+    @Test
+    public void testInsert() {
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        int i = mapper.addUser(Mock.newUser());
+        System.out.println(i);
+    }
 }
