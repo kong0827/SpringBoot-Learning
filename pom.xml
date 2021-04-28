@@ -41,6 +41,7 @@
         <module>RabbitMQ</module>
         <module>SpringAnnotation</module>
         <module>DistributeLock</module>
+        <module>Knife4j</module>
     </modules>
 
     <dependencies>
