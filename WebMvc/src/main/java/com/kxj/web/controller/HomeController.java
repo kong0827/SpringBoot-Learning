@@ -1,9 +1,7 @@
 package com.kxj.web.controller;
 
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -15,7 +13,7 @@ import java.util.Date;
 @RestController
 public class HomeController {
 
-    @RequestMapping("/home")
+    @PostMapping("/home")
     public void home(Date path) {
         System.out.println(path);
     }
