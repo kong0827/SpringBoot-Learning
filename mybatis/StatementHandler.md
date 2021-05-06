@@ -1,3 +1,5 @@
+
+
 ## StatementHandler
 
 ### 参数处理
@@ -20,7 +22,7 @@
 
 参数处理主要在ParamNameResolver中
 
-
+![image-20210506223325732](https://gitee.com/kongxiangjin/images/raw/master/img/20210506223328.png)
 
 `MapperInvoke`
 
@@ -185,7 +187,7 @@ public Object getNamedParams(Object[] args) {
     if (args == null || paramCount == 0) {
         return null;
     } else if (!hasParamAnnotation && paramCount == 1) {
-        // 如果没有@param修饰的参数，并且为一个参数的情况下，直接获取第0个参数并返回
+        // 如果没有@param修饰的参数，并且为一个参数的情况下，直接获取第0个参数并返回，参数名可以随便写
         return args[names.firstKey()];
     } else {
         final Map<String, Object> param = new ParamMap<>();
@@ -205,4 +207,100 @@ public Object getNamedParams(Object[] args) {
     }
 }
 ```
+
+
+
+### 参数设置
+
+**单个原始类型**
+直接映射，忽略SQL中的引用名称
+
+**Map类型**
+基于Map key映射
+
+**Object**
+基于属性名称映射，支持嵌套对象属性访问
+
+
+
+
+
+**源码解析**
+
+**SimpleExecutor**
+
+```java
+private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
+  Statement stmt;
+  Connection connection = getConnection(statementLog);
+  stmt = handler.prepare(connection, transaction.getTimeout());
+  handler.parameterize(stmt);
+  return stmt;
+}
+```
+
+**PreparedStatementHandler**
+
+```java
+@Override
+public void parameterize(Statement statement) throws SQLException {
+  parameterHandler.setParameters((PreparedStatement) statement);
+}
+```
+
+**DefaultParameterHandler**
+
+```java
+@Override
+public void setParameters(PreparedStatement ps) {
+  ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
+  List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+  if (parameterMappings != null) {
+    for (int i = 0; i < parameterMappings.size(); i++) {
+      ParameterMapping parameterMapping = parameterMappings.get(i);
+      if (parameterMapping.getMode() != ParameterMode.OUT) {
+        Object value;
+        String propertyName = parameterMapping.getProperty();
+        if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+          value = boundSql.getAdditionalParameter(propertyName);
+        } else if (parameterObject == null) {
+          value = null;
+        } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+           // 单参
+          value = parameterObject;
+        } else {
+          MetaObject metaObject = configuration.newMetaObject(parameterObject);
+          value = metaObject.getValue(propertyName);
+        }
+        TypeHandler typeHandler = parameterMapping.getTypeHandler();
+        JdbcType jdbcType = parameterMapping.getJdbcType();
+        if (value == null && jdbcType == null) {
+          jdbcType = configuration.getJdbcTypeForNull();
+        }
+        try {
+          typeHandler.setParameter(ps, i + 1, value, jdbcType);
+        } catch (TypeException | SQLException e) {
+          throw new TypeException("Could not set parameters for mapping: " + parameterMapping + ". Cause: " + e, e);
+        }
+      }
+    }
+  }
+}
+```
+
+
+
+### 结果集处理 
+
+
+
+![image-20210428003256749](C:/Users/%E5%B0%8FK/Pictures/image-20210428003256749.png)
+
+![image-20210428004016005](C:/Users/%E5%B0%8FK/Pictures/image-20210428004016005.png)
+
+![image-20210428004610692](C:/Users/%E5%B0%8FK/Pictures/image-20210428004610692.png)
+
+
+
+
 

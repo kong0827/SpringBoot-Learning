@@ -56,7 +56,7 @@ public class StatementHandlerTest {
 
 
     /**
-     * 对象参数测试
+     * 对象参数测试getNamedParams
      */
     @Test
     public void testInsert() {
