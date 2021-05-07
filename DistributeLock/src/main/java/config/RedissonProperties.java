@@ -8,16 +8,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @date 2021/3/25 10:34
  */
 @Data
-@ConfigurationProperties(prefix = "redisson")
+@ConfigurationProperties(prefix = "spring.redis")
 public class RedissonProperties {
-
-    private String address;
 
     private int database = 0;
 
+    /**
+     * 等待节点回复命令的时间。该时间从命令发送成功时开始计时
+     */
+    private int timeout;
+
     private String password;
 
-    private int timeout;
+    private String mode;
 
     /**
      * 池配置
@@ -25,12 +28,17 @@ public class RedissonProperties {
     private RedisPoolProperties pool;
 
     /**
-     * 单机
+     * 单机信息配置
      */
     private RedisSingleProperties single;
 
     /**
-     * 哨兵
+     * 集群 信息配置
+     */
+    private RedissonClusterProperties cluster;
+
+    /**
+     * 哨兵配置
      */
     private RedissonSentinelProperties sentinel;
 
@@ -38,11 +46,5 @@ public class RedissonProperties {
      * 主从
      */
     private RedissonMasterSlaveProperties masterSlave;
-
-    /**
-     * 集群
-     */
-    private RedissonClusterProperties cluster;
-
 
 }

@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class AsyncTaskServiceImpl extends TaskService {
 
-    @Async
+    @Async(value = "pool")
     @Override
     public void oneTask() throws InterruptedException {
         super.oneTask();
     }
 
-    @Async
+    @Async(value = "pool")
     @Override
     public void twoTask() throws InterruptedException {
         super.twoTask();

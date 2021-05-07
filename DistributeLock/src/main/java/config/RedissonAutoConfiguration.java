@@ -1,5 +1,7 @@
 package config;
 
+
+
 import org.apache.commons.lang.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -29,14 +31,11 @@ public class RedissonAutoConfiguration {
 
     @Autowired
     RedissonProperties redisProperties;
-    /**
-     * 单机
-     * @return
-     */
+
+
     /**
      * 单机模式 redisson 客户端
      */
-
     @Bean
     @ConditionalOnProperty(name = "spring.redis.mode", havingValue = "single")
     RedissonClient redissonSingle() {
@@ -122,5 +121,44 @@ public class RedissonAutoConfiguration {
         }
 
         return Redisson.create(config);
+    }
+
+    /**
+     * 主从
+     * @return
+     */
+    RedissonClient redissonClientMasterSalve() {
+        Config config = new Config();
+        try {
+            String address = redisProperties.getMasterSlave().getMasterAddress();
+            String password = redisProperties.getPassword();
+            int database = redisProperties.getDatabase();
+            String[] addrTokens = address.split(",");
+            String masterNodeAddr = addrTokens[0];
+            /**设置主节点ip*/
+            config.useMasterSlaveServers().setMasterAddress(masterNodeAddr);
+            if (StringUtils.isNotBlank(password)) {
+                config.useMasterSlaveServers().setPassword(password);
+            }
+            config.useMasterSlaveServers().setDatabase(database);
+            /**设置从节点，移除第一个节点，默认第一个为主节点*/
+            List<String> slaveList = new ArrayList<>();
+            for (String addrToken : addrTokens) {
+                slaveList.add(GlobalConstant.REDIS_CONNECTION_PREFIX.getConstant_value() + addrToken);
+            }
+            slaveList.remove(0);
+
+            config.useMasterSlaveServers().addSlaveAddress((String[]) slaveList.toArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Redisson.create(config);
+    }
+
+    @Bean
+    DistributedLocker distributedLocker(RedissonClient redissonClient) {
+        DistributedLocker locker = new DistributedLocker();
+        locker.setRedissonClient(redissonClient);
+        return locker;
     }
 }

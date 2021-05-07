@@ -1,10 +1,5 @@
-server:
-  port: 9000
 spring:
   redis:
-    host: 47.102.218.26
-    password: root
-    port: 6379
     cluster:
       failed-attempts: 3
       master-connection-pool-size: 64
@@ -14,6 +9,9 @@ spring:
       retry-interval: 1500
       scan-interval: 1000
       slave-connection-pool-size: 64
+    database: 0
+    mode: single
+    password: ''
     pool:
       conn-timeout: 3000
       max-active: 8
@@ -23,9 +21,10 @@ spring:
       size: 10
       so-timeout: 3000
     sentinel:
-      fail-max: ''
+      fail-max: 3
       master: business-master
       master-onlyWrite: true
       nodes: ''
     single:
       address: 192.168.60.23:6379
+    timeout: 3000

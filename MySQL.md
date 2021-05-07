@@ -307,3 +307,25 @@ Explain 用来分析 SELECT 查询语句，开发人员可以通过分析 Explai
 `TINYINT`,  `SMALLINT`,  `MEDIUMINT`, ` INT`,  `BIGINT` 分别使用 8, 16, 24, 32, 64 位存储空间，一般情况下越小的列越好。
 
 `INT(11) `中的数字只是规定了交互工具显示字符的个数，对于存储和计算来说是没有意义的。
+
+
+
+### 大表禁止join
+
+做这个限制有两个原因：
+
+一是优化器很弱，涉及多个表的查询，往往得不到很好的查询计划
+
+二是执行器很弱，只有nested loop join，block nested loop join和index nested loop join。
+
+1. nested loop join就是分别从两个表读一行数据进行两两对比，复杂度是n^2
+
+2. block nested loop join是分别从两个表读很多行数据，然后进行两两对比，复杂度也是n^2，只是少了些函数调用等overhead
+
+3. index nested loop join是从第一个表读一行，然后在第二个表的索引中查找这个数据，索引是B+树索引，复杂度可以近似认为是nlogn，比上面两个好很多，**这就是要保证关联字段有索引的原因**
+
+重构查询的方式里面提到，需要考虑实际情况，看看是否有必要将一个复杂的查询分解成多个简单的查询，并不一定要把所有的工作全都移交给数据库
+
+Join拆解的核心就是利用In关键字
+
+确实需要两个表里的数据链接在一起，我们可以做个冗余，建表的时候，就把这些列放在一个表里，比如一开始有student(id, name)，class(id, description)，student_class(student_id, class_id)三张表，这样是符合数据库范式的(第一范式，第二范式，第三范式，BC范式等)，没有任何冗余，但是马上就不符合“编程规范“了，那我们可以用一张大表代替它，student_class_full(student_id, class_id, name, description)，这样name和description可能要被存储多份，但是由于不需要join了，查询的性能就可以提高很多了。
