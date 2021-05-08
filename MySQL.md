@@ -102,7 +102,7 @@ InnoDB存储引擎最小存储单位的，叫做页(Page)，默认一页为16kb�
 
 
 
-### 什么是聚集索引
+### 5、什么是聚集索引
 
 https://zoyi14.smartapps.cn/pages/note/index?slug=8991cbca3854&origin=share&hostname=baiduboxapp&_swebfr=1
 
@@ -120,7 +120,7 @@ InnoDB的普通索引的叶子节点储存主键值
 
 
 
-### 为什么InnoDB要建主键，推荐自增的整数主键
+### 6、为什么InnoDB要建主键，推荐自增的整数主键
 
 为什么建主键？
 
@@ -132,9 +132,19 @@ InnoDB的普通索引的叶子节点储存主键值
 
 聚簇索引的顺序和磁盘中数据的存储顺序是一致的，如果主键不是自增id，那么可以想 象，它会干些什么，`不断地调整数据的物理地址、分页`，当然也有其他一些措施来减少这些操作，但却无法彻底避免。但，如果是自增的，那就简单了，它只需要一 页一页地写，索引结构相对紧凑，磁盘碎片少，效率也高
 
+**3. 会出现页分裂**
+
+![image-20210508150229082](https://gitee.com/kongxiangjin/images/raw/master/img/20210508150230.png)
+
+![image-20210508150139235](https://gitee.com/kongxiangjin/images/raw/master/img/20210508150141.png)
+
+![image-20210508150203811](https://gitee.com/kongxiangjin/images/raw/master/img/20210508150205.png)
 
 
-### 为什么非主键索引结构叶子结点存储的是主键值
+
+
+
+### 7、为什么非主键索引结构叶子结点存储的是主键值
 
 **1. 保持一致性：**
 当数据库表进行DML操作时，同一行记录的页地址会发生改变，因非主键索引保存的是主键的值，无需进行更改。
@@ -144,11 +154,11 @@ Innodb数据本身就已经汇聚到主键索引所在的B+树上了， 如果�
 
 
 
-### MySQL 事务
+### 8、MySQL 事务
 
-### MySQL 的隔离级别
+### 9、MySQL 的隔离级别
 
-### 5、什么是回表查询，覆盖索引
+### 10、什么是回表查询，覆盖索引
 
 **回表查询：**
 
@@ -231,7 +241,7 @@ create table user(
 
 
 
-### 性能优化
+### 11、性能优化
 
 #### 1、使用 Explain 进行分析
 
@@ -302,7 +312,7 @@ Explain 用来分析 SELECT 查询语句，开发人员可以通过分析 Explai
 
 
 
-### 数据库中INT(11)，11代表什么意思
+### 12、数据库中INT(11)，11代表什么意思
 
 `TINYINT`,  `SMALLINT`,  `MEDIUMINT`, ` INT`,  `BIGINT` 分别使用 8, 16, 24, 32, 64 位存储空间，一般情况下越小的列越好。
 
@@ -310,7 +320,7 @@ Explain 用来分析 SELECT 查询语句，开发人员可以通过分析 Explai
 
 
 
-### 大表禁止join
+### 13、大表禁止join
 
 做这个限制有两个原因：
 
@@ -329,3 +339,106 @@ Explain 用来分析 SELECT 查询语句，开发人员可以通过分析 Explai
 Join拆解的核心就是利用In关键字
 
 确实需要两个表里的数据链接在一起，我们可以做个冗余，建表的时候，就把这些列放在一个表里，比如一开始有student(id, name)，class(id, description)，student_class(student_id, class_id)三张表，这样是符合数据库范式的(第一范式，第二范式，第三范式，BC范式等)，没有任何冗余，但是马上就不符合“编程规范“了，那我们可以用一张大表代替它，student_class_full(student_id, class_id, name, description)，这样name和description可能要被存储多份，但是由于不需要join了，查询的性能就可以提高很多了。
+
+
+
+### 14、MySQL对分页的支持
+
+简单来说MySQL对分页的支持是通过limit子句。请看下面的例子。
+
+```sql
+limit关键字的用法是
+LIMIT [offset,] rows
+offset是相对于首行的偏移量(首行是0)，rows是返回条数。
+
+# 每页10条记录，取第一页，返回的是前10条记录
+select * from tableA limit 0,10;
+# 每页10条记录，取第二页，返回的是第11条记录，到第20条记录，
+select * from tableA limit 10,10;
+```
+
+这里提一嘴的是，MySQL在处理分页的时候是这样的：
+
+limit 1000,10 - 过滤出1010条数据，然后丢弃前1000条，保留10条。当偏移量大的时候，性能会有所下降。
+
+limit 100000,10 - 会过滤10w+10条数据，然后丢弃前10w条。如果在分页中发现了性能问题，可以根据这个思路调优
+
+即使前10000个会扔掉，mysql也会通过二级索引上的主键id,去聚簇索引上查一遍数据，这可是10000次随机io，自然慢成哈士奇。这里可能会提出疑问，为什么会有这种行为，这是和mysql的分层有关系，limit offset 只能作用于引擎层返回的结果集
+
+**解决方案**
+
+https://mp.weixin.qq.com/s/iFVbwnYY2gJqfuYAA6c-Aw
+
+- 利用子查询 - 利用表的覆盖索引来加速分页查询 
+
+  ```sql
+  SELECT * from blog where id >= (SELECT id from blog LIMIT 1766131,1) LIMIT 20;
+  ```
+
+- 利用连接 - 利用表的覆盖索引来加速分页查询
+
+  ```sql
+  SELECT * from blog  t1 JOIN (SELECT id from blog LIMIT 1766131, 20) t2  on t1.id = t2.id
+  ```
+
+- 复合索引优化
+
+  **数据表 collect**
+
+  ```sql
+  collect ( id, title ,info ,vtype) ，
+  title varchar(20)  定长
+  info  text,
+  id    int          主键 
+  vtype tinyint      索引
+  
+  select id,title from collect limit 90000,10;
+  很慢 
+  
+  select id from collect order by id limit 90000,10;
+  很快 因为用到id主键索引
+  
+  
+  select id,title from collect where id>=(select id from collect order by id limit 90000,1) limit 10;
+  很快 因为用到id主键索引
+  
+  select id from collect where vtype=1 order by id limit 90000,10;
+  很慢
+  vtype 做了索引了啊？怎么会慢呢？vtype做了索引是不错，如果直接使用
+  select id from collect where vtype=1 limit 1000,10;
+  是很快的，基本上0.05秒，可是提高90倍，从9万开始，那就是0.05*90=4.5秒的速度了。和测试结果8-9秒到了一个数量级。
+  
+  
+  ```
+
+### 15、count(\*) 和 count(1)和count(列名)区别
+
+- count(*) 包括了所有的列，相当于行数，在统计结果的时候，不会忽略列值为NULL
+
+- count(1) 包括了忽略所有列，用1代表代码行，在统计结果的时候，不会忽略列值为NULL
+
+- count(列名) 只包括列名那一列，在统计结果的时候，会忽略列值为空（这里的空不是只空字符串或者0，而是表示null）的计数，即某个字段值为NULL时，不统计。
+
+- 列名为主键，count(列名)会比count(1)快 。列名不为主键，count(1)会比count(列名)快。
+
+- 如果表多个列并且没有主键，则 count（1） 的执行效率优于 count（*） 。
+
+- 如果有主键，则 select count（主键）的执行效率是最优的。
+
+- 如果表只有一个字段，则 select count（*）最优。
+
+  
+
+### 16、select * 和 select 所有字段
+
+- SELECT *，需要数据库先 Query Table Metadata For Columns，一定程度上为数据库增加了负担
+
+- 索引问题
+
+  - `select col1 from table` 和 `select * from table`
+
+    ruguo col1有索引 ，mysql 是可以不用读 data，直接使用 index 里面的值就返回结果的。一旦用了 select *，就会有其他列需要读取，这时在读完 index 以后还需要去读 data 才会返回结果，这样就造成了额外的性能开销。
+
+### 17、建立组合索引，必须把区分度高的字段放在前面
+
+　　能够更加有效的过滤数据
