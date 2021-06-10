@@ -42,6 +42,7 @@
         <module>SpringAnnotation</module>
         <module>DistributeLock</module>
         <module>Knife4j</module>
+        <module>Test</module>
         <module>threadlocal</module>
     </modules>
 
