@@ -26,4 +26,6 @@ public class ThreadLocal_Demo_02 {
             thread.start();
         }
     }
+
+
 }
