@@ -175,3 +175,124 @@ for (int i = 0; i < 5; i++) {
 
 
 
+### ThreadLocal的核心方法
+
+#### 1、set方法
+
+```java
+/**
+ * 设置当前线程对应的ThreadLocal的值
+ * 
+ * @param value 将要保存在当前线程对应的ThreadLocal的值
+ */
+public void set(T value) {
+  // 获取当前线程
+  Thread t = Thread.currentThread();
+  // 获取此线程对象中维护的ThreadLocalMap对象
+  ThreadLocalMap map = getMap(t);
+  // 判断map是否存在
+  if (map != null)
+    // 存在则调用map.set设置此实体的entry
+    map.set(this, value);
+  else
+    // 1、当前线程Thread 不存在ThreadLocalMap对象
+    // 2、则调用createMap进行ThreadLocalMap对象的初始化
+    // 3、并将t(当前线程)和value(t对应的值)作为第一个entry存放到ThreadLocalMap对象中
+    createMap(t, value);
+}
+
+/**
+ * 获取当前线程Thread对应维护的ThreadLocalMap
+ * 
+ * @param value 将要保存在当前线程对应的ThreadLocal的值
+ */
+ThreadLocalMap getMap(Thread t) {
+  return t.threadLocals;
+}
+
+/**
+ * 创建当前线程Thread对应维护的ThreadLocalMap
+ *
+ * @param t 当前线程
+ * @param firstValue 存放到map中的第一个entry的值
+ */
+void createMap(Thread t, T firstValue) {
+  // 这里的this是调用此方法的threadLocal
+  t.threadLocals = new ThreadLocalMap(this, firstValue);
+}
+
+```
+
+**代码执行流程**
+
+1. 首先获取当前线程，并根据当前线程获取一个Map
+2. 如果获取的Map不为空，则将参数设置到Map中(当前threadLocal的引用作为key)
+3. 如果Map为空，则给该线程创建Map，并设置初始值
+
+#### 2、get方法
+
+```java
+/**
+ * 返回当前线程中保存ThreadLocal的值
+ * 如果当前线程没有此ThreadLocal变量
+ * 则会通过调用{@link #initialValue}方法进行初始化值
+ * 
+ * @return 返回当前线程对应的此ThreadLocal的值
+ */
+public T get() {
+  // 获取当前线程
+  Thread t = Thread.currentThread();
+  // 获取此线程对象中维护的ThreadLocal对象
+  ThreadLocalMap map = getMap(t);
+  // 如果此map存在
+  if (map != null) {
+    // 以当前的ThreadLocal为key, 调用getEntry获取对应存储的entry
+    ThreadLocalMap.Entry e = map.getEntry(this);
+    // 对e进行判空
+    if (e != null) {
+      @SuppressWarnings("unchecked")
+      // 获取存储实体e对应的value值
+      // 即为我们想要的当前线程对应的ThreadLocal的值
+      T result = (T)e.value;
+      return result;
+    }
+  }
+  // 初始化
+  // 第一种情况：map不存在，表示此线程没有维护的ThreadLocal对象
+  // 第二种情况：map存在，但是没有于当前ThreadLocal关联的entry
+  return setInitialValue();
+}
+
+/**
+ * 初始化
+ */
+private T setInitialValue() {
+  // 调用initalValue获取初始化的值
+  // 此方法可以被子类重写，如果不重写默认返回为null
+  T value = initialValue();
+  // 获取当前线程对象
+  Thread t = Thread.currentThread();
+  // 获取此线程对象中维护的ThreadLocalMap对象
+  ThreadLocalMap map = getMap(t);
+  if (map != null)
+    // 存在则调用map.set设置此实体的entry
+    map.set(this, value);
+  else
+    // 1）当前线程Thread 不存在ThreadLocalMap对象
+    // 2）则调用createMap进行ThreadLocalMap对象的初始化
+    // 3）并将 t(当前线程)和value(t对应的值)作为第一个entry存放至ThreadLocalMap中
+    createMap(t, value);
+  return value;
+}
+```
+
+
+
+#### 3、remove方法
+
+#### 4、initialValue方法
+
+
+
+
+
