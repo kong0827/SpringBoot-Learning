@@ -479,6 +479,10 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 
 
 
+**那既然key为null，调用get/set方法value也会被置为null，那么还有必要remove吗**
+
+可能长时间不执行get、set方法
+
 **假设使用强引用**
 
 ​	假设在业务代码中使用完ThreadLocal ，threadLocal Ref被回收了。
@@ -521,6 +525,16 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 #### hash冲突
 
 
+
+
+
+1、ThreadLocal是什么
+
+2、ThreadLocal的应用
+
+spring @transactional
+
+3、ThreadLocal内存泄漏
 
 
 
