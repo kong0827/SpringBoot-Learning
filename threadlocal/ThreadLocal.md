@@ -118,7 +118,9 @@ for (int i = 0; i < 5; i++) {
 }
 ```
 
+在处理多线程并发安全的方法中，最常用的方法就是使用锁，通过锁来控制不同线程对临界区的访问。但是，无论是什么样的锁，乐观锁还是悲观锁，都会在并发冲突的时候对性能产生一定的影响。
 
+ThreadLocal 提供了一种与众不同的线程安全方式，它不是在发生线程冲突时想办法解决冲突，而是彻底的避免了冲突的发生
 
 **区别**
 
@@ -172,6 +174,49 @@ for (int i = 0; i < 5; i++) {
 1、这样设计之后每个`Map`存储的`Entry`数量会变少。因为之前存储的数量由`Thread`的数量决定，现在由`ThreadLocal`的数量决定。在实际运用当中，往往`ThreadLocal`的数量要少于`Thread`的数量
 
 2、当`Thread`销毁之后，对应的`ThreadLocalMap`也会随之销毁，减少内存的使用
+
+
+
+### ThreadLocal中线程隔离原理
+
+```java
+public class Thread {
+     /* 
+     * ThreadLocal values pertaining to this thread. This map is maintained
+     * by the ThreadLocal class.
+     */
+    ThreadLocal.ThreadLocalMap threadLocals = null;
+
+    /*
+     * InheritableThreadLocal values pertaining to this thread. This map is
+     * maintained by the InheritableThreadLocal class.
+     */
+    ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
+}
+```
+
+Threadlocals 和inheritableThreadLocals 是一个Thread 的两个属性，所以每个Thread 的threadlocales 是孤立的和排他的。在Thread的init方法中，父Thread创建子Thread时，会复制inheritableThreadLocals的值，但不会复制threadlocals的值
+
+```java
+// 线程中的init方法
+private void init(ThreadGroup g, Runnable target, String name, 
+                      long stackSize, AccessControlContext acc) { 
+    ... 
+        //当父线程的inheritableThreadLocals值不为null时
+        //所有inheritable中的值都会被传递到子线程
+        if (parent.inheritableThreadLocals != null) 
+            this.inheritableThreadLocals = 
+               // 
+                ThreadLocal.createInheritedMap(parent.inheritableThreadLocals); 
+     ... 
+    } 
+
+
+// 
+static ThreadLocalMap createInheritedMap(ThreadLocalMap parentMap) {
+        return new ThreadLocalMap(parentMap);
+    }
+```
 
 
 
@@ -286,11 +331,228 @@ private T setInitialValue() {
 }
 ```
 
+**执行流程**
+
+1. 首先获取当前线程，根据当前线程获取一个Map
+2. 如果获取的Map不为空，则在Map中以ThreadLocal的引用作为key来获取Map中对应的Entry，否则转到4
+3. 如果entry不为null，则返回e.value，否则转到4
+4. Map为空或者e为空，则通过initialValue函数获取初始值value，然后用ThreadLocal的引用和value作为firstKey和firstValue创建新的Map
+
 
 
 #### 3、remove方法
 
+```java
+/**
+ * 删除当前线程中保存的ThreadLocal对应的实体entry
+ */
+public void remove() {
+  // 获取当前线程对象中维护的ThreadLocalMap对象
+   ThreadLocalMap m = getMap(Thread.currentThread());
+   if (m != null)
+     // 如果Map存在，则调用remove方法
+     // 以当前ThreadLocal为key删除对应的实体entry
+     m.remove(this);
+ }
+```
+
+**执行流程**
+
+1. 获取当前线程，并根据当前线程获取一个Map
+2. 如果获取的Map不为空，则移除当前ThreadLocal对应的entry
+
 #### 4、initialValue方法
+
+```java
+/**
+ * 返货当前线程对应的ThreadLocal的初始值
+ *
+ * 此方法的第一此调用发生在当线程通过get方法访问此线程的ThreadLocal值时
+ * 除非此线程先调用了set方法，在这种情况下，initalValue才不会被这个线程调用
+ * 通常情况下，每个线程最多调用一次这个方法
+ *
+ * 这个方法仅仅简单的方法返回null
+ * 如果程序员向ThreadLocal线程局部变量有一个除null以外的初始值
+ * 必须通过子类继承的方法去重写此方法
+ * 通常可以通过匿名内部类的方式实现
+ *
+ */
+protected T initialValue() {
+  return null;
+}
+```
+
+**执行流程**
+
+1. 这个方法是一个延迟调用方法，从上面的代码可知，在set方法还未调用而先调用了`get`方法时才执行，并且仅执行1次
+2. 这个方法缺省实现直接返回一个`null`
+3. 如果要返回除null之外的初始值，可以重写此方法
+
+
+
+可以看出`set、get、remove`方法的底层原理比较简单，但都包含一个共同的特点，那就是使用`ThreadLocalMap`。
+
+
+
+### ThreadLocalMap源码分析
+
+`ThreadLocalMap` 是 `ThreadLocal` 中的一个静态内部类，本质上是一个简单的 `Map` 结构。 `key`是`ThreadLocal`类型，`value`是`ThreadLocal`保存的值，底层是一个Entry类型数组组成的数据结构
+
+#### 基本结构
+
+**成员变量**
+
+```java
+        /**
+         * 初始容量
+         */
+        private static final int INITIAL_CAPACITY = 16;
+
+        /**
+         * 存放数据的table，Entry类
+         * 必须是2的整数幂
+         */
+        private Entry[] table;
+
+        /**
+         * 数组中entrys的个数，可以用于判断table当前使用量是否超过阈值
+         */
+        private int size = 0;
+
+        /**
+         * 进行扩容的阈值，表使用量大于它的时候进行扩容
+         */
+        private int threshold; // Default to 0
+```
+
+**存储结构-Entry**
+
+```java
+/**
+ * Entry集成WeakReference，并且使用ThreadLocal作为key
+ * 如果key为null(entry.get() == null), 意味着key不在被引用
+ * 因此这时候entry也可以从table中清除
+ */
+static class Entry extends WeakReference<ThreadLocal<?>> {
+  /** The value associated with this ThreadLocal. */
+  Object value;
+
+  Entry(ThreadLocal<?> k, Object v) {
+    super(k);
+    value = v;
+  }
+}
+```
+
+​	 在ThreadLocalMap中，也是用Entry来保存K-V结构数据的。不过Entry中的key只能是ThreadLocal对象，这点在构造方法中已经限定死了。
+
+​	另外，Entry继承WeakReference，也就是key（ThreadLocal）是弱引用，其目的是将ThreadLocal对象的生命周期和线程生命周期解绑。
+
+
+
+#### 弱引用和内存泄漏
+
+**（1） 内存泄漏相关概念**
+
+内存泄漏主要有两种情况：一种是堆中申请的空间没有释放；另一个是对象不再使用，但仍在内存中。
+
+- Memory overflow:内存溢出，没有足够的内存提供申请者使用。
+- Memory leak: 内存泄漏是指程序中己动态分配的堆内存由于某种原因程序未释放或无法释放，造成系统内存的浪费，导致程序运行速度减慢甚至系统崩溃等严重后果。内存泄漏的堆积终将导致内存溢出。
+
+**（2）  弱引用相关概念**
+
+​	Java中的引用有4种类型： 强、软、弱、虚。当前这个问题主要涉及到强引用和弱引用：
+
+​	**强引用（“Strong” Reference）**，就是我们最常见的普通对象引用，只要还有强引用指向一个对象，就能表明对象还“活着”，垃圾回收器就不会回收这种对象。
+
+​	**弱引用（WeakReference）**，垃圾回收器一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。
+
+
+
+![image-20210809005358741](https://gitee.com/kongxiangjin/images/raw/master/img/image-20210809005358741.png)
+
+如果key使用弱引用，在使用完ThreadLocal后，threadLocal Ref被回收了
+
+由于ThreadLocalMap中只持有ThreadLocal的弱引用，没有任何强引用指向threadLocal实例，所以threadlocal可以被gc回收，此时Entry中的key=null
+
+但是在没有手动删除这个Entry以及CurrentThread依然运行的前提下，也存在有强引用连CurrentThreadRef-> currentThread ->threadLocalMap -> entry -> value，value不会被回收，而这块value永远不会访问到了，导致value内存泄漏
+
+
+
+**假设使用强引用**
+
+​	假设在业务代码中使用完ThreadLocal ，threadLocal Ref被回收了。
+
+​	但是因为threadLocalMap的Entry强引用了threadLocal，造成threadLocal无法被回收。
+
+​	在没有手动删除这个Entry以及CurrentThread依然运行的前提下，始终有强引用链 threadRef->currentThread->threadLocalMap->entry，Entry就不会被回收（Entry中包括了ThreadLocal实例和value），导致Entry内存泄漏。
+
+​	也就是说，ThreadLocalMap中的key使用了强引用， 是无法完全避免内存泄漏的。
+
+
+
+**为什么会出现内存泄漏**
+
+比较以上两种情况，可以发现内存泄漏的发生跟ThreadLocalMap中的key是否使用弱引用是没有关系的，那么内存泄漏的真正原因是什么呢？
+
+可以发现，在以上两种内存泄漏情况下，都有两个前提
+
+1. 没有手动删除这个Entry
+2. CurrentThread依然在运行
+
+第一点很好理解，之哟啊在使用完ThreadLocal，调用remove方法删除对应的Entry，就能避免内存泄漏
+
+第二点则是因为ThreadLocalMap是Thread的一个属性，被当前线程引用，所以它的声明周期和Thread一样长。那么使用完ThreadLocal，如果当前线程也随之执行结束，ThreadLocalMap自然也会 被gc回收，从根源避免了内存泄漏。
+
+综上，**ThreadLocal内存泄漏的根源是**：由于ThreadLocalMap的生命周期跟Thread一样长，如果没有手动删除对应key就会导致内存泄漏。
+
+
+
+**为什么要使用弱引用**
+
+经过根系，发现无论ThreadLocalMap中的key使用哪种类型引用都无法完全避免内存泄漏，跟强弱引用无关。那么为什么要使用弱引用呢
+
+事实上，在ThreadLocalMap中的set/getEntry方法中，会对key为null（也即是ThreadLocal为null）进行判断，如果为null的话，那么是会对value置为null的。
+
+这就意味着使用完ThreadLocal，CurrentThread依然运行的前提下，就算忘记调用remove方法，**弱引用比强引用可以多一层保障**：弱引用的ThreadLocal会被回收，对应的value在下一次ThreadLocalMap调用set,get,remove中的任一方法的时候会被清除，从而避免内存泄漏。
+
+
+
+#### hash冲突
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
