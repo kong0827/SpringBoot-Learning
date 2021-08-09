@@ -266,6 +266,117 @@ void createMap(Thread t, T firstValue) {
   t.threadLocals = new ThreadLocalMap(this, firstValue);
 }
 
+/**
+ * 设置threadlocal关联的value值
+ */
+private void set(ThreadLocal<?> key, Object value) {
+  
+  Entry[] tab = table;
+  int len = tab.length;
+  
+  // 查找索引位置
+  int i = key.threadLocalHashCode & (len-1);
+
+  for (Entry e = tab[i];
+       e != null;
+       // 下一个索引位置
+       e = tab[i = nextIndex(i, len)]) {
+    ThreadLocal<?> k = e.get();
+
+    // 如果key相同，则替换value
+    if (k == key) {
+      e.value = value;
+      return;
+    }
+
+    // 如果key为null，取代旧的entry
+    if (k == null) {
+      replaceStaleEntry(key, value, i);
+      return;
+    }
+  }
+
+  tab[i] = new Entry(key, value);
+  int sz = ++size;
+  if (!cleanSomeSlots(i, sz) && sz >= threshold)
+    rehash();
+}
+
+
+
+private void replaceStaleEntry(ThreadLocal<?> key, Object value,
+                                       int staleSlot) {
+  Entry[] tab = table;
+  int len = tab.length;
+  Entry e;
+
+  .......
+
+    for (int i = nextIndex(staleSlot, len);
+       (e = tab[i]) != null;
+       i = nextIndex(i, len)) {
+    ThreadLocal<?> k = e.get();
+
+    // If we find key, then we need to swap it
+    // with the stale entry to maintain hash table order.
+    // The newly stale slot, or any other stale slot
+    // encountered above it, can then be sent to expungeStaleEntry
+    // to remove or rehash all of the other entries in run.
+    if (k == key) {
+      e.value = value;
+
+      tab[i] = tab[staleSlot];
+      tab[staleSlot] = e;
+
+      // Start expunge at preceding stale entry if it exists
+      if (slotToExpunge == staleSlot)
+        slotToExpunge = i;
+      cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);
+      return;
+    }
+
+    ........
+}
+  
+/**
+ * 删除一个陈旧的条目通过再处理任何可能碰撞条目躺陈旧槽和下一个空槽之间
+ */
+private int expungeStaleEntry(int staleSlot) {
+  Entry[] tab = table;
+  int len = tab.length;
+
+  // 删除
+  tab[staleSlot].value = null;
+  tab[staleSlot] = null;
+  size--;
+
+  // Rehash until we encounter null
+  Entry e;
+  int i;
+  for (i = nextIndex(staleSlot, len);
+       (e = tab[i]) != null;
+       i = nextIndex(i, len)) {
+    ThreadLocal<?> k = e.get();
+    if (k == null) {
+      e.value = null;
+      tab[i] = null;
+      size--;
+    } else {
+      int h = k.threadLocalHashCode & (len - 1);
+      if (h != i) {
+        tab[i] = null;
+
+        // Unlike Knuth 6.4 Algorithm R, we must scan until
+        // null because multiple entries could have been stale.
+        while (tab[h] != null)
+          h = nextIndex(h, len);
+        tab[h] = e;
+      }
+    }
+  }
+  return i;
+}
+
 ```
 
 **代码执行流程**
@@ -478,6 +589,8 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 但是在没有手动删除这个Entry以及CurrentThread依然运行的前提下，也存在有强引用连CurrentThreadRef-> currentThread ->threadLocalMap -> entry -> value，value不会被回收，而这块value永远不会访问到了，导致value内存泄漏
 
 
+
+弱引用并不能解决内存泄漏问题，实际作用就是标记的不再使用的entry, 便于扫描到进行value置为null
 
 **那既然key为null，调用get/set方法value也会被置为null，那么还有必要remove吗**
 
