@@ -475,22 +475,7 @@ public void remove() {
 #### 4、initialValue方法
 
 ```java
-/**
- * 返货当前线程对应的ThreadLocal的初始值
- *
- * 此方法的第一此调用发生在当线程通过get方法访问此线程的ThreadLocal值时
- * 除非此线程先调用了set方法，在这种情况下，initalValue才不会被这个线程调用
- * 通常情况下，每个线程最多调用一次这个方法
- *
- * 这个方法仅仅简单的方法返回null
- * 如果程序员向ThreadLocal线程局部变量有一个除null以外的初始值
- * 必须通过子类继承的方法去重写此方法
- * 通常可以通过匿名内部类的方式实现
- *
- */
-protected T initialValue() {
-  return null;
-}
+/** * 返货当前线程对应的ThreadLocal的初始值 * * 此方法的第一此调用发生在当线程通过get方法访问此线程的ThreadLocal值时 * 除非此线程先调用了set方法，在这种情况下，initalValue才不会被这个线程调用 * 通常情况下，每个线程最多调用一次这个方法 * * 这个方法仅仅简单的方法返回null * 如果程序员向ThreadLocal线程局部变量有一个除null以外的初始值 * 必须通过子类继承的方法去重写此方法 * 通常可以通过匿名内部类的方式实现 * */protected T initialValue() {  return null;}
 ```
 
 **执行流程**
@@ -514,50 +499,18 @@ protected T initialValue() {
 **成员变量**
 
 ```java
-        /**
-         * 初始容量
-         */
-        private static final int INITIAL_CAPACITY = 16;
-
-        /**
-         * 存放数据的table，Entry类
-         * 必须是2的整数幂
-         */
-        private Entry[] table;
-
-        /**
-         * 数组中entrys的个数，可以用于判断table当前使用量是否超过阈值
-         */
-        private int size = 0;
-
-        /**
-         * 进行扩容的阈值，表使用量大于它的时候进行扩容
-         */
-        private int threshold; // Default to 0
+        /**         * 初始容量         */        private static final int INITIAL_CAPACITY = 16;        /**         * 存放数据的table，Entry类         * 必须是2的整数幂         */        private Entry[] table;        /**         * 数组中entrys的个数，可以用于判断table当前使用量是否超过阈值         */        private int size = 0;        /**         * 进行扩容的阈值，表使用量大于它的时候进行扩容         */        private int threshold; // Default to 0
 ```
 
 **存储结构-Entry**
 
 ```java
-/**
- * Entry集成WeakReference，并且使用ThreadLocal作为key
- * 如果key为null(entry.get() == null), 意味着key不在被引用
- * 因此这时候entry也可以从table中清除
- */
-static class Entry extends WeakReference<ThreadLocal<?>> {
-  /** The value associated with this ThreadLocal. */
-  Object value;
-
-  Entry(ThreadLocal<?> k, Object v) {
-    super(k);
-    value = v;
-  }
-}
+/** * Entry集成WeakReference，并且使用ThreadLocal作为key * 如果key为null(entry.get() == null), 意味着key不在被引用 * 因此这时候entry也可以从table中清除 */static class Entry extends WeakReference<ThreadLocal<?>> {  /** The value associated with this ThreadLocal. */  Object value;  Entry(ThreadLocal<?> k, Object v) {    super(k);    value = v;  }}
 ```
 
-​	 在ThreadLocalMap中，也是用Entry来保存K-V结构数据的。不过Entry中的key只能是ThreadLocal对象，这点在构造方法中已经限定死了。
-
-​	另外，Entry继承WeakReference，也就是key（ThreadLocal）是弱引用，其目的是将ThreadLocal对象的生命周期和线程生命周期解绑。
+	 在ThreadLocalMap中，也是用Entry来保存K-V结构数据的。不过Entry中的key只能是ThreadLocal对象，这点在构造方法中已经限定死了。
+	
+	另外，Entry继承WeakReference，也就是key（ThreadLocal）是弱引用，其目的是将ThreadLocal对象的生命周期和线程生命周期解绑。
 
 
 
@@ -572,11 +525,11 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 
 **（2）  弱引用相关概念**
 
-​	Java中的引用有4种类型： 强、软、弱、虚。当前这个问题主要涉及到强引用和弱引用：
-
-​	**强引用（“Strong” Reference）**，就是我们最常见的普通对象引用，只要还有强引用指向一个对象，就能表明对象还“活着”，垃圾回收器就不会回收这种对象。
-
-​	**弱引用（WeakReference）**，垃圾回收器一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。
+	Java中的引用有4种类型： 强、软、弱、虚。当前这个问题主要涉及到强引用和弱引用：
+	
+	**强引用（“Strong” Reference）**，就是我们最常见的普通对象引用，只要还有强引用指向一个对象，就能表明对象还“活着”，垃圾回收器就不会回收这种对象。
+	
+	**弱引用（WeakReference）**，垃圾回收器一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。
 
 
 
@@ -598,13 +551,13 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 
 **假设使用强引用**
 
-​	假设在业务代码中使用完ThreadLocal ，threadLocal Ref被回收了。
-
-​	但是因为threadLocalMap的Entry强引用了threadLocal，造成threadLocal无法被回收。
-
-​	在没有手动删除这个Entry以及CurrentThread依然运行的前提下，始终有强引用链 threadRef->currentThread->threadLocalMap->entry，Entry就不会被回收（Entry中包括了ThreadLocal实例和value），导致Entry内存泄漏。
-
-​	也就是说，ThreadLocalMap中的key使用了强引用， 是无法完全避免内存泄漏的。
+	假设在业务代码中使用完ThreadLocal ，threadLocal Ref被回收了。
+	
+	但是因为threadLocalMap的Entry强引用了threadLocal，造成threadLocal无法被回收。
+	
+	在没有手动删除这个Entry以及CurrentThread依然运行的前提下，始终有强引用链 threadRef->currentThread->threadLocalMap->entry，Entry就不会被回收（Entry中包括了ThreadLocal实例和value），导致Entry内存泄漏。
+	
+	也就是说，ThreadLocalMap中的key使用了强引用， 是无法完全避免内存泄漏的。
 
 
 
@@ -635,21 +588,7 @@ static class Entry extends WeakReference<ThreadLocal<?>> {
 
 
 
-#### hash冲突
-
-
-
-
-
-1、ThreadLocal是什么
-
-2、ThreadLocal的应用
-
-spring @transactional
-
-3、ThreadLocal内存泄漏
-
-
+#### 待写-hash冲突
 
 
 
