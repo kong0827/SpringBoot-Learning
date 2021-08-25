@@ -95,3 +95,45 @@ rr是不可以解决幻读的，他解决的只是查询中的幻读现象，而
 
 ![image-20210823235434137](https://gitee.com/kongxiangjin/images/raw/master/img/image-20210823235434137.png)
 
+
+
+
+
+### 概念
+
+https://zhuanlan.zhihu.com/p/286775643
+
+多版本并发控制(Multi-Version Concurrency Control, MVCC)，是数据库常用的一种并发控制的手段，用于提供对数据库的并发访问。
+
+
+
+
+
+### MVCC作用
+
+#### 并发事务带来的问题
+
+#### 事务的隔离级别
+
+#### MVCC是否解决幻读
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

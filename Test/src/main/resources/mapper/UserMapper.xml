@@ -5,4 +5,10 @@
     <insert id="insert" parameterType="User">
         insert into user(name) values (#{name});
     </insert>
+
+    <update id="update" parameterType="User">
+        update user set name = #{name} where id = #{id}
+    </update>
+
+
 </mapper>

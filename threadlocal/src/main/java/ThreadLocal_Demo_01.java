@@ -18,20 +18,20 @@ public class ThreadLocal_Demo_01 {
 
     public static void main(String[] args) throws InterruptedException {
         ThreadLocal_Demo_01 demo_01 = new ThreadLocal_Demo_01();
-        for (int i = 0; i < 5; i++) {
-            Thread thread = new Thread(() -> {
-                demo_01.setContent(Thread.currentThread().getName() + "的数据");
-                System.out.println("---------");
-                System.out.println(Thread.currentThread().getName() + "---->" + demo_01.getContent());
-            });
-            thread.setName("线程" + i);
-            thread.start();
-        }
+//        for (int i = 0; i < 5; i++) {
+//            Thread thread = new Thread(() -> {
+//                demo_01.setContent(Thread.currentThread().getName() + "的数据");
+//                System.out.println("---------");
+//                System.out.println(Thread.currentThread().getName() + "---->" + demo_01.getContent());
+//            });
+//            thread.setName("线程" + i);
+//            thread.start();
+//        }
 
         /**
          * 使用synchronized解决线程并发问题
          */
-        Thread.sleep(1000);
+//        Thread.sleep(1000);
         System.out.println("-----synchronized-------");
         for (int i = 0; i < 5; i++) {
             Thread thread = new Thread(() -> {
