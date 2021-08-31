@@ -152,6 +152,16 @@ SET [GLOBAL|SESSION] TRANSACTION ISOLATION LEVEL level
 
 
 
+
+
+#### ReadView
+
+- m_ids: 在生成ReadView时，当前系统中活跃的读写事务的事务id列表
+- min_trx_id: 在生成ReadView时，当前系统中活跃事务的最小事务id
+- 
+
+
+
 #### MVCC是否解决幻读
 
 
