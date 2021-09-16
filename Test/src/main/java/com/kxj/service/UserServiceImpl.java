@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * @author xiangjin.kong
@@ -22,11 +24,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void addUser() {
         User user = new User();
-        user.setName("xx");
+        user.setName(usingUUID());
         user.setCreateTime(LocalDateTime.now());
-        user.setSex(0);
+        user.setSex((int) ((Math.random() * (10 - 1)) + 1));
         userMapper.insert(user);
-        addUser2();
+//        addUser2();
+    }
+
+    String usingUUID() {
+        UUID randomUUID = UUID.randomUUID();
+        return randomUUID.toString().replaceAll("-", "");
     }
 
     private void addUser2() {

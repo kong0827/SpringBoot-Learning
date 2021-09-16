@@ -27,10 +27,14 @@ public class UserServiceTest {
     @Before
     public void initData() {
 
-        User user1 = new User(1, "Jack", 1);
-        User user2 = new User(2, "Lucy", 0);
-        User user3 = new User(3, "Marry", 0);
-        User user4 = new User(4, "Tom", 1);
+        for (int i = 0; i < 5000; i++) {
+//            User user1 = new User(1, "Jack", 1);
+            userService.addUser();
+        }
+//        User user1 = new User(1, "Jack", 1);
+//        User user2 = new User(2, "Lucy", 0);
+//        User user3 = new User(3, "Marry", 0);
+//        User user4 = new User(4, "Tom", 1);
     }
 
     @Test

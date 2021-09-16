@@ -477,7 +477,7 @@ Mysql5.6之前的版本
 
 
 
-<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/3/30/1712b6ea19dbdb18~tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom:50%;" />
+<img src="https://gitee.com/kongxiangjin/images/raw/master/img/1712b6ea19dbdb18~tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom:50%;" />
 
 
 
@@ -489,7 +489,7 @@ Mysql5.6及之后版本
 
 
 
-<img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2020/3/30/1712b6ea1a5ce813~tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom:50%;" />
+<img src="https://gitee.com/kongxiangjin/images/raw/master/img/1712b6ea1a5ce813~tplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom:50%;" />
 
 
 
@@ -502,3 +502,18 @@ Mysql5.6及之后版本
 
 内部优化器会进行优化，对于n张表会有 n! 的算法，会计算出最优的组合。会极大的消耗CPU和内存，耗时严重，建议多表join，将其进行拆分出不同的查询
 
+
+
+
+
+### 20、索引失效原理
+
+**联合索引，为什么遵守最左前缀原则**
+
+假设有联合索引(A, B)
+
+A是有序的，B是无序的，当A相等时，B是有序的。B是无序的，无法通过索引树进行二分查找
+
+如果查询A>某个值且B=某个值，索引也会失效，同样原理，A>某个值，但是B是无序，无法在索引树上进行二分查找
+
+like同理

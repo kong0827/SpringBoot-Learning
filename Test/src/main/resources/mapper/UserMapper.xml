@@ -3,7 +3,7 @@
 <mapper namespace="com.kxj.mapper.UserMapper" >
 
     <insert id="insert" parameterType="User">
-        insert into user(name) values (#{name});
+        insert into user(name, sex) values(#{name}, #{sex});
     </insert>
 
     <update id="update" parameterType="User">
