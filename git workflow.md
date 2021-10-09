@@ -77,6 +77,17 @@
 
 
 
+开发期间要保持与master分支的同步
+
+```
+# 如果你使用rebase，将会得到更干净的提交记录，详细看后面rebase的介绍
+# on branch feature-download-page
+$ git fetch origin master
+$ git merge origin/master
+```
+
+
+
 
 
 
