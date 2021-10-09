@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +32,12 @@ public class UserServiceTest {
         User user2 = new User(2, "Lucy", 0);
         User user3 = new User(3, "Marry", 0);
         User user4 = new User(4, "Tom", 1);
+
     }
 
     @Test
-    public void test() {
+    public void test() throws InterruptedException {
+        userService.addUser();
 
 
     }
