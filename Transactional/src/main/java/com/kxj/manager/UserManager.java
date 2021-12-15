@@ -27,4 +27,8 @@ public class UserManager {
         userMapper.insert(user);
         throw new RuntimeException("foo");
     }
+
+    public void insert11(User user) {
+        userMapper.insert(user);
+    }
 }
