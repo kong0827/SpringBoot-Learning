@@ -90,7 +90,7 @@ show variables like '%isolation%';
 设置隔离级别
 
 ```sql
-SET [GLOBAL|SESSION] TRANSACTION ISOLATION LEVEL level
+SET [GLOBAL|SESSION] transaction_isolation  = level
 ```
 
 

@@ -2,8 +2,6 @@ package com.kxj.rollback;
 
 import com.kxj.rollback.service.RollbackService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,8 +25,8 @@ public class RollbackDemo {
     private RollbackService rollbackService;
 
     @GetMapping("test1")
-    public void test() throws Exception {
-        rollbackService.aTransactional();
+    public boolean test() throws Exception {
+        return rollbackService.aTransactional();
     }
 
 

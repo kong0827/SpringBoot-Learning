@@ -1,4 +1,4 @@
-package com.kxj.rollback.service;
+package com.kxj.service;
 
 /**
  * @author xiangjin.kong
@@ -6,6 +6,6 @@ package com.kxj.rollback.service;
  */
 public interface RollbackService {
 
-    boolean aTransactional() throws Exception;
+    void aTransactional();
 
 }

@@ -1,13 +1,12 @@
-package com.kxj.rollback.service;
+package com.kxj.service;
 
-import com.kxj.entity.User;
-import com.kxj.manager.UserManager;
+import com.kxj.entity.UserEntity;
+import com.kxj.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import javax.annotation.Resource;
 
 /**
  * @author xiangjin.kong
@@ -17,26 +16,25 @@ import javax.annotation.Resource;
 @Service
 public class RollbackServiceImpl implements RollbackService {
 
-    @Resource
-    private UserManager userManager;
+    @Autowired
+    UserRepository repository;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean aTransactional() {
-        userManager.insert11(new User(null, "cc"));
+    public void aTransactional() {
         try {
             log.info(TransactionSynchronizationManager.getCurrentTransactionName());
             bTransactional();
         } catch (Exception e) {
             log.error("捕获异常....");
         }
-        return true;
     }
+
 
     @Transactional(rollbackFor = Exception.class)
     public void bTransactional() {
         log.info(TransactionSynchronizationManager.getCurrentTransactionName());
-        userManager.insert11(new User(null, "ccc222cc"));
+        repository.save(new UserEntity(1, "xxxxxxxxxx"));
     }
 
 

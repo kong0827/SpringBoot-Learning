@@ -27,7 +27,6 @@
         <module>Cache</module>
         <module>JDBC</module>
         <module>MQ</module>
-        <module>mybatis</module>
         <module>WebSocket</module>
         <module>Redis</module>
         <module>MongoDB</module>
@@ -44,6 +43,7 @@
         <module>Knife4j</module>
         <module>Test</module>
         <module>threadlocal</module>
+        <module>JPA</module>
     </modules>
 
     <dependencies>
