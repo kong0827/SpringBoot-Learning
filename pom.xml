@@ -44,6 +44,7 @@
         <module>Test</module>
         <module>threadlocal</module>
         <module>JPA</module>
+        <module>Statemachine</module>
     </modules>
 
     <dependencies>
