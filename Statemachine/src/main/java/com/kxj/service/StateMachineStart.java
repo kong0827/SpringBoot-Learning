@@ -18,9 +18,14 @@ public class StateMachineStart implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Message message = MessageBuilder.withPayload(Events.E1).build();
+        Message message = MessageBuilder.withPayload(Events.START_DEAL).setHeader("content", "123").build();
         stateMachine.sendEvent(message);
-        stateMachine.sendEvent(Events.E2);
-        stateMachine.sendEvent(Events.E3);
+
+        boolean isError = stateMachine.hasStateMachineError();
+        if (isError) {
+            Object exception = stateMachine.getExtendedState().getVariables().get("exception");
+            System.out.println(exception);
+        }
+//        stateMachine.sendEvent(Events.FINISH);
     }
 }

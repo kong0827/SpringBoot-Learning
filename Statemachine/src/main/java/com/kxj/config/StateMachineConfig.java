@@ -1,9 +1,14 @@
 package com.kxj.config;
 
+import com.kxj.action.ErrorAction;
+import com.kxj.action.FinishAction;
+import com.kxj.action.StartDealAction;
 import com.kxj.enums.Events;
 import com.kxj.enums.States;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.EnableStateMachine;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
@@ -13,11 +18,22 @@ import org.springframework.statemachine.listener.StateMachineListener;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.state.State;
 
+import javax.annotation.Resource;
 import java.util.EnumSet;
 
+@Slf4j
 @Configuration
 @EnableStateMachine
 public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<States, Events> {
+
+
+    @Resource
+    private StartDealAction startDealAction;
+    @Resource
+    private FinishAction finishAction;
+    @Resource
+    private ErrorAction errorAction;
+
 
     /**
      * 状态机配置,自动启动,添加监听器
@@ -43,7 +59,7 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<States
     public void configure(StateMachineStateConfigurer<States, Events> states) throws Exception {
         states
                 .withStates()
-                .initial(States.SI)
+                .initial(States.TO_DEAL)
                 .states(EnumSet.allOf(States.class));
     }
 
@@ -57,13 +73,12 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<States
     public void configure(StateMachineTransitionConfigurer<States, Events> transitions) throws Exception {
         transitions
                 .withExternal()
-                .source(States.SI).target(States.S1).event(Events.E1)
                 .and()
                 .withExternal()
-                .source(States.S1).target(States.S2).event(Events.E2)
+                .source(States.TO_DEAL).target(States.DEALING).event(Events.START_DEAL).action(startDealAction, errorAction)
                 .and()
                 .withExternal()
-                .source(States.S1).target(States.S3).event(Events.E3);
+                .source(States.DEALING).target(States.COMPLETED).event(Events.FINISH).action(finishAction, errorAction);
     }
 
     /**
@@ -73,13 +88,17 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<States
      */
     @Bean
     public StateMachineListener<States, Events> listener() {
-        StateMachineListenerAdapter<States, Events> listenerAdapter = new StateMachineListenerAdapter<States, Events>() {
+        return new StateMachineListenerAdapter<States, Events>() {
             @Override
             public void stateChanged(State<States, Events> from, State<States, Events> to) {
                 String fromId = from != null ? String.valueOf(from.getId()) : "";
-                System.out.println(fromId+ " State change to " + to.getId());
+                log.info(fromId + " State change to " + to.getId());
+            }
+
+            @Override
+            public void stateMachineError(StateMachine<States, Events> stateMachine, Exception exception) {
+                log.info("异常.....");
             }
         };
-        return listenerAdapter;
     }
 }

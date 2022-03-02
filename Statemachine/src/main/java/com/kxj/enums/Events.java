@@ -2,7 +2,11 @@ package com.kxj.enums;
 
 /**
  * 事件枚举
+ *
+ * @author Ben
  */
 public enum Events {
-    E1, E2,E3
+    START_DEAL,
+    FINISH;
+
 }
