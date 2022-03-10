@@ -5,6 +5,7 @@ package com.kxj.enums;
  */
 public enum States {
     TO_DEAL,
+    COMPLETED,
     DEALING,
-    COMPLETED;
+    REJECT;
 }

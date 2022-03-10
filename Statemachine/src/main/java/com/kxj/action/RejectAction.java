@@ -13,12 +13,9 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class StartDealAction implements Action<States, Events> {
+public class RejectAction implements Action<States, Events> {
     @Override
     public void execute(StateContext<States, Events> context) {
-        log.info("开始处理");
-        Object content = context.getMessageHeaders().get("content");
-        log.info("信息: {}", content);
-//        int i = 1 / 0;
+        log.info("驳回");
     }
 }
