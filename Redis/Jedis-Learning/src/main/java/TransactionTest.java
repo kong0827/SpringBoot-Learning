@@ -1,5 +1,4 @@
 import cn.hutool.json.JSONObject;
-import com.alibaba.fastjson.JSONObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
@@ -20,7 +19,7 @@ public class TransactionTest {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("hello", "world");
         jsonObject.put("name", "kongxiangjin");
-        String jsonString = jsonObject.toJSONString();
+        String jsonString = jsonObject.toString();
 
         Transaction transaction = jedis.multi(); // 开启事务
         try {
