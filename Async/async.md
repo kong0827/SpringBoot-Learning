@@ -372,6 +372,8 @@ Spring 已经实现的异常线程池：
 
 
 
+当你的spring版本是2.1之前的版本时，这里是没有applicationTaskExecutor这个默认配置的线程池，而是SimpleAsyncTaskExecutor，他的submit方法就是在不断的新建线程去执行任务，也是及其消耗资源的，因此这里也是不推荐直接使用的。
+
 在上下文中没有`TaskExecutor`bean 的情况下，Spring Boot 自动配置一个 `ThreadPoolTaskExecutor`合理的默认值，这些默认值可以自动关联到异步任务执行 ( `@EnableAsync`) 和 Spring MVC 异步请求处理。
 
 线程池使用8个核心线程，可以根据负载增长和收缩。这些默认设置可以使用命名空间进行微调`spring.task.execution`，如下例所示：
@@ -398,3 +400,18 @@ B方法会新起事务，B方法的执行成功与否不影响A事务的执行
 
 
 
+
+
+#### 失效场景
+
+1. 在`启动类`或者`能被启动类扫描到的配置类`上标注`@EnableAsync`
+2. 在`被spring管理的bean`的方法上`标注@Async()`
+3. `调用方法`与`被调用方法`**不在同一个bean**中。
+
+
+
+
+
+https://juejin.cn/post/7008368482224078856#heading-16
+
+https://juejin.cn/post/6961035880802811941
