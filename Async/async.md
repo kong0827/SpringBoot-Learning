@@ -358,7 +358,7 @@ public interface AsyncUncaughtExceptionHandler {
 
 
 
-#### 1. TaskExecutor
+#### TaskExecutor
 
 Spring异步线程池的接口类，其实质是`java.util.concurrent.Executor`
 
@@ -369,6 +369,24 @@ Spring 已经实现的异常线程池：
 3. `ConcurrentTaskExecutor`：Executor的适配类，不推荐使用。如果`ThreadPoolTaskExecutor`不满足要求时，才用考虑使用这个类
 4. `SimpleThreadPoolTaskExecutor`：是`Quartz`的`SimpleThreadPool`的类。线程池同时被quartz和非quartz使用，才需要使用此类
 5. `ThreadPoolTaskExecutor` ：最常使用，推荐。 其实质是对`java.util.concurrent.ThreadPoolExecutor`的包装
+
+
+
+在上下文中没有`TaskExecutor`bean 的情况下，Spring Boot 自动配置一个 `ThreadPoolTaskExecutor`合理的默认值，这些默认值可以自动关联到异步任务执行 ( `@EnableAsync`) 和 Spring MVC 异步请求处理。
+
+线程池使用8个核心线程，可以根据负载增长和收缩。这些默认设置可以使用命名空间进行微调`spring.task.execution`，如下例所示：
+
+```
+spring.task.execution.pool.max-threads =16
+ spring.task.execution.pool.queue-capacity =100
+ spring.task.execution.pool.keep-alive =10s
+```
+
+这会将线程池更改为使用有界队列，以便当队列已满（100 个任务）时，线程池增加到最多 16 个线程。由于线程在空闲 10 秒（而不是默认情况下的 60 秒）时被回收，因此池的收缩更具侵略性。
+
+`ThreadPoolTaskScheduler`如果需要与计划的任务执行相关联，也可以自动配置A ( `@EnableScheduling`)。线程池默认使用一个线程，这些设置可以使用命名空间进行微调`spring.task.scheduling`。
+
+如果需要创建自定义执行程序或调度程序，则`TaskExecutorBuilder`bean 和bean 在上下文中都可用。`TaskSchedulerBuilder`
 
 
 
