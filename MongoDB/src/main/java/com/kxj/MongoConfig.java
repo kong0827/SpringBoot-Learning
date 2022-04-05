@@ -1,10 +1,9 @@
 package com.kxj;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.convert.*;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
@@ -15,10 +14,11 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
  */
 
 @Configuration
-public class MongoTemplateConfig {
+public class MongoConfig {
 
     /**
-     * 去除 `_class` 字段
+     * 去除 `_class` 字段、
+     * mongodb存储的时候会有_class字段
      * @param factory
      * @param context
      * @param conversions
@@ -31,6 +31,7 @@ public class MongoTemplateConfig {
         MappingMongoConverter mappingConverter = new MappingMongoConverter(dbRefResolver,
                 context);
         mappingConverter.setCustomConversions(conversions);
+        //不设置_class字段
         MongoTypeMapper mongoTypeMapper = new DefaultMongoTypeMapper(null);
         mappingConverter.setTypeMapper(mongoTypeMapper);
         return mappingConverter;
@@ -41,5 +42,12 @@ public class MongoTemplateConfig {
 //                                       MongoConverter converter) {
 //        return new MongoTemplate(mongoDbFactory, converter);
 //    }
+
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDbFactory factory){
+        return new MongoTransactionManager(factory);
+    }
+
 
 }

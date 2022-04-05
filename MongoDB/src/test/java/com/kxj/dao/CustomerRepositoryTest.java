@@ -1,14 +1,15 @@
 package com.kxj.dao;
 
 import com.kxj.entity.Customer;
+import com.kxj.service.CustomerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLOutput;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -24,17 +25,25 @@ public class CustomerRepositoryTest {
 
     @Autowired
     CustomerRepository customerRepository;
+    @Autowired
+    CustomerService customerService;
 
     @Test
     public void insertTest() {
-        Customer customer = new Customer(3, "wanger");
+        Customer customer = Customer.builder().name("kxj").age(18).build();
         customerRepository.insert(customer);
+    }
+
+    @Test
+    public void testTransaction() {
+        Customer customer = Customer.builder().name("kxj").age(18).build();
+        customerService.testTransaction(customer);
     }
 
     @Test
     public void findAllTest() {
         List<Customer> customers = customerRepository.findAll();
-        customers.stream().forEach(customer -> System.out.println());
+        customers.forEach(System.out::println);
     }
 
     @Test
@@ -49,6 +58,17 @@ public class CustomerRepositoryTest {
                 break;
             }
         }
+    }
+
+
+    @Test
+    public void testGroup() {
+        customerService.group();
+    }
+
+    @Test
+    public void testGroupAndAvg() {
+        customerService.groupAndAvg();
     }
 
 }

@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.client.RestTemplate;
 import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ public class UserServiceTest {
     @Autowired
     UserServiceImpl userService;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     List<User> users = new ArrayList<>();
 
     @Before
@@ -37,7 +41,8 @@ public class UserServiceTest {
 
     @Test
     public void test() throws InterruptedException {
-        userService.addUser();
+        Object response = restTemplate.getForObject("http://rbox.ruigushop.com/after-sales-order/init/out-dealer-id?access_token=a6HEqpDQyZrPL1ZlMBgPU11zL", Object.class);
+        System.out.println(response);
 
 
     }

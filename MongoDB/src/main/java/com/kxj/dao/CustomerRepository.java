@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
  * @date 2020/9/7 14:33
  */
 @Repository
-public interface CustomerRepository extends MongoRepository<Customer, Integer> {
+public interface CustomerRepository extends MongoRepository<Customer, String> {
 
 
     @Async
