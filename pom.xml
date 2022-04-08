@@ -44,6 +44,8 @@
         <module>Test</module>
         <module>threadlocal</module>
         <module>JPA</module>
+        <module>Statemachine</module>
+        <module>compensation-mechanism</module>
     </modules>
 
     <dependencies>
@@ -70,12 +72,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.4</version>
         </dependency>
 
         <dependency>
@@ -113,6 +109,18 @@
             <artifactId>guava</artifactId>
             <version>20.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.5.7</version>
+        </dependency>
+
     </dependencies>
 
     <build>
