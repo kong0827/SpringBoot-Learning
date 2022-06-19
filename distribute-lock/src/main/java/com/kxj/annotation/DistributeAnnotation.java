@@ -1,4 +1,4 @@
-package annotation;
+package com.kxj.annotation;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 @Documented
 @Target(value = ElementType.METHOD)
 public @interface DistributeAnnotation {
+
+    String lockName() default "";
 
     /**
      * 锁前缀
@@ -25,7 +27,7 @@ public @interface DistributeAnnotation {
     String lockSuffix() default "";
 
     /**
-     * 需要锁的参数
+     * 需要锁的对象中参数
      * @return
      */
     String param() default "";

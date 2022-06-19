@@ -46,6 +46,7 @@
         <module>JPA</module>
         <module>Statemachine</module>
         <module>compensation-mechanism</module>
+        <module>thread</module>
         <module>distribute-lock</module>
     </modules>
 
