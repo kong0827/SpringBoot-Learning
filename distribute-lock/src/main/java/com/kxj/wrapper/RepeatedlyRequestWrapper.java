@@ -6,6 +6,9 @@ import java.io.*;
 import java.nio.charset.Charset;
 
 /**
+ *
+ * request的inputStream只能被读取一次，多次读取将报错\
+ * 增加缓冲，记录已读取的内容。
  * 构建可重复读取inputStream的request
  */
 public class RepeatedlyRequestWrapper extends HttpServletRequestWrapper {
