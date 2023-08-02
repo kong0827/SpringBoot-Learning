@@ -48,6 +48,7 @@
         <module>compensation-mechanism</module>
         <module>thread</module>
         <module>distribute-lock</module>
+        <module>RabbitMQ</module>
     </modules>
 
     <dependencies>
