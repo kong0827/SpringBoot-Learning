@@ -4,13 +4,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * @author xiangjin.kong
- * @date 2021/2/19 10:25
- * @desc Spring Boot 集成 RabbitMQ
+ * @author kxj
+ * @date 2022/10/17 14:00
+ * @desc
  */
 @SpringBootApplication
-public class RabbitMQApplication {
+public class MybatisLearningApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(RabbitMQApplication.class, args);
+        SpringApplication.run(MybatisLearningApplication.class, args);
     }
 }

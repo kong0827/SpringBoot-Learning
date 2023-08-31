@@ -32,6 +32,7 @@
         <module>10-spring-boot-rabbitmq-ttl</module>
         <module>11-spring-boot-rabbitmq-dlx</module>
         <module>12-spring-boot-rabbitmq-delay-queue</module>
+        <module>spring-boot-rabbitmq-multi-datasource</module>
     </modules>
 
     <dependencies>

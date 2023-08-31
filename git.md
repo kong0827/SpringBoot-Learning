@@ -263,15 +263,16 @@ git branch --unset-upstream
   git push origin master
   ```
   
+
 *方式二：使用 reset*
-  
+
 ```git
   git reset --hard HEAD
   git push origin master -f
-  ```
-  
+```
+
 *二者区别：*
-  
+
 - **revert** 是放弃指定提交的修改，但是会生成一次新的提交，需要填写提交注释，以前的历史记录都在；
   - **reset** 是指将HEAD指针指到指定提交，历史记录中不会出现放弃的提交记录。
 
