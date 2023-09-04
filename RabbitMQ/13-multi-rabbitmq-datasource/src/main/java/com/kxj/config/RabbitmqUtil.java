@@ -17,7 +17,6 @@ public class RabbitmqUtil {
         }
         return null;
     }
-
     public static TopicExchange createTopicExchange(String exchangeName) {
         if (StringUtils.isNotBlank(exchangeName)) {
             return new TopicExchange(exchangeName, true, false);
@@ -46,27 +45,21 @@ public class RabbitmqUtil {
         return null;
     }
 
-    public static void createRabbitAdmin(Queue queue, Exchange exchange, Binding binding, RabbitAdmin rabbitAdmin) {
-//        rabbitAdmin.declareQueue(queue);
-        rabbitAdmin.declareExchange(exchange);
-//        rabbitAdmin.declareBinding(binding);
-    }
-
 //    public static void createRabbitAdmin(Queue queue, DirectExchange exchange, Binding binding, RabbitAdmin rabbitAdmin) {
 //        rabbitAdmin.declareQueue(queue);
 //        rabbitAdmin.declareExchange(exchange);
 //        rabbitAdmin.declareBinding(binding);
 //    }
-//
-//    public static void createRabbitAdmin(Queue queue, TopicExchange exchange, Binding binding, RabbitAdmin rabbitAdmin) {
-//        rabbitAdmin.declareQueue(queue);
-//        rabbitAdmin.declareExchange(exchange);
-//        rabbitAdmin.declareBinding(binding);
-//    }
-//
-//    public static void createRabbitAdmin(Queue queue, FanoutExchange exchange, Binding binding, RabbitAdmin rabbitAdmin) {
-//        rabbitAdmin.declareQueue(queue);
-//        rabbitAdmin.declareExchange(exchange);
-//        rabbitAdmin.declareBinding(binding);
-//    }
+
+    public static void createRabbitAdmin(Queue queue, Exchange exchange, Binding binding, RabbitAdmin rabbitAdmin) {
+        if (queue != null) {
+            rabbitAdmin.declareQueue(queue);
+        }
+        if (exchange != null) {
+            rabbitAdmin.declareExchange(exchange);
+        }
+        if (binding != null) {
+            rabbitAdmin.declareBinding(binding);
+        }
+    }
 }

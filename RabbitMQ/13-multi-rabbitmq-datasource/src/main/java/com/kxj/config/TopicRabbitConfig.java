@@ -19,18 +19,16 @@ import org.springframework.context.annotation.Primary;
  * @desc
  */
 @Configuration
-@ConfigurationProperties(prefix = "kxj.rabbit")
-public class RabbitConfig extends AbstractRabbitConfiguration {
+@ConfigurationProperties(prefix = "kxj.rabbit.topic")
+public class TopicRabbitConfig extends AbstractRabbitConfiguration {
 
-    @Bean("primaryConnectionFactory")
-    @Primary
-    public ConnectionFactory primaryConnectionFactory() {
+    @Bean("topicConnectionFactory")
+    public ConnectionFactory topicConnectionFactory() {
         return super.connectionFactory();
     }
 
-    @Bean
-    @Primary
-    public RabbitTemplate rabbitTemplate(@Qualifier("primaryConnectionFactory") ConnectionFactory connectionFactory,
+    @Bean("topicRabbitTemplate")
+    public RabbitTemplate rabbitTemplate(@Qualifier("topicConnectionFactory") ConnectionFactory connectionFactory,
                                          @Qualifier("confirmCallback") ConfirmCallback confirmCallback,
                                          @Qualifier("returnCallback") ReturnCallback returnCallback) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -41,10 +39,10 @@ public class RabbitConfig extends AbstractRabbitConfiguration {
         return rabbitTemplate;
     }
 
-    @Bean(name = "primaryContainerFactory")
+    @Bean(name = "topicContainerFactory")
     public SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(
             SimpleRabbitListenerContainerFactoryConfigurer configurer,
-            @Qualifier("primaryConnectionFactory") ConnectionFactory connectionFactory) {
+            @Qualifier("topicConnectionFactory") ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         // 设置ACK确认机制
@@ -55,15 +53,15 @@ public class RabbitConfig extends AbstractRabbitConfiguration {
         return factory;
     }
 
-    @Bean(name = "primaryRabbitAdmin")
-    public RabbitAdmin rabbitAdmin(@Qualifier("primaryConnectionFactory") ConnectionFactory connectionFactory) {
+    @Bean(name = "topicRabbitAdmin")
+    public RabbitAdmin rabbitAdmin(@Qualifier("topicConnectionFactory") ConnectionFactory connectionFactory) {
         RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
         rabbitAdmin.setAutoStartup(true);
 
         // 声明交换机，队列及对应绑定关系
         Queue queue = RabbitmqUtil.createQueue(queueName);
-        FanoutExchange exchange = RabbitmqUtil.createFanoutExchange(exchangeName);
-        Binding binding = RabbitmqUtil.createBinding(queue, exchange, "");
+        TopicExchange exchange = RabbitmqUtil.createTopicExchange(exchangeName);
+        Binding binding = RabbitmqUtil.createBinding(queue, exchange, routingKey);
         RabbitmqUtil.createRabbitAdmin(queue, exchange, binding, rabbitAdmin);
         return rabbitAdmin;
     }

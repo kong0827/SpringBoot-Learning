@@ -9,7 +9,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
  */
 @Data
 public abstract class AbstractRabbitConfiguration {
-    protected String address;
+    // protected String address;
     protected String host;
     protected Integer port;
     protected String userName;
@@ -28,7 +28,6 @@ public abstract class AbstractRabbitConfiguration {
         connectionFactory.setVirtualHost(virtualHost);
         connectionFactory.setUsername(userName);
         connectionFactory.setPassword(password);
-//        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
         connectionFactory.setPublisherConfirms(true);
         connectionFactory.setPublisherReturns(Boolean.TRUE);
         return connectionFactory;

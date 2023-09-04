@@ -1,5 +1,7 @@
 package com.kxj.config;
 
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
@@ -15,17 +17,15 @@ import org.springframework.stereotype.Component;
  *      cause参数是错误信息；
  *      CorrelationData可以理解为context，在发送消息时传入的这个参数，此时会拿到。
  */
+@Slf4j
 @Component
 public class ConfirmCallback implements RabbitTemplate.ConfirmCallback {
-
-
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
         if (ack) {
-            System.out.println(String.format("消息成功发送给mq"));
+            log.info("传递消息到交换机成功,correlationData:{}, cause:{}", JSON.toJSONString(correlationData), cause);
         } else {
-            System.out.println(String.format("消息发送给mq失败"));
+            log.error("传递消息到交换机失败,correlationData:{}, cause:{}", JSON.toJSONString(correlationData), cause);
         }
-
     }
 }
