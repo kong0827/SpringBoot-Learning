@@ -10,7 +10,7 @@
 
     <parent>
         <groupId>com.kxj</groupId>
-        <artifactId>springboot</artifactId>
+        <artifactId>spring-boot-learning</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
