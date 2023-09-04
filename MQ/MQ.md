@@ -1356,7 +1356,7 @@ Dead-Letter-Exchange
 
 队列绑定死信交换机
 
-给队列设置参数：x-dead-letter-exchange 和 x-dead-letter-routing-key
+给队列设置参数：**x-dead-letter-exchange** 和 **x-dead-letter-routing-key**
 
 
 
@@ -1415,8 +1415,6 @@ public class RabbitConfig {
      */
     @Bean
     public Exchange commonExchange() {
-
-
         return ExchangeBuilder.directExchange(COMMON_EXCHANGE).build();
     }
 

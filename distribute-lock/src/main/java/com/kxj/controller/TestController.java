@@ -3,26 +3,29 @@ package com.kxj.controller;
 import com.kxj.annotation.DistributeAnnotation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author kxj
  * @date 2022/6/20 00:47
  * @desc
  */
-@Controller
+@RestController
 public class TestController {
 
-    @GetMapping("/student")
+    @PostMapping("/student")
     @DistributeAnnotation(param = "id")
     // 参数必须是对象
-    public void getStudents(Student student) {
+    public void getStudents(@RequestBody Student student) {
 
     }
 
 
-    @GetMapping("/student1")
+    @PostMapping("/student1")
     @DistributeAnnotation
-    public void getStudents1(Student student) {
+    public void getStudents1(@RequestBody Student student) {
 
     }
 

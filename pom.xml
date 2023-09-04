@@ -49,6 +49,7 @@
         <module>thread</module>
         <module>distribute-lock</module>
         <module>RabbitMQ</module>
+        <module>mybatis-learning</module>
     </modules>
 
     <dependencies>
